@@ -227,6 +227,7 @@ onMounted(() => {
 .teaching-experience {
   padding: 24px;
   min-height: 100vh;
+  width: 100%;
 }
 
 /* 统计信息样式 */

@@ -43,6 +43,11 @@
           </router-link>
         </li>
         <li class="nav-item">
+          <router-link to="/teaching-resources/student-assignments" active-class="active" class="nav-link">
+            <span>学生作业</span>
+          </router-link>
+        </li>
+        <li class="nav-item">
           <router-link to="/teaching-resources/student-academic" active-class="active" class="nav-link">
             <span>我的学生</span>
           </router-link>
@@ -64,56 +69,65 @@
   display: grid;
   grid-template-columns: 180px 1fr;
   gap: 30px;
-  min-height: calc(100vh - 72px);
-  margin: auto;
+  min-height: 100vh;
   max-width: 1440px;
+  margin: auto;
+  background: #f5f7fa;
   width: 100%;
 }
 
 .side-nav {
-  background: #fff;
+  background: white;
   border-right: 1px solid #e8ecf3;
-  padding: 16px 0;
+  padding: 20px 0;
 }
 
 .nav-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 16px 24px 24px 0;
 }
 
-.nav-item { }
+.nav-item {
+  margin-bottom: 4px;
+}
 
 .nav-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 10px 20px;
-  color: #445066;
+  display: block;
+  padding: 12px 20px;
+  color: #666;
   text-decoration: none;
+  transition: all 0.3s;
   border-left: 3px solid transparent;
 }
 
 .nav-link:hover {
-  background: #f5f8ff;
+  background: #f0f9ff;
+  color: #1677ff;
 }
 
 .nav-link.active {
-  background: #eef4ff;
+  background: #e6f7ff;
   color: #1677ff;
   border-left-color: #1677ff;
   font-weight: 600;
 }
 
-.icon { width: 20px; text-align: center; }
-
 .main-area {
+  /* max-width: calc(1440px - 180px); */
+  width: 100%;
   padding: 16px 24px 24px 0;
+  overflow: auto;
 }
 
-.main-area :deep(.section-card) {
-  background: #fff;
-  border-radius: 12px;
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .teaching-resources-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .side-nav {
+    display: none;
+  }
 }
 </style>

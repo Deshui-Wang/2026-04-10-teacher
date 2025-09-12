@@ -457,6 +457,7 @@ onMounted(() => {
   padding: 24px;
   background: #f8f9ff;
   min-height: 100vh;
+  width: 100%;
   font-family: 'Poppins', sans-serif;
 }
 

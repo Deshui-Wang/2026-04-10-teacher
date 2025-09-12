@@ -502,6 +502,7 @@ watch([selectedCourse, selectedType, selectedSemester], () => {
   padding: 20px;
   background: #f8f9fa;
   min-height: 100vh;
+  width: 100%;
 }
 
 .page-header {

@@ -21,23 +21,20 @@
       </div>
       <button class="add-btn" @click="createArchive">
         <span class="add-icon">+</span>
-        创建档案
+        创建
       </button>
     </div>
-
     <!-- 加载状态 -->
     <div v-if="loading" class="loading-state">
       <div class="loading-spinner"></div>
       <p>正在加载档案数据...</p>
     </div>
-
     <!-- 空状态 -->
     <div v-else-if="filteredArchives.length === 0" class="empty-state">
       <div class="empty-icon">📁</div>
       <p>暂无档案</p>
       <small>点击"创建档案"开始管理您的档案信息</small>
     </div>
-
     <!-- 档案卡片网格 -->
     <div v-else class="archives-grid">
       <div 
@@ -93,7 +90,6 @@
             </div>
           </div>
         </div>
-
         <div class="card-footer">
           <div class="meta-info">
             <span class="archive-time">{{ archive.createTime }}</span>
@@ -110,7 +106,6 @@
         </div>
       </div>
     </div>
-
     <!-- 档案预览模态框 -->
     <div v-if="previewArchiveData" class="archive-preview-modal" @click="closeArchivePreview">
       <div class="modal-content">
@@ -129,27 +124,28 @@
         </div>
       </div>
     </div>
+    <!-- 报告创建模态框 -->
+    <ReportCreationModal 
+      v-if="showReportModal" 
+      @close="closeReportModal" 
+    />
   </div>
 </template>
-
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-
+import ReportCreationModal from './ReportCreationModal.vue'
 // 导航标签数据
 const tabs = [
   { id: 'all', name: '全部' },
   { id: 'word', name: 'Word' },
   { id: 'pdf', name: 'PDF' },
   { id: 'ppt', name: 'PPT' },
-  { id: 'image', name: '图片' },
-  { id: 'video', name: '视频' },
-  { id: 'webpage', name: '网页' }
+  { id: 'image', name: '图片' }
 ]
-
 const activeTab = ref('all')
 const loading = ref(true)
 const previewArchiveData = ref(null)
-
+const showReportModal = ref(false)
 // 可用的图片列表
 const availableImages = [
   '/pic/learning/0f0.jpeg',
@@ -166,12 +162,10 @@ const availableImages = [
   '/pic/learning/banner1.png',
   '/pic/learning/banner2.png'
 ]
-
 // 随机获取图片
 const getRandomImage = () => {
   return availableImages[Math.floor(Math.random() * availableImages.length)]
 }
-
 // 档案数据
 const archives = [
   {
@@ -247,7 +241,6 @@ const archives = [
     createTime: '2024-07-01'
   }
 ]
-
 // 根据选中的标签过滤档案
 const filteredArchives = computed(() => {
   if (activeTab.value === 'all') {
@@ -255,28 +248,27 @@ const filteredArchives = computed(() => {
   }
   return archives.filter(a => a.format === activeTab.value)
 })
-
 // 获取标签对应的档案数量
 const getTabCount = (tabId) => {
   if (tabId === 'all') return 0
   return archives.filter(a => a.format === tabId).length
 }
-
 // 切换标签
 const switchTab = (tabId) => {
   activeTab.value = tabId
 }
-
 // 创建档案
 const createArchive = () => {
-  console.log('打开创建档案')
+  showReportModal.value = true
 }
-
+// 关闭报告创建模态框
+const closeReportModal = () => {
+  showReportModal.value = false
+}
 // 处理图片加载错误
 const handleImageError = (event) => {
   event.target.style.display = 'none'
 }
-
 // 获取格式图标
 const getFormatIcon = (format) => {
   const icons = {
@@ -289,23 +281,19 @@ const getFormatIcon = (format) => {
   }
   return icons[format] || '📁'
 }
-
 // 预览档案
 const previewArchive = (archive) => {
   previewArchiveData.value = archive
 }
-
 // 关闭档案预览
 const closeArchivePreview = () => {
   previewArchiveData.value = null
 }
-
 // 下载档案
 const downloadArchive = (archive) => {
   console.log('下载档案:', archive.name)
   // 这里可以实现实际的下载逻辑
 }
-
 // 格式化文件大小
 const formatFileSize = (bytes) => {
   if (bytes === 0) return '0 B'
@@ -314,7 +302,6 @@ const formatFileSize = (bytes) => {
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
-
 // 模拟加载数据
 onMounted(() => {
   setTimeout(() => {
@@ -322,13 +309,11 @@ onMounted(() => {
   }, 500)
 })
 </script>
-
 <style scoped>
 .archive-management {
   padding: 24px;
   min-height: 100vh;
 }
-
 /* 导航区域样式 */
 .nav-section {
   display: flex;
@@ -337,7 +322,6 @@ onMounted(() => {
   margin-bottom: 24px;
   gap: 20px;
 }
-
 .nav-tabs {
   display: flex;
   background: white;
@@ -348,13 +332,11 @@ onMounted(() => {
   overflow-x: auto;
   overflow-y: visible;
 }
-
 .nav-tab-wrapper {
   flex: 1;
   position: relative;
   min-width: 100px;
 }
-
 .nav-tab {
   width: 100%;
   padding: 12px 16px;
@@ -367,16 +349,13 @@ onMounted(() => {
   transition: all 0.3s ease;
   white-space: nowrap;
 }
-
 .nav-tab:hover {
   background-color: #f0f0f0;
 }
-
 .nav-tab.active {
   background-color: #8b5cf6;
   color: white;
 }
-
 .tab-count {
   position: absolute;
   top: 0px;
@@ -396,7 +375,6 @@ onMounted(() => {
   z-index: 20;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
-
 /* 添加按钮样式 */
 .add-btn {
   background: linear-gradient(135deg, #8b5cf6, #a855f7);
@@ -414,17 +392,14 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
   white-space: nowrap;
 }
-
 .add-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
 }
-
 .add-icon {
   font-size: 18px;
   font-weight: bold;
 }
-
 /* 加载状态样式 */
 .loading-state {
   display: flex;
@@ -434,7 +409,6 @@ onMounted(() => {
   padding: 60px 20px;
   text-align: center;
 }
-
 .loading-spinner {
   width: 40px;
   height: 40px;
@@ -444,12 +418,10 @@ onMounted(() => {
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
 }
-
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
 /* 空状态样式 */
 .empty-state {
   display: flex;
@@ -462,32 +434,27 @@ onMounted(() => {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-
 .empty-icon {
   font-size: 48px;
   margin-bottom: 16px;
   opacity: 0.6;
 }
-
 .empty-state p {
   margin: 0 0 8px 0;
   font-size: 18px;
   color: #666;
   font-weight: 500;
 }
-
 .empty-state small {
   color: #999;
   font-size: 14px;
 }
-
 /* 档案卡片网格 */
 .archives-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(370px, 1fr));
   gap: 20px;
 }
-
 .archive-card {
   background: white;
   border-radius: 12px;
@@ -498,19 +465,16 @@ onMounted(() => {
   opacity: 0;
   transform: translateY(20px);
 }
-
 .archive-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
-
 @keyframes fadeInUp {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-
 /* 卡片头部 */
 .card-header {
   display: flex;
@@ -519,7 +483,6 @@ onMounted(() => {
   margin-bottom: 16px;
   gap: 12px;
 }
-
 .title {
   font-weight: 600;
   color: #333;
@@ -528,7 +491,6 @@ onMounted(() => {
   flex: 1;
   display: flex;
 }
-
 /* 类型标签 */
 .type-tag {
   padding: 4px 12px;
@@ -538,56 +500,45 @@ onMounted(() => {
   color: white;
   white-space: nowrap;
 }
-
 .type-word {
   background-color: #2563eb;
 }
-
 .type-pdf {
   background-color: #dc2626;
 }
-
 .type-ppt {
   background-color: #ea580c;
 }
-
 .type-image {
   background-color: #059669;
 }
-
 .type-video {
   background-color: #7c3aed;
 }
-
 .type-webpage {
   background-color: #0891b2;
 }
-
 /* 卡片内容 */
 .card-content {
   margin-bottom: 16px;
 }
-
 /* 缩略图区域 */
 .thumbnail-section {
   margin-bottom: 16px;
 }
-
 .thumbnail-container {
   width: 100%;
-  height: 160px;
+  height: 80px;
   border-radius: 8px;
   overflow: hidden;
   background: #f8f9fa;
   border: 1px solid #e9ecef;
 }
-
 .archive-thumbnail {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
 .thumbnail-placeholder {
   width: 100%;
   height: 100%;
@@ -596,24 +547,20 @@ onMounted(() => {
   justify-content: center;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
-
 .format-icon {
   font-size: 48px;
   opacity: 0.6;
 }
-
 /* 描述区域 */
 .description-section {
   margin-bottom: 16px;
 }
-
 .description-text {
   font-size: 14px;
   line-height: 1.6;
   color: #353535;
   text-align: justify;
 }
-
 /* 档案信息 */
 .archive-info {
   background: #f8f9fa;
@@ -621,28 +568,23 @@ onMounted(() => {
   padding: 12px;
   margin-bottom: 16px;
 }
-
 .info-item {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
   font-size: 12px;
 }
-
 .info-item:last-child {
   margin-bottom: 0;
 }
-
 .info-label {
   color: #666;
   font-weight: 500;
 }
-
 .info-value {
   color: #333;
   font-weight: 600;
 }
-
 /* 卡片底部 */
 .card-footer {
   border-top: 1px solid #f0f0f0;
@@ -651,7 +593,6 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
 }
-
 .meta-info {
   display: flex;
   align-items: center;
@@ -659,23 +600,19 @@ onMounted(() => {
   font-size: 12px;
   color: #999;
 }
-
 .archive-time {
   color: #666;
   font-weight: 500;
 }
-
 .archive-size {
   color: #666;
   font-weight: 500;
 }
-
 /* 操作按钮 */
 .action-buttons {
   display: flex;
   gap: 8px;
 }
-
 .action-btn {
   padding: 6px 12px;
   border: none;
@@ -685,25 +622,20 @@ onMounted(() => {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
 .preview-btn {
   background: #8b5cf6;
   color: white;
 }
-
 .preview-btn:hover {
   background: #7c3aed;
 }
-
 .download-btn {
   background: #059669;
   color: white;
 }
-
 .download-btn:hover {
   background: #047857;
 }
-
 /* 档案预览模态框 */
 .archive-preview-modal {
   position: fixed;
@@ -718,7 +650,6 @@ onMounted(() => {
   z-index: 1000;
   cursor: pointer;
 }
-
 .modal-content {
   background: white;
   border-radius: 12px;
@@ -727,7 +658,6 @@ onMounted(() => {
   overflow: hidden;
   cursor: default;
 }
-
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -735,13 +665,11 @@ onMounted(() => {
   padding: 20px;
   border-bottom: 1px solid #f0f0f0;
 }
-
 .modal-header h3 {
   margin: 0;
   color: #333;
   font-size: 18px;
 }
-
 .close-btn {
   background: none;
   border: none;
@@ -750,17 +678,14 @@ onMounted(() => {
   cursor: pointer;
   padding: 4px;
 }
-
 .close-btn:hover {
   color: #333;
 }
-
 .modal-body {
   padding: 20px;
   max-height: 60vh;
   overflow-y: auto;
 }
-
 .modal-body img {
   width: 100%;
   max-height: 300px;
@@ -768,25 +693,21 @@ onMounted(() => {
   border-radius: 8px;
   margin-bottom: 16px;
 }
-
 .preview-info p {
   margin: 0 0 8px 0;
   font-size: 14px;
   line-height: 1.6;
   color: #333;
 }
-
 .preview-info strong {
   color: #666;
 }
-
 /* 响应式设计 */
 @media (max-width: 1200px) {
   .archives-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-
 @media (max-width: 768px) {
   .archives-grid {
     grid-template-columns: 1fr;
@@ -820,4 +741,4 @@ onMounted(() => {
     justify-content: center;
   }
 }
-</style> 
+</style>

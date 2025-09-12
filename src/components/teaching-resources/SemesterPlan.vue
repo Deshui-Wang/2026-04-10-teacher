@@ -487,6 +487,7 @@ onMounted(() => {
   padding: 20px;
   background: #f5f7fa;
   min-height: 100vh;
+  width: 100%;
 }
 
 /* 第一部分：日历和当日课程 */

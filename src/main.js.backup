@@ -14,14 +14,6 @@ import AgentEditor from './views/AgentEditor.vue'
 import ReportPreview from './views/ReportPreview.vue'
 import GrowthTrajectory from './views/GrowthTrajectory.vue'
 
-// 发展轨迹布局和子页面
-import GrowthTrajectoryLayout from './components/growth-trajectory/GrowthTrajectoryLayout.vue'
-import ProfessionalAbility from './views/growth-trajectory/ProfessionalAbility.vue'
-import TeachingAchievements from './views/growth-trajectory/TeachingAchievements.vue'
-import IndustryPractice from './views/growth-trajectory/IndustryPractice.vue'
-import AbilityCertification from './views/growth-trajectory/AbilityCertification.vue'
-import ResearchInnovation from './views/growth-trajectory/ResearchInnovation.vue'
-import InternationalAbility from './views/growth-trajectory/InternationalAbility.vue'
 
 // 个人主页与子页面
 import Profile from './components/profile/Profile.vue'
@@ -61,20 +53,7 @@ const routes = [
   { path: '/academic-monitor', redirect: '/teaching-resources/student-academic' },
   { path: '/student-academic/:id', component: StudentAcademicDetail },
   { path: '/ai', component: EvaluationCenter },
-  { 
-    path: '/growth-trajectory', 
-    component: GrowthTrajectoryLayout,
-    children: [
-      { path: '', redirect: '/growth-trajectory/route' },
-      { path: 'route', component: GrowthTrajectory },
-      { path: 'professional-ability', component: ProfessionalAbility },
-      { path: 'teaching-achievements', component: TeachingAchievements },
-      { path: 'industry-practice', component: IndustryPractice },
-      { path: 'ability-certification', component: AbilityCertification },
-      { path: 'research-innovation', component: ResearchInnovation },
-      { path: 'international-ability', component: InternationalAbility }
-    ]
-  },
+  { path: '/growth-trajectory', component: GrowthTrajectory },
   { path: '/ai-thinking', component: AIThinking, meta: { hideFooter: true } },
   { 
     path: '/tch-ai', 

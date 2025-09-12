@@ -548,6 +548,7 @@ onMounted(() => {
 .teaching-activities {
   padding: 24px;
   min-height: 100vh;
+  width: 100%;
 }
 
 /* 筛选区域样式 */

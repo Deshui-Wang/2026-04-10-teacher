@@ -2141,12 +2141,12 @@ const getRandomPhoto = () => {
 <style scoped>
 .student-academic-detail {
   width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
   position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 .page-header {
@@ -2158,8 +2158,6 @@ const getRandomPhoto = () => {
   z-index: 100;
   padding: 16px 48px;
   /*box-shadow: 0 2px 8px rgba(0,0,0,0.05);*/
-  max-width: 1440px;
-  margin: 0 auto;
   width: 100%;
 }
 
@@ -2621,7 +2619,6 @@ h1 {
   position: relative;
   width: 200px;
   height: 200px;
-  margin: 0 auto;
 }
 
 .radar-axis {

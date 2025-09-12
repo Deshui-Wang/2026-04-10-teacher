@@ -314,6 +314,7 @@ onMounted(() => {
   padding: 20px;
   background: #f5f7fa;
   min-height: 100vh;
+  width: 100%;
 }
 
 /* 概览卡片 */

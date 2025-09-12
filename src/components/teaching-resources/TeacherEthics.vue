@@ -747,6 +747,7 @@ onBeforeUnmount(() => {
 
 .teacher-ethics-container {
   min-height: 100vh;
+  width: 100%;
   background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
   padding: 20px;
   font-family: 'Poppins', sans-serif;

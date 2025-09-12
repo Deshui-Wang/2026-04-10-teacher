@@ -2,7 +2,7 @@
   <div class="teaching-resume">
     <!-- 任教年限信息 -->
     <div class="module-container">
-      <h3 class="module-title">任教年限</h3>
+      <h3 class="module-title">任教信息概览</h3>
       <div class="section">
         <div class="teaching-info-grid">
           <div class="info-card">
@@ -38,16 +38,6 @@
             </div>
           </div>
         </div>
-        
-        <!-- 所授课程名称列表 -->
-        <div class="courses-summary">
-          <h4 class="courses-summary-title">所授课程名称</h4>
-          <div class="courses-tags">
-            <span v-for="course in taughtCourses" :key="course.id" class="course-tag">
-              {{ course.name }}
-            </span>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -60,110 +50,126 @@
             <!-- 课程头部信息 -->
             <div class="course-header">
               <div class="course-title-section">
-                <h4 class="course-name">{{ course.name }}</h4>
-                <div class="course-badges">
-                  <span class="course-credits">{{ course.credits }}学分</span>
-                  <span class="course-semester">{{ course.semester }}</span>
-                  <span class="course-students">{{ course.studentCount }}人</span>
+                <div class="course-title-group">
+                  <h4 class="course-name">{{ course.name }}</h4>
+                  <div class="course-meta-info">
+                    <span class="course-credits">{{ course.credits }}学分</span>
+                    <span class="course-semester">{{ course.semester }}</span>
+                    <span class="course-students">{{ course.studentCount }}人</span>
+                  </div>
+                </div>
+                <div class="course-stats">
+                  <div class="stat-item">
+                    <span class="stat-label">满意度</span>
+                    <span class="stat-value">{{ course.effectiveness.satisfaction }}%</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">通过率</span>
+                    <span class="stat-value">{{ course.effectiveness.passRate }}%</span>
+                  </div>
                 </div>
               </div>
             </div>
             
-            <!-- 课程内容 - 紧凑布局 -->
+            <!-- 课程内容 - 优化布局 -->
             <div class="course-content">
-              <!-- 第一行：课程简介和教学成效 -->
-              <div class="course-row">
-                <div class="course-col course-col-2">
-                  <h5 class="section-subtitle">课程简介</h5>
-                  <p class="course-description">{{ course.description }}</p>
+              <!-- 课程简介区域 -->
+              <div class="course-intro-section">
+                <h5 class="section-subtitle">课程简介</h5>
+                <p class="course-description">{{ course.description }}</p>
+              </div>
+
+              <!-- 课程核心信息网格 -->
+              <div class="course-info-grid">
+                <!-- 课程内容 -->
+                <div class="info-block">
+                  <h5 class="section-subtitle">课程内容</h5>
+                  <div class="content-list">
+                    <div v-for="(content, index) in course.content" :key="index" class="content-item">
+                      <span class="content-number">{{ index + 1 }}</span>
+                      <span class="content-text">{{ content }}</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="course-col course-col-1">
-                  <h5 class="section-subtitle">教学成效</h5>
-                  <div class="teaching-effectiveness-compact">
-                    <div class="effectiveness-item-compact">
-                      <span class="effectiveness-label">满意度</span>
-                      <span class="effectiveness-value">{{ course.effectiveness.satisfaction }}%</span>
-                    </div>
-                    <div class="effectiveness-item-compact">
-                      <span class="effectiveness-label">通过率</span>
-                      <span class="effectiveness-value">{{ course.effectiveness.passRate }}%</span>
-                    </div>
-                    <div class="effectiveness-item-compact">
-                      <span class="effectiveness-label">优秀率</span>
-                      <span class="effectiveness-value">{{ course.effectiveness.excellentRate }}%</span>
+
+                <!-- 教学目标 -->
+                <div class="info-block">
+                  <h5 class="section-subtitle">教学目标</h5>
+                  <div class="objectives-list">
+                    <div v-for="(objective, index) in course.objectives" :key="index" class="objective-item">
+                      <div class="objective-icon">✓</div>
+                      <span class="objective-text">{{ objective }}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- 第二行：课程内容和教学目标 -->
-              <div class="course-row">
-                <div class="course-col course-col-1">
-                  <h5 class="section-subtitle">课程内容</h5>
-                  <ul class="course-content-list-compact">
-                    <li v-for="content in course.content" :key="content">{{ content }}</li>
-                  </ul>
-                </div>
-                <div class="course-col course-col-1">
-                  <h5 class="section-subtitle">教学目标</h5>
-                  <ul class="course-objectives-compact">
-                    <li v-for="objective in course.objectives" :key="objective">{{ objective }}</li>
-                  </ul>
+              <!-- 教学能力展示区域 -->
+              <div class="teaching-ability-section">
+                <h5 class="section-subtitle">教学能力描述</h5>
+                <div class="ability-description">
+                  <div class="ability-highlights">
+                    <div class="highlight-item">
+                      <span class="highlight-icon">🎯</span>
+                      <span class="highlight-text">理论与实践结合</span>
+                    </div>
+                    <div class="highlight-item">
+                      <span class="highlight-icon">🚀</span>
+                      <span class="highlight-text">案例驱动教学</span>
+                    </div>
+                    <div class="highlight-item">
+                      <span class="highlight-icon">👥</span>
+                      <span class="highlight-text">互动式课堂</span>
+                    </div>
+                  </div>
+                  <p class="ability-text">{{ course.teachingAbility }}</p>
                 </div>
               </div>
 
-              <!-- 第三行：教学能力描述和综合能力评估 -->
-              <div class="course-row">
-                <div class="course-col course-col-2">
-                  <h5 class="section-subtitle">教学能力描述</h5>
-                  <p class="teaching-ability-compact">{{ course.teachingAbility }}</p>
-                </div>
-                <div class="course-col course-col-1">
-                  <h5 class="section-subtitle">综合能力评估</h5>
-                  <div class="ability-assessment-compact">
-                    <div class="ability-item-compact">
-                      <span class="ability-label">课程设计</span>
-                      <div class="ability-bar-compact">
-                        <div class="ability-fill" :style="{ width: course.assessment.courseDesign + '%' }"></div>
-                      </div>
-                      <span class="ability-score">{{ course.assessment.courseDesign }}%</span>
+              <!-- 综合能力评估 -->
+              <div class="assessment-section">
+                <h5 class="section-subtitle">综合能力评估</h5>
+                <div class="assessment-grid">
+                  <div class="assessment-item">
+                    <div class="assessment-header">
+                      <span class="assessment-label">课程设计</span>
+                      <span class="assessment-score">{{ course.assessment.courseDesign }}%</span>
                     </div>
-                    <div class="ability-item-compact">
-                      <span class="ability-label">教学方法</span>
-                      <div class="ability-bar-compact">
-                        <div class="ability-fill" :style="{ width: course.assessment.teachingMethod + '%' }"></div>
-                      </div>
-                      <span class="ability-score">{{ course.assessment.teachingMethod }}%</span>
+                    <div class="assessment-bar">
+                      <div class="assessment-fill" :style="{ width: course.assessment.courseDesign + '%' }"></div>
                     </div>
-                    <div class="ability-item-compact">
-                      <span class="ability-label">学生互动</span>
-                      <div class="ability-bar-compact">
-                        <div class="ability-fill" :style="{ width: course.assessment.studentInteraction + '%' }"></div>
-                      </div>
-                      <span class="ability-score">{{ course.assessment.studentInteraction }}%</span>
+                  </div>
+                  <div class="assessment-item">
+                    <div class="assessment-header">
+                      <span class="assessment-label">教学方法</span>
+                      <span class="assessment-score">{{ course.assessment.teachingMethod }}%</span>
                     </div>
-                    <div class="ability-item-compact">
-                      <span class="ability-label">知识传授</span>
-                      <div class="ability-bar-compact">
-                        <div class="ability-fill" :style="{ width: course.assessment.knowledgeTransfer + '%' }"></div>
-                      </div>
-                      <span class="ability-score">{{ course.assessment.knowledgeTransfer }}%</span>
+                    <div class="assessment-bar">
+                      <div class="assessment-fill" :style="{ width: course.assessment.teachingMethod + '%' }"></div>
+                    </div>
+                  </div>
+                  <div class="assessment-item">
+                    <div class="assessment-header">
+                      <span class="assessment-label">学生互动</span>
+                      <span class="assessment-score">{{ course.assessment.studentInteraction }}%</span>
+                    </div>
+                    <div class="assessment-bar">
+                      <div class="assessment-fill" :style="{ width: course.assessment.studentInteraction + '%' }"></div>
+                    </div>
+                  </div>
+                  <div class="assessment-item">
+                    <div class="assessment-header">
+                      <span class="assessment-label">知识传授</span>
+                      <span class="assessment-score">{{ course.assessment.knowledgeTransfer }}%</span>
+                    </div>
+                    <div class="assessment-bar">
+                      <div class="assessment-fill" :style="{ width: course.assessment.knowledgeTransfer + '%' }"></div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 教学理念 -->
-    <div class="module-container">
-      <h3 class="module-title">教学理念</h3>
-      <div class="section">
-        <div class="philosophy-content">
-          <p class="philosophy-text">{{ teachingPhilosophy }}</p>
         </div>
       </div>
     </div>
@@ -334,9 +340,6 @@ const taughtCourses = ref([
     }
   }
 ])
-
-// 教学理念
-const teachingPhilosophy = ref('以学生为中心，注重理论与实践相结合，培养学生的创新思维和实践能力。通过启发式教学和项目驱动的方式，激发学生的学习兴趣，提高教学质量。同时，关注学生的个性化发展，因材施教，为每个学生提供适合的学习路径。')
 </script>
 
 <style scoped>
@@ -344,6 +347,7 @@ const teachingPhilosophy = ref('以学生为中心，注重理论与实践相结
   padding: 20px;
   background: #f5f7fa;
   min-height: 100vh;
+  width: 100%;
 }
 
 /* 模块容器 */
@@ -352,12 +356,11 @@ const teachingPhilosophy = ref('以学生为中心，注重理论与实践相结
 }
 
 .module-title {
-  margin: 0 0 6px 0;
+  margin: 0 0 16px 0;
   font-size: 24px;
-  color:#5856d6;
+  color: #5856d6;
   font-weight: 600;
   padding-bottom: 8px;
-  display: inline-block;
   display: flex;
 }
 
@@ -462,228 +465,334 @@ const teachingPhilosophy = ref('以学生为中心，注重理论与实践相结
   transform: translateY(-1px);
 }
 
-/* 详细课程样式 - 紧凑布局 */
+/* 详细课程样式 - 优化布局 */
 .courses-detailed {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .course-detailed-card {
   border: 1px solid #e8ecf3;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   transition: all 0.3s;
+  background: white;
 }
 
 .course-detailed-card:hover {
   border-color: #1677ff;
-  box-shadow: 0 8px 24px rgba(22, 119, 255, 0.1);
+  box-shadow: 0 12px 32px rgba(22, 119, 255, 0.15);
+  transform: translateY(-2px);
 }
 
+/* 课程头部优化 */
 .course-header {
-  background: #f8f9fa;
-  padding: 16px 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 24px;
   border-bottom: 1px solid #e8ecf3;
 }
 
 .course-title-section {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.course-title-group {
+  flex: 1;
 }
 
 .course-name {
-  margin: 0;
-  font-size: 18px;
+  margin: 0 0 12px 0;
+  font-size: 22px;
   color: #333;
-  font-weight: 600;
+  font-weight: 700;
+  line-height: 1.3;
+  display: flex;
 }
 
-.course-badges {
+.course-meta-info {
   display: flex;
-  gap: 8px;
-  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .course-credits {
   background: #e6f7ff;
   color: #1677ff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #bae7ff;
 }
 
 .course-semester {
   color: #666;
-  font-size: 12px;
+  font-size: 13px;
   background: #f0f0f0;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 500;
 }
 
 .course-students {
   color: #52c41a;
-  font-size: 12px;
+  font-size: 13px;
   background: #f6ffed;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
   border: 1px solid #b7eb8f;
+  font-weight: 500;
 }
 
-.course-content {
-  padding: 20px;
-}
-
-/* 紧凑布局的行和列 */
-.course-row {
+.course-stats {
   display: flex;
   gap: 20px;
-  margin-bottom: 20px;
+  align-items: center;
 }
 
-.course-row:last-child {
-  margin-bottom: 0;
+.stat-item {
+  text-align: center;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-width: 80px;
 }
 
-.course-col {
-  flex: 1;
+.stat-label {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
 }
 
-.course-col-1 {
-  flex: 1;
+.stat-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1677ff;
 }
 
-.course-col-2 {
-  flex: 2;
+/* 课程内容区域 */
+.course-content {
+  padding: 0;
+}
+
+/* 课程简介区域 */
+.course-intro-section {
+  padding: 24px;
+  background: #fafbfc;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .section-subtitle {
-  margin: 0 0 8px 0;
-  font-size: 14px;
+  margin: 0 0 12px 0;
+  font-size: 16px;
   color: #333;
   font-weight: 600;
-  border-left: 2px solid #1677ff;
-  padding-left: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-subtitle::before {
+  content: '';
+  width: 4px;
+  height: 16px;
+  background: #1677ff;
+  border-radius: 2px;
 }
 
 .course-description {
   margin: 0;
-  color: #666;
-  line-height: 1.5;
-  font-size: 13px;
+  color: #555;
+  line-height: 1.7;
+  font-size: 15px;
 }
 
-/* 紧凑的列表样式 */
-.course-content-list-compact,
-.course-objectives-compact {
-  margin: 0;
-  padding-left: 16px;
-  color: #666;
-  line-height: 1.4;
-  font-size: 13px;
+/* 课程信息网格 */
+.course-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px;
+  background: white;
 }
 
-.course-content-list-compact li,
-.course-objectives-compact li {
-  margin-bottom: 4px;
+.info-block {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e8ecf3;
 }
 
-/* 紧凑的教学成效 */
-.teaching-effectiveness-compact {
+/* 课程内容列表 */
+.content-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
-.effectiveness-item-compact {
+.content-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.content-number {
+  background: #1677ff;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.content-text {
+  color: #555;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* 教学目标列表 */
+.objectives-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.objective-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.objective-icon {
+  background: #52c41a;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.objective-text {
+  color: #555;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* 教学能力展示区域 */
+.teaching-ability-section {
+  padding: 24px;
+  background: #f8f9fa;
+  border-top: 1px solid #f0f0f0;
+}
+
+.ability-description {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e8ecf3;
+}
+
+.ability-highlights {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #e6f7ff;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #1677ff;
+  font-weight: 500;
+}
+
+.highlight-icon {
+  font-size: 14px;
+}
+
+.ability-text {
+  margin: 0;
+  color: #555;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* 综合能力评估 */
+.assessment-section {
+  padding: 24px;
+  background: white;
+  border-top: 1px solid #f0f0f0;
+}
+
+.assessment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.assessment-item {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e8ecf3;
+}
+
+.assessment-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
-  background: #f8f9fa;
-  border-radius: 4px;
-  font-size: 12px;
+  margin-bottom: 12px;
 }
 
-.effectiveness-label {
-  color: #666;
-}
-
-.effectiveness-value {
-  color: #1677ff;
+.assessment-label {
+  font-size: 14px;
+  color: #333;
   font-weight: 600;
 }
 
-/* 紧凑的教学能力描述 */
-.teaching-ability-compact {
-  margin: 0;
-  color: #666;
-  line-height: 1.5;
-  background: #f8f9fa;
-  padding: 12px;
-  border-radius: 4px;
-  border-left: 2px solid #1677ff;
-  font-size: 13px;
+.assessment-score {
+  font-size: 16px;
+  color: #1677ff;
+  font-weight: 700;
 }
 
-/* 紧凑的能力评估 */
-.ability-assessment-compact {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ability-item-compact {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-}
-
-.ability-label {
-  min-width: 60px;
-  color: #666;
-  font-size: 11px;
-}
-
-.ability-bar-compact {
-  flex: 1;
-  height: 6px;
+.assessment-bar {
+  height: 8px;
   background: #e8ecf3;
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
-.ability-fill {
+.assessment-fill {
   height: 100%;
   background: linear-gradient(90deg, #1677ff, #4096ff);
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-
-.ability-score {
-  min-width: 30px;
-  color: #1677ff;
-  font-weight: 600;
-  font-size: 11px;
-  text-align: right;
-}
-
-/* 教学理念 */
-.philosophy-content {
-  background: #f8f9fa;
-  padding: 24px;
-  border-radius: 8px;
-  border-left: 4px solid #1677ff;
-}
-
-.philosophy-text {
-  margin: 0;
-  color: #333;
-  line-height: 1.8;
-  font-size: 16px;
+  border-radius: 4px;
+  transition: width 0.6s ease;
 }
 
 /* 响应式设计 */
@@ -694,27 +803,27 @@ const teachingPhilosophy = ref('以学生为中心，注重理论与实践相结
   
   .course-title-section {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  
-  .course-badges {
-    flex-wrap: wrap;
-  }
-  
-  .course-row {
-    flex-direction: column;
     gap: 16px;
   }
   
-  .teaching-effectiveness-compact {
-    flex-direction: row;
-    flex-wrap: wrap;
+  .course-stats {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
   }
   
-  .effectiveness-item-compact {
-    flex: 1;
-    min-width: 100px;
+  .course-info-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .assessment-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ability-highlights {
+    flex-direction: column;
+    gap: 8px;
   }
   
   .courses-tags {
@@ -724,19 +833,21 @@ const teachingPhilosophy = ref('以学生为中心，注重理论与实践相结
 
 @media (max-width: 480px) {
   .course-content {
+    padding: 0;
+  }
+  
+  .course-header {
     padding: 16px;
   }
   
-  .course-row {
-    gap: 12px;
+  .course-intro-section,
+  .teaching-ability-section,
+  .assessment-section {
+    padding: 16px;
   }
   
-  .teaching-effectiveness-compact {
-    flex-direction: column;
-  }
-  
-  .effectiveness-item-compact {
-    min-width: auto;
+  .course-info-grid {
+    padding: 16px;
   }
 }
 </style> 
