@@ -465,8 +465,15 @@ onMounted(() => {
 }
 
 .stat-icon {
-  font-size: 32px;
+  font-size: 22px;
   flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f9fafb 0%, #f0f0f0 100%);
+  border-radius: 12px;
 }
 
 .stat-content {

@@ -204,12 +204,10 @@ const questionStats = ref([
 
 // 学生参与度数据
 const participationData = ref([
-  { name: '张三', participation: 95 },
-  { name: '李四', participation: 88 },
-  { name: '王五', participation: 92 },
-  { name: '赵六', participation: 76 },
-  { name: '钱七', participation: 83 },
-  { name: '孙八', participation: 89 }
+  { name: '提问', participation: 35 },
+  { name: '讨论', participation: 88 },
+  { name: '演示', participation: 62 },
+  { name: '其他', participation: 76 },
 ])
 
 // 作业数据
@@ -334,12 +332,19 @@ onMounted(() => {
   padding: 24px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 36px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card-icon {
-  font-size: 32px;
+  font-size: 22px;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f9fafb 0%, #f0f0f0 100%);
+  border-radius: 12px;
 }
 
 .card-content h3 {

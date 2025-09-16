@@ -75,17 +75,20 @@
             <div v-for="(course, index) in dailyCourses" :key="course.id" class="course-item">
               <div class="course-time">
                 <div class="time-slot">{{ course.timeSlot }}</div>
-                <div class="course-index">第{{ index + 1 }}节</div>
               </div>
               <div class="course-info">
-                <div class="course-name">{{ course.name }}</div>
-                <div class="course-code">{{ course.code }}</div>
-                <div class="course-details">
+                <div class="info-top">
+                  <div class="title-line">
+                    <span class="course-name">{{ course.name }}</span>
+                    <span class="course-code">（{{ course.code }}）</span>
+                  </div>
+                  <div class="type-badge">
+                    <span class="course-type-badge" :class="course.type.toLowerCase()">{{ course.type }}</span>
+                  </div>
+                </div>
+                <div class="info-bottom">
                   <span class="class-name">{{ course.className }}</span>
                   <span class="classroom">{{ course.classroom }}</span>
-                </div>
-                <div class="course-type-badge" :class="course.type.toLowerCase()">
-                  {{ course.type }}
                 </div>
               </div>
             </div>
@@ -123,6 +126,7 @@
           <div class="header-cell">授课班级</div>
           <div class="header-cell">总学时</div>
           <div class="header-cell">总学分</div>
+          <div class="header-cell">本学期进度</div>
         </div>
         <div class="table-body">
           <div v-for="course in coursesList" :key="course.id" class="table-row">
@@ -140,6 +144,18 @@
             </div>
             <div class="table-cell">{{ course.totalHours }}</div>
             <div class="table-cell">{{ course.totalCredits }}</div>
+            <div class="table-cell">
+              <div class="progress-container">
+                <div class="progress-bar">
+                  <div 
+                    class="progress-fill" 
+                    :style="{ width: course.progress + '%' }"
+                    :class="getProgressClass(course.progress)"
+                  ></div>
+                </div>
+                <span class="progress-text">{{ course.progress }}%</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -150,9 +166,22 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
+// Local date helpers to avoid UTC shift when using ISO strings
+const formatDate = (date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const parseLocalDate = (dateStr) => {
+  const [year, month, day] = dateStr.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
 // 响应式数据
 const currentDate = ref(new Date())
-const selectedDate = ref(new Date().toISOString().split('T')[0])
+const selectedDate = ref(formatDate(new Date()))
 const showYearPicker = ref(false)
 
 // 星期数组
@@ -174,81 +203,89 @@ const baseCourses = [
     code: 'CS101',
     name: '数据结构与算法',
     type: '理论课',
-    classes: ['计算机21-1', '计算机21-2'],
+    classes: ['计算机21-1班', '计算机21-2班'],
     totalHours: 64,
-    totalCredits: 4
+    totalCredits: 4,
+    progress: 75
   },
   {
     id: 2,
     code: 'CS102',
     name: '软件工程实践',
     type: '实践课',
-    classes: ['计算机21-1'],
+    classes: ['计算机21-1班'],
     totalHours: 48,
-    totalCredits: 3
+    totalCredits: 3,
+    progress: 60
   },
   {
     id: 3,
     code: 'CS103',
     name: '计算机网络实验',
     type: '实验课',
-    classes: ['计算机21-2', '计算机21-3'],
+    classes: ['计算机21-2班', '计算机21-3班'],
     totalHours: 32,
-    totalCredits: 2
+    totalCredits: 2,
+    progress: 45
   },
   {
     id: 4,
     code: 'CS104',
     name: '数据库原理',
     type: '理论课',
-    classes: ['计算机21-1', '计算机21-2', '计算机21-3'],
+    classes: ['计算机21-1班', '计算机21-2班', '计算机21-3班'],
     totalHours: 48,
-    totalCredits: 3
+    totalCredits: 3,
+    progress: 60
   },
   {
     id: 5,
     code: 'CS105',
     name: '操作系统原理',
     type: '理论课',
-    classes: ['计算机21-1', '计算机21-2'],
+    classes: ['计算机21-1班', '计算机21-2班'],
     totalHours: 48,
-    totalCredits: 3
+    totalCredits: 3,
+    progress: 60
   },
   {
     id: 6,
     code: 'CS106',
     name: '编译原理',
     type: '理论课',
-    classes: ['计算机21-3'],
+    classes: ['计算机21-3班'],
     totalHours: 48,
-    totalCredits: 3
+    totalCredits: 3,
+    progress: 60
   },
   {
     id: 7,
     code: 'CS107',
     name: '人工智能导论',
     type: '理论课',
-    classes: ['计算机21-1', '计算机21-2', '计算机21-3'],
+    classes: ['计算机21-1班', '计算机21-2班', '计算机21-3班'],
     totalHours: 32,
-    totalCredits: 2
+    totalCredits: 2,
+    progress: 45
   },
   {
     id: 8,
     code: 'CS108',
     name: '机器学习',
     type: '理论课',
-    classes: ['计算机21-1'],
+    classes: ['计算机21-1班'],
     totalHours: 48,
-    totalCredits: 3
+    totalCredits: 3,
+    progress: 60
   }
 ]
 
 // 教室配置
-const classrooms = ['A101', 'A102', 'A103', 'A104', 'B201', 'B202', 'B203', 'C301', 'C302', 'C303', 'D401', 'D402']
+const classrooms = ['主楼101', '主楼102', '实验楼103', '教学二楼104', '教学二楼201', '实验楼202', '主楼203', '主楼301', '主楼302', '主楼303', '实验室401', '机房402']
 
 // 生成指定日期的课程安排（轮询使用基础课程数据）
 const generateCoursesForDate = (dateStr) => {
-  const date = new Date(dateStr)
+  const date = parseLocalDate(dateStr)
   const dayOfWeek = date.getDay()
   
   // 只安排周一到周五的课程
@@ -340,14 +377,14 @@ const calendarDays = computed(() => {
   
   // 获取上个月最后几天
   const prevMonthLastDay = new Date(year, month, 0).getDate()
-  
+
   const days = []
   
   // 添加上个月的末尾几天
   for (let i = firstDayWeek - 1; i >= 0; i--) {
     const day = prevMonthLastDay - i
     const date = new Date(year, month - 1, day)
-    const dateStr = date.toISOString().split('T')[0]
+    const dateStr = formatDate(date)
     days.push({
       day,
       date: dateStr,
@@ -360,9 +397,9 @@ const calendarDays = computed(() => {
   // 添加当月的所有天
   for (let day = 1; day <= lastDay.getDate(); day++) {
     const date = new Date(year, month, day)
-    const dateStr = date.toISOString().split('T')[0]
+    const dateStr = formatDate(date)
     const today = new Date()
-    const isToday = dateStr === today.toISOString().split('T')[0]
+    const isToday = dateStr === formatDate(today)
     
     days.push({
       day,
@@ -377,7 +414,7 @@ const calendarDays = computed(() => {
   const remainingDays = 42 - days.length
   for (let day = 1; day <= remainingDays; day++) {
     const date = new Date(year, month + 1, day)
-    const dateStr = date.toISOString().split('T')[0]
+    const dateStr = formatDate(date)
     days.push({
       day,
       date: dateStr,
@@ -386,7 +423,6 @@ const calendarDays = computed(() => {
       courseCount: getCourseCountForDate(dateStr)
     })
   }
-  
   return days
 })
 
@@ -403,7 +439,7 @@ const selectDate = (date) => {
 
 // 格式化选中日期
 const selectedDateFormatted = computed(() => {
-  const date = new Date(selectedDate.value)
+  const date = parseLocalDate(selectedDate.value)
   const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
   const weekday = weekdays[date.getDay()]
   return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${weekday}`
@@ -445,6 +481,14 @@ const coursesList = computed(() => {
   return baseCourses
 })
 
+// 获取进度条样式类
+const getProgressClass = (progress) => {
+  if (progress >= 80) return "progress-high"
+  if (progress >= 60) return "progress-medium"
+  if (progress >= 40) return "progress-low"
+  return "progress-very-low"
+}
+
 // 年份选择
 const selectYear = (year) => {
   currentDate.value = new Date(year, currentDate.value.getMonth(), 1)
@@ -473,15 +517,14 @@ const nextYear = () => {
 const goToToday = () => {
   const today = new Date()
   currentDate.value = new Date(today.getFullYear(), today.getMonth(), 1)
-  selectedDate.value = today.toISOString().split('T')[0]
+  selectedDate.value = formatDate(today)
 }
 
 onMounted(() => {
   // 初始化时选中今天
-  selectedDate.value = new Date().toISOString().split('T')[0]
+  selectedDate.value = formatDate(new Date())
 })
 </script>
-
 <style scoped>
 .semester-plan {
   padding: 20px;
@@ -727,7 +770,7 @@ onMounted(() => {
 }
 
 .day-number {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .course-count {
@@ -749,7 +792,7 @@ onMounted(() => {
 .daily-courses {
   background: white;
   border-radius: 12px;
-  padding: 20px;
+  padding: 16px; /* 紧凑化 */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -757,19 +800,19 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px; /* 紧凑化 */
 }
 
 .daily-courses-header h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px; /* 稍微缩小 */
   color: #333;
 }
 
 .course-count-badge {
   background: #1677ff;
   color: white;
-  padding: 4px 12px;
+  padding: 2px 8px; /* 紧凑化 */
   border-radius: 12px;
   font-size: 12px;
   font-weight: 500;
@@ -783,32 +826,33 @@ onMounted(() => {
 .no-courses {
   text-align: center;
   color: #999;
-  padding: 40px 0;
+  padding: 32px 0; /* 紧凑化 */
 }
 
 .no-courses-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
+  font-size: 40px; /* 紧凑化 */
+  margin-bottom: 12px; /* 紧凑化 */
 }
 
 .no-courses p {
   margin: 0;
-  font-size: 16px;
+  font-size: 14px; /* 紧凑化 */
 }
 
 .course-item {
   display: flex;
-  gap: 16px;
-  padding: 16px;
-  border: 1px solid #f0f0f0;
+  gap: 20px; /* 紧凑化 */
+  padding: 12px; /* 紧凑化 */
+  border: 1px solid #f0f0f0; 
   border-radius: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 12px; /* 紧凑化 */
   transition: all 0.2s;
+  background: #f8f9fa;
 }
 
 .course-item:hover {
   border-color: #1677ff;
-  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.1);
+  box-shadow: 0 1px 4px rgba(22, 119, 255, 0.15); /* 更轻的悬浮效果 */
 }
 
 .course-item:last-child {
@@ -820,50 +864,68 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 80px;
-  padding: 8px;
-  background: #f8f9fa;
-  border-radius: 6px;
+  min-width: 110px; /* 左侧时间块更宽 */
+  padding: 10px;
+  background: #fff;
+  border-radius: 8px;
 }
 
 .time-slot {
-  font-size: 12px;
+  font-size: 16px; /* 突出时间 */
   color: #1677ff;
   font-weight: 600;
-  margin-bottom: 4px;
 }
 
-.course-index {
-  font-size: 11px;
-  color: #666;
-  background: #e6f7ff;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
 
 .course-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.info-top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.title-line {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .course-name {
   font-weight: 600;
   color: #333;
-  margin-bottom: 4px;
-  font-size: 16px;
+  font-size: 14px; /* 紧凑化 */
 }
 
 .course-code {
-  font-size: 12px;
-  color: #999;
-  margin-bottom: 8px;
+  font-size: 13px;
+  color: #9aa0a6;
 }
 
-.course-details {
+.type-badge {
+  justify-self: end;
+}
+
+.info-bottom {
   display: flex;
-  gap: 16px;
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 8px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.class-name {
+  color: #1677ff;
+  font-weight: 500;
+}
+
+.classroom {
+  color: #52c41a;
+  font-weight: 600;
 }
 
 .class-name {
@@ -878,24 +940,24 @@ onMounted(() => {
 
 .course-type-badge {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 500;
+  padding: 4px 10px; /* pill */
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .course-type-badge.理论课 {
-  background: #e6f7ff;
+  background: #e6f2ff;
   color: #1677ff;
 }
 
 .course-type-badge.实践课 {
-  background: #fff7e6;
+  background: #fff4e6;
   color: #fa8c16;
 }
 
 .course-type-badge.实验课 {
-  background: #f6ffed;
+  background: #effbea;
   color: #52c41a;
 }
 
@@ -946,7 +1008,7 @@ onMounted(() => {
 
 .table-header {
   display: grid;
-  grid-template-columns: 120px 1fr 100px 150px 80px 80px;
+  grid-template-columns: 120px 1fr 100px 150px 80px 80px 140px;
   gap: 16px;
   padding: 12px 0;
   border-bottom: 2px solid #f0f0f0;
@@ -961,7 +1023,7 @@ onMounted(() => {
 
 .table-row {
   display: grid;
-  grid-template-columns: 120px 1fr 100px 150px 80px 80px;
+  grid-template-columns: 120px 1fr 100px 150px 80px 80px 140px;
   gap: 16px;
   padding: 16px 0;
   border-bottom: 1px solid #f0f0f0;
@@ -1003,6 +1065,59 @@ onMounted(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  justify-content: center;
+}
+
+.class-tag {
+  background: #f0f0f0;
+  color: #666;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* 进度条样式 */
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-fill.progress-high {
+  background: #52c41a;
+}
+
+.progress-fill.progress-medium {
+  background: #1677ff;
+}
+
+.progress-fill.progress-low {
+  background: #fa8c16;
+}
+
+.progress-fill.progress-very-low {
+  background: #ff4d4f;
+}
+
+.progress-text {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+  min-width: 35px;
 }
 
 .class-tag {
@@ -1041,13 +1156,13 @@ onMounted(() => {
   
   .table-header,
   .table-row {
-    grid-template-columns: 100px 1fr 80px 120px 60px 60px;
+    grid-template-columns: 100px 1fr 80px 120px 60px 60px 120px;
     gap: 8px;
   }
   
   .course-item {
     flex-direction: column;
-    gap: 12px;
+    gap: 10px; /* 紧凑化 */
   }
   
   .course-time {

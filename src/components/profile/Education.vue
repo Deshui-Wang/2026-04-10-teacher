@@ -2,7 +2,7 @@
   <div class="education-container">
     <!-- 筛选选项 -->
     <div class="filter-section">
-      <div class="section-header">最高学历：博士</div>
+      <div class="section-header">最高学历：Doctorate博士</div>
       <button class="add-award-btn" @click="addEducationAward">
         添加教育经历
       </button>
@@ -59,9 +59,9 @@
               <span class="institution-name">北京理工大学</span>
               <span class="major">人工智能</span>
             </div>
-            <div class="certification-status pending">
-              <span class="status-icon">!</span>
-              <span class="status-text">待认证</span>
+            <div class="certification-status certified">
+              <span class="status-icon">✓</span>
+              <span class="status-text">已认证</span>
             </div>
           </div>
           <div class="action-buttons">
@@ -89,9 +89,9 @@
               <span class="institution-name">北京大学</span>
               <span class="major">机器人应用技术</span>
             </div>
-            <div class="certification-status pending">
-              <span class="status-icon">!</span>
-              <span class="status-text">待认证</span>
+            <div class="certification-status certified">
+              <span class="status-icon">✓</span>
+              <span class="status-text">已认证</span>
             </div>
           </div>
           <div class="action-buttons">
@@ -131,14 +131,39 @@
         </div>
       </div>
     </div>
+
+    <!-- 添加教育经历弹层 -->
+    <AddEducationModal 
+      :visible="showAddModal"
+      @close="closeAddModal"
+      @submit="handleAddEducation"
+    />
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import AddEducationModal from './AddEducationModal.vue'
+
+// 弹层状态
+const showAddModal = ref(false)
+
 // 添加教育奖励
 const addEducationAward = () => {
-  // 这里可以打开添加教育奖励的模态框或跳转到添加页面
-  console.log('打开添加教育奖励')
+  showAddModal.value = true
+}
+
+// 关闭弹层
+const closeAddModal = () => {
+  showAddModal.value = false
+}
+
+// 处理添加教育经历
+const handleAddEducation = (educationData) => {
+  console.log('添加教育经历:', educationData)
+  // 这里可以调用API保存数据，然后更新列表
+  // 暂时只是关闭弹层
+  showAddModal.value = false
 }
 </script>
 
@@ -441,4 +466,4 @@ const addEducationAward = () => {
     text-align: center;
   }
 }
-</style> 
+</style>

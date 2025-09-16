@@ -4,7 +4,6 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from './components/HomePage.vue'
-import EvaluationCenter from './components/EvaluationCenter.vue'
 import AcademicMonitor from './components/profile/AcademicMonitor.vue'
 import LearningSquare from './components/LearningSquare.vue'
 import TchAI from './views/TchAI.vue'
@@ -13,6 +12,7 @@ import AIAssistant from './views/AIAssistant.vue'
 import AgentEditor from './views/AgentEditor.vue'
 import ReportPreview from './views/ReportPreview.vue'
 import GrowthTrajectory from './views/GrowthTrajectory.vue'
+import EvaluationCenter from './components/EvaluationCenter.vue'
 
 // 发展轨迹布局和子页面
 import GrowthTrajectoryLayout from './components/growth-trajectory/GrowthTrajectoryLayout.vue'
@@ -60,7 +60,6 @@ const routes = [
 
   { path: '/academic-monitor', redirect: '/teaching-resources/student-academic' },
   { path: '/student-academic/:id', component: StudentAcademicDetail },
-  { path: '/ai', component: EvaluationCenter },
   { 
     path: '/growth-trajectory', 
     component: GrowthTrajectoryLayout,
@@ -76,6 +75,8 @@ const routes = [
     ]
   },
   { path: '/ai-thinking', component: AIThinking, meta: { hideFooter: true } },
+  { path: '/ai', redirect: '/EvaluationCenter' },
+  { path: '/EvaluationCenter', component: EvaluationCenter, meta: { hideFooter: true } },
   { 
     path: '/tch-ai', 
     component: TchAI, 

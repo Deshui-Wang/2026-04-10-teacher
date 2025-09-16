@@ -163,29 +163,97 @@
 
             <!-- 总结与反思 -->
             <div class="form-group">
-              <label for="reflection">总结与反思 *</label>
-              <textarea 
-                id="reflection"
-                v-model="selfEvaluationForm.reflection"
-                class="form-textarea"
-                placeholder="请详细描述您对本课程的教学总结与反思..."
-                rows="6"
-                required
-              ></textarea>
+              <div class="input-header">
+                <label for="reflection">总结与反思 *</label>
+                <button 
+                  type="button" 
+                  class="ai-write-btn" 
+                  @click="handleAiWrite('reflection')"
+                  :disabled="aiWriting.reflection"
+                >
+                  <span class="ai-icon">✨</span>
+                  {{ aiWriting.reflection ? 'AI撰写中...' : 'AI智能撰写' }}
+                </button>
+              </div>
+              <div class="textarea-container">
+                <textarea 
+                  ref="reflectionTextarea"
+                  id="reflection"
+                  v-model="selfEvaluationForm.reflection"
+                  class="form-textarea"
+                  placeholder="请录入您对本课程的教学总结与反思，您可以尝试使用@功能来插入课程、学生、教师等信息..."
+                  rows="6"
+                  required
+                  @input="handleTextareaInput($event, 'reflection')"
+                  @keyup="handleAtSymbol($event, 'reflection')"
+                  @click="handleTextareaClick($event, 'reflection')"
+                ></textarea>
+                
+                <!-- @功能提示列表 -->
+                <div 
+                  v-if="atSuggestions.reflection.show" 
+                  class="at-suggestions"
+                  :style="atSuggestions.reflection.position"
+                >
+                  <div 
+                    v-for="(item, index) in atSuggestions.reflection.list" 
+                    :key="index"
+                    :class="['suggestion-item', { active: atSuggestions.reflection.activeIndex === index }]"
+                    @click="insertAtMention(item, 'reflection')"
+                  >
+                    <span class="suggestion-type">{{ item.type }}</span>
+                    <span class="suggestion-name">{{ item.name }}</span>
+                  </div>
+                </div>
+              </div>
               <div class="char-count">{{ selfEvaluationForm.reflection.length }}/1000</div>
             </div>
 
             <!-- 未来规划 -->
             <div class="form-group">
-              <label for="future-plan">未来规划 *</label>
-              <textarea 
-                id="future-plan"
-                v-model="selfEvaluationForm.futurePlan"
-                class="form-textarea"
-                placeholder="请描述您对未来教学的规划和改进方向..."
-                rows="6"
-                required
-              ></textarea>
+              <div class="input-header">
+                <label for="future-plan">未来规划 *</label>
+                <button 
+                  type="button" 
+                  class="ai-write-btn" 
+                  @click="handleAiWrite('futurePlan')"
+                  :disabled="aiWriting.futurePlan"
+                >
+                  <span class="ai-icon">✨</span>
+                  {{ aiWriting.futurePlan ? 'AI撰写中...' : 'AI智能撰写' }}
+                </button>
+              </div>
+              <div class="textarea-container">
+                <textarea 
+                  ref="futurePlanTextarea"
+                  id="future-plan"
+                  v-model="selfEvaluationForm.futurePlan"
+                  class="form-textarea"
+                  placeholder="请描述您对未来教学的规划和改进方向，使用@功能来插入课程、学生、教师等信息......"
+                  rows="6"
+                  required
+                  @input="handleTextareaInput($event, 'futurePlan')"
+                  @keyup="handleAtSymbol($event, 'futurePlan')"
+                  @click="handleTextareaClick($event, 'futurePlan')"
+                ></textarea>
+                
+                <!-- @功能提示列表 -->
+                <div 
+                  v-if="atSuggestions.futurePlan.show" 
+                  class="at-suggestions"
+                  :style="atSuggestions.futurePlan.position"
+                >
+                  <div 
+                    v-for="(item, index) in atSuggestions.futurePlan.list" 
+                    :key="index"
+                    :class="['suggestion-item', { active: atSuggestions.futurePlan.activeIndex === index }]"
+                    @click="insertAtMention(item, 'futurePlan')"
+                  >
+                    <span class="suggestion-type">{{ item.type }}</span>
+                    <span class="suggestion-name">{{ item.name }}</span>
+                  </div>
+                </div>
+              </div>
               <div class="char-count">{{ selfEvaluationForm.futurePlan.length }}/1000</div>
             </div>
           </form>
@@ -245,6 +313,68 @@ const selfEvaluationForm = ref({
   courseId: '',
   reflection: '',
   futurePlan: ''
+})
+
+// AI智能撰写状态
+const aiWriting = ref({
+  reflection: false,
+  futurePlan: false
+})
+
+// @功能相关状态
+const atSuggestions = ref({
+  reflection: {
+    show: false,
+    list: [],
+    activeIndex: 0,
+    position: { top: '0px', left: '0px' },
+    searchText: '',
+    atPosition: 0
+  },
+  futurePlan: {
+    show: false,
+    list: [],
+    activeIndex: 0,
+    position: { top: '0px', left: '0px' },
+    searchText: '',
+    atPosition: 0
+  }
+})
+
+// ref引用
+const reflectionTextarea = ref(null)
+const futurePlanTextarea = ref(null)
+
+// @功能数据源
+const atDataSource = ref({
+  courses: [
+    { type: '课程', name: '计算机应用基础', id: 'course_1' },
+    { type: '课程', name: '数据结构与算法', id: 'course_2' },
+    { type: '课程', name: '人工智能在教学场景下的趣味应用', id: 'course_3' },
+    { type: '课程', name: 'Web前端开发', id: 'course_4' },
+    { type: '课程', name: '数据库原理与应用', id: 'course_5' },
+    { type: '课程', name: '软件工程', id: 'course_6' }
+  ],
+  courseware: [
+    { type: '课件', name: '第一章：计算机基础知识', id: 'courseware_1' },
+    { type: '课件', name: '第二章：数据结构基础', id: 'courseware_2' },
+    { type: '课件', name: '第三章：算法设计与分析', id: 'courseware_3' },
+    { type: '课件', name: 'AI教学应用案例', id: 'courseware_4' },
+    { type: '课件', name: 'HTML5与CSS3实战', id: 'courseware_5' }
+  ],
+  students: [
+    { type: '学员', name: '张三', id: 'student_1' },
+    { type: '学员', name: '李四', id: 'student_2' },
+    { type: '学员', name: '王五', id: 'student_3' },
+    { type: '学员', name: '赵六', id: 'student_4' },
+    { type: '学员', name: '孙七', id: 'student_5' }
+  ],
+  teachers: [
+    { type: '教师', name: '刘老师', id: 'teacher_1' },
+    { type: '教师', name: '陈老师', id: 'teacher_2' },
+    { type: '教师', name: '杨老师', id: 'teacher_3' },
+    { type: '教师', name: '周老师', id: 'teacher_4' }
+  ]
 })
 
 // 可用课程列表
@@ -787,6 +917,198 @@ onMounted(() => {
     loading.value = false
   }, 500)
 })
+
+// AI智能撰写功能
+const handleAiWrite = async (field) => {
+  if (aiWriting.value[field]) return
+  
+  aiWriting.value[field] = true
+  
+  try {
+    // 模拟AI生成内容
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    
+    let aiContent = ''
+    if (field === 'reflection') {
+      aiContent = '通过本学期的教学实践，我深刻认识到传统教学方法与现代信息技术相结合的重要性。在课程设计上，我注重理论与实践相结合，通过案例分析、实际操作等方式，提高学生的学习兴趣和参与度。同时，我也发现学生在基础知识掌握方面存在差异，需要因材施教，采用分层教学的方法。在教学过程中，我积极运用多媒体技术，制作了丰富的教学课件，有效提升了课堂教学效果。'
+    } else if (field === 'futurePlan') {
+      aiContent = '未来教学中，我计划进一步完善课程体系，引入更多前沿技术内容，如人工智能、大数据等，让学生能够接触到最新的技术发展趋势。同时，我将加强与企业的合作，邀请行业专家进行讲座，为学生提供更多实践机会。在教学方法上，我将探索翻转课堂、项目化教学等新模式，培养学生的自主学习能力和创新思维。此外，我还计划建立更完善的学生评价体系，及时了解学生的学习情况，调整教学策略。'
+    }
+    
+    selfEvaluationForm.value[field] = aiContent
+  } catch (error) {
+    console.error('AI撰写失败:', error)
+    alert('AI撰写失败，请稍后重试')
+  } finally {
+    aiWriting.value[field] = false
+  }
+}
+
+// 处理@符号输入
+const handleAtSymbol = (event, field) => {
+  const textarea = event.target
+  const cursorPosition = textarea.selectionStart
+  const text = textarea.value
+  
+  // 检查是否输入了@
+  if (event.key === '@' || (event.key === '2' && event.shiftKey)) {
+    showAtSuggestions(field, cursorPosition)
+  } else if (atSuggestions.value[field].show) {
+    // 如果@提示框已显示，处理键盘导航
+    if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      const maxIndex = atSuggestions.value[field].list.length - 1
+      atSuggestions.value[field].activeIndex = Math.min(atSuggestions.value[field].activeIndex + 1, maxIndex)
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault()
+      atSuggestions.value[field].activeIndex = Math.max(atSuggestions.value[field].activeIndex - 1, 0)
+    } else if (event.key === 'Enter') {
+      event.preventDefault()
+      const activeItem = atSuggestions.value[field].list[atSuggestions.value[field].activeIndex]
+      if (activeItem) {
+        insertAtMention(activeItem, field)
+      }
+    } else if (event.key === 'Escape') {
+      hideAtSuggestions(field)
+    } else {
+      // 更新搜索文本
+      updateAtSuggestions(field, text, cursorPosition)
+    }
+  }
+}
+
+// 显示@提示框
+const showAtSuggestions = (field, cursorPosition) => {
+  const textarea = field === 'reflection' ? reflectionTextarea.value : futurePlanTextarea.value
+  if (!textarea) return
+  
+  // 计算提示框位置
+  const textareaRect = textarea.getBoundingClientRect()
+  const position = getCaretPosition(textarea, cursorPosition)
+  
+  atSuggestions.value[field] = {
+    show: true,
+    list: getAllAtItems(),
+    activeIndex: 0,
+    position: {
+      top: `${position.top + 20}px`,
+      left: `${position.left}px`
+    },
+    searchText: '',
+    atPosition: cursorPosition
+  }
+}
+
+// 隐藏@提示框
+const hideAtSuggestions = (field) => {
+  atSuggestions.value[field].show = false
+}
+
+// 更新@提示列表
+const updateAtSuggestions = (field, text, cursorPosition) => {
+  const atPosition = atSuggestions.value[field].atPosition
+  const searchText = text.substring(atPosition + 1, cursorPosition)
+  
+  if (searchText.includes(' ') || searchText.includes('\n')) {
+    hideAtSuggestions(field)
+    return
+  }
+  
+  atSuggestions.value[field].searchText = searchText
+  atSuggestions.value[field].list = filterAtItems(searchText)
+  atSuggestions.value[field].activeIndex = 0
+}
+
+// 获取所有@选项
+const getAllAtItems = () => {
+  return [
+    ...atDataSource.value.courses,
+    ...atDataSource.value.courseware,
+    ...atDataSource.value.students,
+    ...atDataSource.value.teachers
+  ]
+}
+
+// 过滤@选项
+const filterAtItems = (searchText) => {
+  const allItems = getAllAtItems()
+  if (!searchText) return allItems
+  
+  return allItems.filter(item => 
+    item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+    item.type.toLowerCase().includes(searchText.toLowerCase())
+  )
+}
+
+// 插入@提及
+const insertAtMention = (item, field) => {
+  const textarea = field === 'reflection' ? reflectionTextarea.value : futurePlanTextarea.value
+  if (!textarea) return
+  
+  const text = selfEvaluationForm.value[field]
+  const atPosition = atSuggestions.value[field].atPosition
+  const searchText = atSuggestions.value[field].searchText
+  
+  const beforeAt = text.substring(0, atPosition)
+  const afterSearch = text.substring(atPosition + 1 + searchText.length)
+  const mention = `@${item.name} `
+  
+  selfEvaluationForm.value[field] = beforeAt + mention + afterSearch
+  
+  // 设置光标位置
+  nextTick(() => {
+    const newCursorPosition = atPosition + mention.length
+    textarea.setSelectionRange(newCursorPosition, newCursorPosition)
+    textarea.focus()
+  })
+  
+  hideAtSuggestions(field)
+}
+
+// 获取光标位置（简化版本）
+const getCaretPosition = (textarea, caretPos) => {
+  const div = document.createElement('div')
+  const style = getComputedStyle(textarea)
+  div.style.position = 'absolute'
+  div.style.visibility = 'hidden'
+  div.style.whiteSpace = 'pre-wrap'
+  div.style.wordWrap = 'break-word'
+  div.style.fontFamily = style.fontFamily
+  div.style.fontSize = style.fontSize
+  div.style.lineHeight = style.lineHeight
+  div.style.padding = style.padding
+  div.style.border = style.border
+  div.style.width = textarea.offsetWidth + 'px'
+  
+  const textBeforeCaret = textarea.value.substring(0, caretPos)
+  div.textContent = textBeforeCaret
+  
+  document.body.appendChild(div)
+  const span = document.createElement('span')
+  span.textContent = '|'
+  div.appendChild(span)
+  
+  const spanRect = span.getBoundingClientRect()
+  const textareaRect = textarea.getBoundingClientRect()
+  
+  document.body.removeChild(div)
+  
+  return {
+    top: spanRect.top - textareaRect.top,
+    left: spanRect.left - textareaRect.left
+  }
+}
+
+// 处理文本框输入
+const handleTextareaInput = (event, field) => {
+  // 可以在这里添加其他输入处理逻辑
+}
+
+// 处理文本框点击
+const handleTextareaClick = (event, field) => {
+  // 点击时隐藏@提示框
+  hideAtSuggestions(field)
+}
 </script>
 
 <style scoped>
@@ -1584,6 +1906,151 @@ onMounted(() => {
   .btn-cancel,
   .btn-submit {
     width: 100%;
+  }
+}
+
+/* AI智能撰写和@功能样式 */
+.input-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.ai-write-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.ai-write-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.ai-write-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ai-icon {
+  font-size: 14px;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.textarea-container {
+  position: relative;
+}
+
+.at-suggestions {
+  position: absolute;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  min-width: 200px;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover,
+.suggestion-item.active {
+  background-color: #f9fafb;
+}
+
+.suggestion-type {
+  background: #e5e7eb;
+  color: #374151;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  min-width: 32px;
+  text-align: center;
+}
+
+.suggestion-name {
+  font-size: 14px;
+  color: #111827;
+  flex: 1;
+}
+
+/* 不同类型的标签颜色 */
+.suggestion-item:has(.suggestion-type:contains("课程")) .suggestion-type {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.suggestion-item:has(.suggestion-type:contains("课件")) .suggestion-type {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.suggestion-item:has(.suggestion-type:contains("学员")) .suggestion-type {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.suggestion-item:has(.suggestion-type:contains("教师")) .suggestion-type {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .input-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .ai-write-btn {
+    align-self: flex-end;
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+  
+  .at-suggestions {
+    max-height: 150px;
+    min-width: 180px;
+  }
+  
+  .suggestion-item {
+    padding: 6px 10px;
+  }
+  
+  .suggestion-name {
+    font-size: 13px;
   }
 }
 </style> 

@@ -133,6 +133,7 @@
 </template>
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import ReportCreationModal from './ReportCreationModal.vue'
 // 导航标签数据
 const tabs = [
@@ -140,7 +141,6 @@ const tabs = [
   { id: 'word', name: 'Word' },
   { id: 'pdf', name: 'PDF' },
   { id: 'ppt', name: 'PPT' },
-  { id: 'image', name: '图片' }
 ]
 const activeTab = ref('all')
 const loading = ref(true)
@@ -169,72 +169,45 @@ const getRandomImage = () => {
 // 档案数据
 const archives = [
   {
-    name: '数据结构课程教学大纲',
+    name: '2025下学期教学工作计划',
     format: 'word',
-    formatText: 'Word文档',
+    formatText: 'Word',
     description: '数据结构课程的教学大纲，包含课程目标、教学内容、考核方式等详细信息，为教学提供指导性文件。',
     thumbnail: getRandomImage(),
     size: 2048576,
     createTime: '2024-01-15'
   },
   {
-    name: '算法设计实验报告',
+    name: '2025上学期教学工作报告',
     format: 'pdf',
-    formatText: 'PDF文档',
+    formatText: 'PDF',
     description: '算法设计课程的实验报告，详细记录了各种算法的实现过程、性能分析和优化方案。',
     thumbnail: getRandomImage(),
     size: 4096000,
     createTime: '2024-02-20'
   },
   {
-    name: '软件工程课程PPT',
+    name: '2024-2025教学工作计划',
     format: 'ppt',
-    formatText: 'PPT演示',
+    formatText: 'PPT',
     description: '软件工程课程的完整PPT课件，包含软件生命周期、需求分析、系统设计等核心内容。',
     thumbnail: getRandomImage(),
     size: 15360000,
     createTime: '2024-03-10'
   },
   {
-    name: '教学活动现场照片',
-    format: 'image',
-    formatText: '图片文件',
-    description: '教学实践活动的现场照片集，记录了学生参与项目开发、团队协作的精彩瞬间。',
-    thumbnail: getRandomImage(),
-    size: 8192000,
-    createTime: '2024-04-05'
-  },
-  {
-    name: '课程教学视频',
-    format: 'video',
-    formatText: '视频文件',
-    description: '数据结构课程的教学视频，详细讲解了链表、栈、队列等核心概念和实现方法。',
-    thumbnail: getRandomImage(),
-    size: 104857600,
-    createTime: '2024-05-12'
-  },
-  {
-    name: '在线学习资源链接',
-    format: 'webpage',
-    formatText: '网页链接',
-    description: '收集整理的优质在线学习资源，包含MOOC平台、技术博客、开源项目等学习资料。',
-    thumbnail: null,
-    size: 0,
-    createTime: '2024-06-01'
-  },
-  {
-    name: '学生作品集',
+    name: '2024学生人工智能作品集',
     format: 'pdf',
-    formatText: 'PDF文档',
+    formatText: 'PDF',
     description: '学生优秀作品集，展示了学生在课程学习中的创新思维和实践能力。',
     thumbnail: getRandomImage(),
     size: 6144000,
     createTime: '2024-06-15'
   },
   {
-    name: '教学反思笔记',
+    name: '2024-2025教学工作总结',
     format: 'word',
-    formatText: 'Word文档',
+    formatText: 'Word',
     description: '教学过程中的反思笔记，记录了教学方法的改进、学生反馈的总结和教学效果的评估。',
     thumbnail: null,
     size: 1024000,
@@ -282,7 +255,9 @@ const getFormatIcon = (format) => {
   return icons[format] || '📁'
 }
 // 预览档案
+const router = useRouter()
 const previewArchive = (archive) => {
+  // TODO: 已移除评价模型页面，这里暂时仅展示预览模态
   previewArchiveData.value = archive
 }
 // 关闭档案预览
@@ -667,13 +642,13 @@ onMounted(() => {
 }
 .modal-header h3 {
   margin: 0;
-  color: #333;
+  color: #fff;
   font-size: 18px;
 }
 .close-btn {
   background: none;
   border: none;
-  color: #666;
+  color: #fff;
   font-size: 24px;
   cursor: pointer;
   padding: 4px;

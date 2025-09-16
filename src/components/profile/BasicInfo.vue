@@ -172,7 +172,7 @@
 .avatar-wrap { width: 160px; height: 160px; border-radius: 50%; overflow: hidden; background: #f5f7fb; }
 .avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .summary-info .name { font-size: 32px; font-weight: 700; color: #333; display: flex;}
-.summary-info .meta { display: flex; gap: 18px; margin-top: 20px; color: #667085; font-size: 18px; }
+.summary-info .meta { display: flex; gap: 18px; margin-top: 20px; color: #667085; font-size: 14px; }
 .title-badge { color: #1677ff; font-weight: 600; }
 
 /* 两列主体 */

@@ -1,5 +1,6 @@
 <template>
   <div class="workload-quantification">
+    <h3 class="module-title">本周平均工作量：8.9（💛偏大，注意调整）</h3>
     <!-- 页面标题 -->
     <div class="page-header">
     </div>
@@ -67,7 +68,6 @@
         <div class="chart-header">
           <h3>工作量占比</h3>
           <div class="chart-stats">
-            <span class="stat-item">总工作量: {{ totalWorkload }} 小时</span>
             <span class="stat-item">筛选结果: {{ filteredWorkload }} 小时</span>
           </div>
         </div>
@@ -522,6 +522,14 @@ watch([selectedCourse, selectedType, selectedSemester], () => {
   font-size: 16px;
 }
 
+.module-title {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  color: #5856d6;
+  font-weight: 600;
+  padding-bottom: 8px;
+  display: flex;
+}
 /* 筛选区域 */
 .filter-section {
   background: white;
@@ -623,9 +631,9 @@ watch([selectedCourse, selectedType, selectedSemester], () => {
 }
 
 .stat-item {
-  font-size: 16px;
-  color: #6841ea;
-  font-weight: 600;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
   background: #f8f9fa;
   padding: 4px 12px;
   border-radius: 4px;

@@ -14,20 +14,32 @@
 
     <!-- 项目类型统计 -->
     <div class="statistics-section">
-      <h3 class="section-title">项目统计</h3>
-      <div class="stats-grid">
-        <div class="stat-card" v-for="stat in projectStats" :key="stat.type">
-          <div class="stat-icon" :style="{ backgroundColor: stat.color }">
-            {{ stat.icon }}
-          </div>
+      <div class="stats-overview">
+        <div class="stat-card main-stat" style="background: #4f46e5;">
+          <div class="stat-icon">🌍</div>
           <div class="stat-content">
-            <h4 class="stat-number">{{ stat.count }}</h4>
-            <p class="stat-label">{{ stat.type }}</p>
+            <div class="stat-number">{{ totalProjects }}</div>
+            <div class="stat-label">参与国际项目总数</div>
+            <div class="stat-trend" :class="trendClass">
+              <span class="trend-icon">{{ trendIcon }}</span>
+              <span class="trend-text">{{ trendText }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card" v-for="stat in projectStats" :key="stat.type">
+            <div class="stat-icon" :style="{ backgroundColor: stat.color }">
+              {{ stat.icon }}
+            </div>
+            <div class="stat-content">
+              <h4 class="stat-number">{{ stat.count }}</h4>
+              <p class="stat-label">{{ stat.type }}</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
     <!-- 项目筛选 -->
     <div class="filter-section">
       <div class="filter-controls">
@@ -302,6 +314,26 @@ const selectedType = ref('')
 const searchKeyword = ref('')
 
 // 计算属性
+
+// 总项目数统计
+const totalProjects = computed(() => {
+  return projects.value.length
+})
+
+// 趋势相关
+const trendClass = computed(() => {
+  // 模拟趋势计算
+  return 'trend-up'
+})
+
+const trendIcon = computed(() => {
+  return '📈'
+})
+
+const trendText = computed(() => {
+  return '较上月增长 8%'
+})
+
 const projectStats = computed(() => {
   const stats = {}
   const colors = {
@@ -309,6 +341,7 @@ const projectStats = computed(() => {
     '国际会议': '#059669',
     '访学交流': '#DC2626'
   }
+  
   const icons = {
     '合作办学': '🤝',
     '国际会议': '🏛️',
@@ -346,14 +379,15 @@ const getTypeColor = (type) => {
     '国际会议': '#059669',
     '访学交流': '#DC2626'
   }
+  
   return colors[type] || '#6B7280'
 }
 
 const getAttachmentIcon = (type) => {
   const icons = {
     'pdf': '📄',
-    'doc': '',
-    'docx': '',
+    'doc': '📝',
+    'docx': '📝',
     'ppt': '📊',
     'pptx': '📊',
     'image': '🖼️',
@@ -361,6 +395,7 @@ const getAttachmentIcon = (type) => {
     'jpeg': '🖼️',
     'png': '🖼️'
   }
+  
   return icons[type] || '📎'
 }
 
@@ -430,6 +465,7 @@ const saveProject = () => {
     }
     projects.value.push(newProject)
   }
+  
   closeModal()
 }
 </script>
@@ -469,8 +505,64 @@ const saveProject = () => {
 }
 
 /* 统计卡片 */
-.statistics-section {
+
+/* 统计概览 */
+.stats-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
   margin-bottom: 30px;
+}
+
+.main-stat {
+  background: linear-gradient(135deg, #4f46e5, #7e7eff);
+  color: white;
+}
+
+.main-stat .stat-icon {
+  background: rgba(255,255,255,0.2);
+}
+
+.main-stat .stat-number {
+  color: #fff;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.main-stat .stat-label {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.stat-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.trend-up {
+  color: #fff;
+  display: flex;
+  justify-content: center;
+}
+
+.trend-down {
+  color: #ff3b30;
+}
+
+.trend-icon {
+  font-size: 14px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
 }
 
 .section-title {
@@ -478,12 +570,6 @@ const saveProject = () => {
   font-weight: 600;
   color: #333;
   margin-bottom: 16px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
 }
 
 .stat-card {
@@ -497,15 +583,14 @@ const saveProject = () => {
 }
 
 .stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  font-size: 22px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  margin-right: 16px;
-  color: white;
+  background: linear-gradient(135deg, #f9fafb 0%, #f0f0f0 100%);
+  border-radius: 12px;
 }
 
 .stat-content {
@@ -924,20 +1009,28 @@ const saveProject = () => {
     align-items: flex-start;
     gap: 16px;
   }
-
+  
+  .stats-overview {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+  
   .filter-controls {
     flex-direction: column;
     align-items: stretch;
   }
-
+  
   .search-input {
     max-width: none;
   }
-
+  
   .projects-grid {
     grid-template-columns: 1fr;
   }
-
+  
   .form-row {
     grid-template-columns: 1fr;
   }

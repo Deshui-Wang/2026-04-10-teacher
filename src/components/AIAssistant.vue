@@ -148,7 +148,7 @@ watch(() => route.path, (newPath) => {
         messages.value.push({
             id: Date.now(),
             sender: 'ai',
-            text: '您好，需要为您推荐合适的考评卡吗？',
+            text: '您好，您有一个新的考评任务请尽快完成！',
             type: 'evaluation-prompt'
         });
     }

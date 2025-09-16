@@ -5,7 +5,7 @@
     <div class="current-progress-section">
       <div class="progress-info">
         <h2 class="progress-title">正在参评</h2>
-        <p class="progress-subtitle">您于2025年9月1日提交了【高级教师职称】的晋升申请</p>
+        <p class="progress-subtitle">您于2025年9月1日提交了【高级教师职称】的晋升报告</p>
         <p class="progress-task-summary">1个通用晋升考评任务 · 1个职称申请专用任务 · 3个技能辅助考评任务</p>
       </div>
       <div class="progress-card-wrapper">
@@ -18,13 +18,13 @@
               </div>
             </div>
           </div>
-          <p class="progress-percentage">已完成 2%</p>
+          <p class="progress-percentage">已完成 27%</p>
           <div class="progress-bar-container">
-            <div class="progress-bar" style="width: 2%"></div>
+            <div class="progress-bar" style="width: 27%"></div>
           </div>
           <button class="refresh-button">
-            <span class="refresh-icon">🔄</span>
-            <span>刷新进度</span>
+            <span class="refresh-icon">📝</span>
+            <span>去填报</span>
           </button>
         </div>
       </div>
@@ -69,7 +69,7 @@
         <input 
           type="text" 
           v-model="searchQuery"
-          placeholder="搜索考评工具..."
+          placeholder="搜索考评任务..."
           class="search-input"
         />
         <span class="search-icon">🔍</span>
@@ -159,11 +159,11 @@ import { ref, computed } from 'vue'
 // 过滤器选项
 const filterOptions = [
   { key: 'all', label: '全部' },
-  { key: 'general', label: '通用考评' },
-  { key: 'title', label: '职称评选' },
+  { key: 'general', label: '通用考评任务' },
+  { key: 'title', label: '职称评选任务' },
   { key: 'competency', label: '智能胜任力考评' },
   { key: 'subject', label: '学科技能考评' },
-  { key: 'other', label: '其他考评' }
+  { key: 'other', label: '其他考评任务' }
 ]
 
 const activeFilter = ref('all')
@@ -188,7 +188,7 @@ const evaluationTools = [
     tabs: ['课程数', '课时数', '学生考试通过率'],
     description: '综合年度考核以及聘期内考核整体教学工作可量化考察内容的评定,适用于全体教师,不分级别和年限',
     participantCount: '98725',
-    actionText: '正在参考考核',
+    actionText: '进行中的考评任务',
     actionClass: 'btn-participating',
     category: 'general'
   },
@@ -200,7 +200,7 @@ const evaluationTools = [
     tabs: ['论文发表', '项目参与', '经费使用', '专利软著'],
     description: '综合年度考核以及聘期内考核整体教学工作可量化考察内容的评定,适用于全体教师,不分级别和年限',
     participantCount: '98725',
-    actionText: '添加目标',
+    actionText: '添加任务',
     actionClass: 'btn-join',
     category: 'general'
   },
@@ -212,7 +212,7 @@ const evaluationTools = [
     tabs: ['学术兼职', '横向课题', '服务地方', '成果转化'],
     description: '社会服务考评,考察成果转化效。支撑学校社会服务成果的在线对外展示与宣传)促进社会服务成果在专业教学改革和相关企业中的转化应用。',
     participantCount: '98725',
-    actionText: '添加目标',
+    actionText: '添加任务',
     actionClass: 'btn-join',
     category: 'general'
   },
@@ -224,7 +224,7 @@ const evaluationTools = [
     tabs: ['工具使用', '设计开发', '分享传播', '新技术发现'],
     description: '依托国家职业教育大数据中心,结合多平台多终端的教师教学及学习行为的归集,构建教师人工智能教学胜任力能力考评机制',
     participantCount: '98725',
-    actionText: '添加目标',
+    actionText: '添加任务',
     actionClass: 'btn-join',
     category: 'competency'
   },
@@ -236,7 +236,7 @@ const evaluationTools = [
     tabs: ['论文发表', '项目参与', '经费使用', '专利软著'],
     description: '综合年度考核以及聘期内考核整体教学工作可量化考察内容的评定,适用于全体教师,不分级别和年限',
     participantCount: '98725',
-    actionText: '添加目标',
+    actionText: '添加任务',
     actionClass: 'btn-join',
     category: 'general'
   },
@@ -248,7 +248,7 @@ const evaluationTools = [
     tabs: ['学术兼职', '横向课题', '服务地方', '成果转化'],
     description: '社会服务考评,考察成果转化效。支撑学校社会服务成果的在线对外展示与宣传)促进社会服务成果在专业教学改革和相关企业中的转化应用。',
     participantCount: '98725',
-    actionText: '添加目标',
+    actionText: '添加任务',
     actionClass: 'btn-join',
     category: 'general'
   },
@@ -260,7 +260,7 @@ const evaluationTools = [
     tabs: ['学术兼职', '横向课题', '服务地方', '成果转化'],
     description: '社会服务考评,考察成果转化效。支撑学校社会服务成果的在线对外展示与宣传)促进社会服务成果在专业教学改革和相关企业中的转化应用。',
     participantCount: '98725',
-    actionText: '添加目标',
+    actionText: '添加任务',
     actionClass: 'btn-join',
     category: 'general'
   },
@@ -272,7 +272,7 @@ const evaluationTools = [
     tabs: ['学术兼职', '横向课题', '服务地方', '成果转化'],
     description: '社会服务考评,考察成果转化效。支撑学校社会服务成果的在线对外展示与宣传)促进社会服务成果在专业教学改革和相关企业中的转化应用。',
     participantCount: '98725',
-    actionText: '添加目标',
+    actionText: '添加任务',
     actionClass: 'btn-join',
     category: 'general'
   },
@@ -284,7 +284,7 @@ const evaluationTools = [
     tabs: ['学术兼职', '横向课题', '服务地方', '成果转化'],
     description: '社会服务考评,考察成果转化效。支撑学校社会服务成果的在线对外展示与宣传)促进社会服务成果在专业教学改革和相关企业中的转化应用。',
     participantCount: '98725',
-    actionText: '添加目标',
+    actionText: '添加任务',
     actionClass: 'btn-join',
     category: 'general'
   }
@@ -544,6 +544,7 @@ const resetFilters = () => {
   display: flex;
   justify-content: space-between;
   gap: 32px;
+  margin: 62px;
 }
 
 .stat-item {
@@ -594,6 +595,7 @@ const resetFilters = () => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
+  margin-top: 32px;
   gap: 24px;
 }
 

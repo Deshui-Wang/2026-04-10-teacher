@@ -744,7 +744,7 @@ watch(() => filteredGrades.value, () => {
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #f9fafb 0%, #f0f0f0 100%);
-  border-radius: 50%;
+  border-radius: 15%;
 }
 
 .stat-value {

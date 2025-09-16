@@ -6,7 +6,10 @@
     </div>
     <ul class="nav-menu">
       <li class="nav-item" :class="{active: currentPath.startsWith('/Home')}" @click="goNav('/Home')">首页</li>      
-      <li class="nav-item" :class="{active: currentPath.startsWith('/ai')}" @click="goNav('/ai')">考评中心</li>
+      <li class="nav-item evaluation-center-item" :class="{active: currentPath.startsWith('/EvaluationCenter')}" @click="goNav('/EvaluationCenter')">
+        考评中心
+        <div class="notification-dot" v-if="hasNewNotifications"></div>
+      </li>
       <li class="nav-item" :class="{active: currentPath.startsWith('/teaching-resources')}" @click="goNav('/teaching-resources')">教学管理</li>
       <li class="nav-item" :class="{active: currentPath.startsWith('/growth-trajectory')}" @click="goNav('/growth-trajectory')">发展轨迹</li>
       <li class="nav-item" :class="{active: currentPath.startsWith('/learning-square')}" @click="goNav('/learning-square')">协作空间</li>
@@ -31,13 +34,22 @@ const router = useRouter()
 const route = useRoute()
 const currentPath = computed(() => route.path)
 
+// 新消息提醒状态
+const hasNewNotifications = ref(true) // 这里可以根据实际业务逻辑来控制
+
 // 下拉菜单状态
 const showDropdown = ref(false)
 let hideTimer = null
 
 // 导航函数
 const goNav = (path) => {
-  if (route.path !== path) router.push(path)
+  if (route.path !== path) {
+    router.push(path)
+    // 点击考评中心后清除提醒
+    if (path === '/ai') {
+      hasNewNotifications.value = false
+    }
+  }
 }
 
 // 下拉菜单控制函数
@@ -260,6 +272,64 @@ const clearHideTimer = () => {
   font-size: 16px;
   color: #333;
 }
+
+/* 考评中心菜单项样式 */
+.evaluation-center-item {
+  position: relative;
+}
+
+/* 新消息提醒红点样式 */
+.notification-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  /* border: 2px solid #fff; */
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.3);
+  animation: notificationPulse 2s infinite, notificationShake 3s infinite;
+  z-index: 10;
+}
+
+/* 红点脉冲动画 */
+@keyframes notificationPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.8;
+  }
+}
+
+/* 红点抖动动画 */
+@keyframes notificationShake {
+  0%, 90%, 100% {
+    transform: translateX(0);
+  }
+  5%, 15% {
+    transform: translateX(-1px);
+  }
+  10%, 20% {
+    transform: translateX(1px);
+  }
+}
+
+/* 鼠标悬停时红点效果 */
+.evaluation-center-item:hover .notification-dot {
+  animation: notificationPulse 0.5s infinite, notificationShake 1s infinite;
+  transform: scale(1.2);
+}
+
+/* 考评中心菜单项激活状态下的红点样式 */
+.evaluation-center-item.active .notification-dot {
+  background: #dc2626;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.4);
+}
+
 @media (max-width: 900px) {
   .main-navbar { flex-direction: column; height: auto; padding: 0 8px; }
   .nav-menu { gap: 12px; }

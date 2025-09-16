@@ -527,7 +527,7 @@ onMounted(() => {
 }
 
 .stat-icon {
-  font-size: 32px;
+  font-size: 22px;
   width: 60px;
   height: 60px;
   display: flex;

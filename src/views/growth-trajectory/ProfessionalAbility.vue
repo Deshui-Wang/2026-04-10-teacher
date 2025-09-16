@@ -350,14 +350,14 @@ const downloadCertificate = (certificate) => {
 }
 
 .stat-icon {
-  font-size: 20px;
+  font-size: 22px;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #d9d9d9, #f5f5f5);
-  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, #f9fafb 0%, #f0f0f0 100%);
+  border-radius: 12px;
 }
 
 .stat-content {

@@ -383,8 +383,8 @@ const taughtCourses = ref([
 .info-card {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 20px;
+  gap: 6px;
+  padding: 30px;
   background: #f8f9fa;
   border-radius: 12px;
   transition: all 0.3s;
@@ -398,8 +398,15 @@ const taughtCourses = ref([
 }
 
 .info-icon {
-  font-size: 32px;
+  font-size: 22px;
   flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+  border-radius: 12px;
 }
 
 .info-content {

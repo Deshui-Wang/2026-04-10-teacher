@@ -239,8 +239,8 @@ const employmentChart = ref(null)
 const matchingChart = ref(null)
 const riskChart = ref(null)
 const notificationScroll = ref(null)
-const activeTitle = ref('正高级教师')
-const titleOptions = ['三级教师', '二级教师', '助教', '一级教师', '讲师', '高级教师', '副教授', '正高级教师', '教授']
+const activeTitle = ref('副高级-副教授')
+const titleOptions = ['初级-助教', '中级-讲师', '副高级-副教授', '正高级-教授', '讲师']
 
 // 通知条数据
 const notifications = ref([

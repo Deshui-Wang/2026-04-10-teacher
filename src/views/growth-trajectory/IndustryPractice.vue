@@ -46,7 +46,6 @@
     <!-- 时间筛选 -->
     <div class="filter-section">
       <div class="time-filter">
-        <h3>时间筛选</h3>
         <div class="filter-options">
           <button 
             v-for="period in timePeriods" 
@@ -347,8 +346,7 @@ const formData = ref({
 const practices = ref([
   {
     id: 1,
-    companyName: '北京智学教育科技有限公司',
-    position: '数学课程顾问',
+    companyName: '北京智学教育科技有限公司 - 数学课程顾问',
     startDate: '2025-08-01',
     endDate: '2026-01-31',
     isCurrent: false,
@@ -361,8 +359,7 @@ const practices = ref([
   },
   {
     id: 2,
-    companyName: '上海数学思维研究院',
-    position: '高级研究员',
+    companyName: '上海数学思维研究院 - 高级研究员',
     startDate: '2025-04-01',
     endDate: null,
     isCurrent: true,
@@ -375,8 +372,7 @@ const practices = ref([
   },
   {
     id: 3,
-    companyName: '深圳创新教育集团',
-    position: '教学总监',
+    companyName: '深圳创新教育集团 - 教学总监',
     startDate: '2025-06-01',
     endDate: '2026-11-30',
     isCurrent: false,
@@ -389,8 +385,7 @@ const practices = ref([
   },
   {
     id: 4,
-    companyName: '广州智慧教育科技有限公司',
-    position: '技术顾问',
+    companyName: '广州智慧教育科技有限公司 - 技术顾问',
     startDate: '2025-01-15',
     endDate: '2025-08-15',
     isCurrent: true,
@@ -403,8 +398,7 @@ const practices = ref([
   },
   {
     id: 5,
-    companyName: '杭州数学竞赛培训中心',
-    position: '竞赛指导专家',
+    companyName: '杭州数学竞赛培训中心 - 竞赛指导专家',
     startDate: '2025-03-01',
     endDate: '2025-12-31',
     isCurrent: false,
@@ -417,8 +411,7 @@ const practices = ref([
   },
   {
     id: 6,
-    companyName: '成都教育科技研究院',
-    position: '教研专家',
+    companyName: '成都教育科技研究院 - 教研专家',
     startDate: '2025-05-01',
     endDate: null,
     isCurrent: true,
@@ -431,8 +424,7 @@ const practices = ref([
   },
   {
     id: 7,
-    companyName: '南京师范大学出版社',
-    position: '教材编写顾问',
+    companyName: '南京师范大学出版社 - 教材编写顾问',
     startDate: '2025-09-01',
     endDate: '2026-06-30',
     isCurrent: false,
@@ -674,7 +666,7 @@ const handleCurrentChange = () => {
 }
 
 .main-stat {
-  background: linear-gradient(135deg, #5856d6, #7e7eff);
+  /* background: linear-gradient(135deg, #5856d6, #7e7eff); */
   color: white;
 }
 
@@ -683,14 +675,14 @@ const handleCurrentChange = () => {
 }
 
 .stat-icon {
-  font-size: 32px;
+  font-size: 22px;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #34c759, #30d158);
-  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, #f9fafb 0%, #f0f0f0 100%);
+  border-radius: 12px;
 }
 
 .stat-content {
@@ -705,7 +697,7 @@ const handleCurrentChange = () => {
 }
 
 .main-stat .stat-number {
-  color: white;
+  color: #333;
 }
 
 .stat-label {
@@ -715,7 +707,7 @@ const handleCurrentChange = () => {
 }
 
 .main-stat .stat-label {
-  color: rgba(255,255,255,0.9);
+  color: #333;
 }
 
 .stat-trend {
@@ -728,7 +720,9 @@ const handleCurrentChange = () => {
 }
 
 .trend-up {
-  color: #34c759;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
 }
 
 .trend-down {
@@ -971,7 +965,10 @@ const handleCurrentChange = () => {
 }
 
 .practice-details {
-  display: grid;
+  display: flex;
+  justify-items: center;
+  align-items: start;
+  justify-content: space-between;
   gap: 8px;
   margin-bottom: 16px;
 }
@@ -999,6 +996,7 @@ const handleCurrentChange = () => {
   font-weight: 600;
   color: #333;
   margin: 0 0 8px 0;
+  text-align: left;
 }
 
 .work-description p {
@@ -1006,6 +1004,7 @@ const handleCurrentChange = () => {
   color: #666;
   line-height: 1.6;
   margin: 0;
+  text-align: left;
 }
 
 .practice-actions {
@@ -1073,6 +1072,7 @@ const handleCurrentChange = () => {
   font-weight: 600;
   color: #333;
   margin: 0 0 4px 0;
+  text-align: left;
 }
 
 .position-title {

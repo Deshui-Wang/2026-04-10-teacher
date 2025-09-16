@@ -16,7 +16,7 @@
               type="text" 
               id="reportName" 
               v-model="reportForm.name" 
-              placeholder="请输入报告名称"
+              placeholder="张婉婷的报告"
               class="form-input"
             />
           </div>
@@ -38,10 +38,19 @@
               :key="module.id"
               class="module-item"
             >
+              <!-- 模块头部 - 包含模块类型选择和操作按钮 -->
               <div class="module-header">
-                <div class="module-title">
-                  <span class="module-name">{{ module.name || '未命名模块' }}</span>
-                  <span class="module-type">{{ getModuleTypeName(module.type) }}</span>
+                <div class="module-type-selector">
+                  <select v-model="module.type" class="form-select" @change="onModuleTypeChange(module)">
+                    <option value="">选择模块类型</option>
+                    <option 
+                      v-for="moduleType in availableModuleTypes" 
+                      :key="moduleType.id"
+                      :value="moduleType.id"
+                    >
+                      {{ moduleType.name }}
+                    </option>
+                  </select>
                 </div>
                 <div class="module-actions">
                   <button class="edit-btn" @click="editModule(index)" :class="{ active: editingModuleIndex === index }">
@@ -54,87 +63,81 @@
               <!-- 模块编辑区域 -->
               <div v-if="editingModuleIndex === index" class="module-edit-area">
                 <div class="edit-form">
-                  <div class="form-group">
-                    <label>模块类型</label>
-                    <select v-model="module.type" class="form-select" @change="onModuleTypeChange(module)">
-                      <option value="">请选择模块类型</option>
-                      <option 
-                        v-for="moduleType in availableModuleTypes" 
-                        :key="moduleType.id"
-                        :value="moduleType.id"
-                      >
-                        {{ moduleType.name }}
-                      </option>
-                    </select>
-                  </div>
-                  
-                  <div class="form-group">
-                    <label>模块描述</label>
-                    <textarea 
-                      v-model="module.description" 
-                      placeholder="请输入模块描述"
-                      class="form-textarea"
-                      rows="3"
-                    ></textarea>
-                  </div>
 
-                  <div class="form-group">
-                    <label>图表设置</label>
+                  <!-- 图表设置和预览区域 -->
+                  <div class="chart-configuration">
+                    <!-- 左侧：图表预览和设置 -->
+                    <div class="chart-left-panel">
+                      <div class="chart-preview-section">
+                        <label>图表预览区</label>
+                        <div class="chart-preview-container">
+                          <ReportModulePreview
+                            :module-type="module.type"
+                            :chart-type="module.chartType"
+                            :color-scheme="module.colorScheme"
+                            :show-legend="module.showLegend"
+                            :show-labels="module.showLabels"
+                          />
+                        </div>
+                        
+                      </div>
+                      
+
+                    </div>
                     <div class="chart-settings">
-                      <div class="setting-row">
-                        <div class="setting-item">
-                          <label>图表类型</label>
-                          <select v-model="module.chartType" class="form-select">
-                            <option value="none">无图表</option>
-                            <option value="bar">柱状图</option>
-                            <option value="line">折线图</option>
-                            <option value="pie">饼图</option>
-                            <option value="doughnut">环形图</option>
-                            <option value="radar">雷达图</option>
-                          </select>
+                        <div class="setting-row">
+                          <div class="setting-item">
+                            <label>图表类型</label>
+                            <select v-model="module.chartType" class="form-select">
+                              <option value="none">无图表</option>
+                              <option value="bar">柱状图</option>
+                              <option value="line">折线图</option>
+                              <option value="pie">饼图</option>
+                              <option value="doughnut">环形图</option>
+                              <option value="radar">雷达图</option>
+                            </select>
+                          </div>
+                          <div class="setting-item">
+                            <select v-model="module.colorScheme" class="form-select">
+                              <option 
+                                v-for="scheme in colorSchemes" 
+                                :key="scheme.name"
+                                :value="scheme.name"
+                              >
+                                {{ scheme.name }}
+                              </option>
+                            </select>
+                          </div>
                         </div>
-                        <div class="setting-item">
-                          <label>配色方案</label>
-                          <select v-model="module.colorScheme" class="form-select">
-                            <option 
-                              v-for="scheme in colorSchemes" 
-                              :key="scheme.name"
-                              :value="scheme.name"
-                            >
-                              {{ scheme.name }}
-                            </option>
-                          </select>
+                        <div class="setting-row">
+                          <div class="setting-item">
+                            <label>
+                              <input type="checkbox" v-model="module.showLegend" />
+                              显示图例
+                            </label>
+                          </div>
+                          <div class="setting-item">
+                            <label>
+                              <input type="checkbox" v-model="module.showLabels" />
+                              显示标签
+                            </label>
+                          </div>
                         </div>
                       </div>
-                      <div class="setting-row">
-                        <div class="setting-item">
-                          <label>
-                            <input type="checkbox" v-model="module.showLegend" />
-                            显示图例
-                          </label>
-                        </div>
-                        <div class="setting-item">
-                          <label>
-                            <input type="checkbox" v-model="module.showLabels" />
-                            显示标签
-                          </label>
-                        </div>
+                    <!-- 右侧：总结说明 -->
+                    <div class="chart-right-panel">
+                      <div class="form-group">
+                        <label>针对本模块数据的总结说明</label>
+                        <textarea 
+                          v-model="module.summary" 
+                          placeholder="请输入针对本模块数据的总结说明"
+                          class="form-textarea summary-textarea"
+                          rows="8"
+                        ></textarea>
                       </div>
-                    </div>
-                  </div>
+                    </div>                    
 
-                  <!-- 图表预览区域 -->
-                  <div v-if="module.type" class="chart-preview-section">
-                    <label>图表预览</label>
-                    <div class="chart-preview-container">
-                      <ReportModulePreview
-                        :module-type="module.type"
-                        :chart-type="module.chartType"
-                        :color-scheme="module.colorScheme"
-                        :show-legend="module.showLegend"
-                        :show-labels="module.showLabels"
-                      />
-                    </div>
+
                   </div>
                 </div>
               </div>
@@ -248,6 +251,7 @@ const addNewModule = () => {
     name: `模块${reportModules.value.length + 1}`,
     type: '',
     description: '',
+    summary: '', // 添加总结说明字段
     chartType: 'bar', // 默认柱状图
     colorScheme: '经典蓝',
     showLegend: true,
@@ -370,26 +374,28 @@ const emit = defineEmits(['close'])
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
+/* 更新模态框头部样式 */
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 24px 32px;
-  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px 16px 0 0;
 }
 
 .modal-header h2 {
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #111827;
+  color: #fff;
 }
 
 .close-btn {
   background: none;
   border: none;
   font-size: 28px;
-  color: #6b7280;
+  color: #fff;
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -397,8 +403,7 @@ const emit = defineEmits(['close'])
 }
 
 .close-btn:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .modal-body {
@@ -427,6 +432,7 @@ const emit = defineEmits(['close'])
   margin-bottom: 8px;
   font-weight: 500;
   color: #374151;
+  display: flex;
 }
 
 .form-input, .form-select, .form-textarea {
@@ -505,6 +511,7 @@ const emit = defineEmits(['close'])
   border-color: #d1d5db;
 }
 
+/* 更新模块头部样式 */
 .module-header {
   display: flex;
   justify-content: space-between;
@@ -514,26 +521,16 @@ const emit = defineEmits(['close'])
   border-bottom: 1px solid #e5e7eb;
 }
 
-.module-title {
+.module-type-selector {
+  flex: 1;
+  margin-right: 16px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex: 1;
 }
 
-.module-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.module-type {
-  padding: 4px 8px;
-  background: #e5e7eb;
-  color: #6b7280;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
+.module-type-selector .form-select {
+  width: 100%;
+  max-width: 200px;
 }
 
 .module-actions {
@@ -585,15 +582,67 @@ const emit = defineEmits(['close'])
   gap: 20px;
 }
 
-.chart-settings {
+/* 新增图表配置区域样式 */
+.chart-configuration {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.chart-left-panel {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.setting-row {
+.chart-right-panel {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-column: 1/span 2;
+  flex-direction: column;
+}
+
+.chart-preview-section {
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.chart-preview-section label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  display: flex;
+}
+
+.chart-preview-container {
+  width: 100%;
+  height: 200px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: white;
+  border: 1px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.setting-row {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 }
 
@@ -617,29 +666,9 @@ const emit = defineEmits(['close'])
   height: 16px;
 }
 
-.chart-preview-section {
-  margin-top: 20px;
-  padding: 16px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
-}
-
-.chart-preview-section label {
-  display: block;
-  margin-bottom: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #495057;
-}
-
-.chart-preview-container {
-  width: 100%;
+.summary-textarea {
   height: 200px;
-  border-radius: 6px;
-  overflow: hidden;
-  background: white;
-  border: 1px solid #dee2e6;
+  resize: vertical;
 }
 
 .module-preview {
@@ -783,13 +812,23 @@ const emit = defineEmits(['close'])
     gap: 12px;
   }
   
-  .module-title {
+  .module-type-selector {
     width: 100%;
+    margin-right: 0;
+  }
+  
+  .module-type-selector .form-select {
+    max-width: none;
   }
   
   .module-actions {
     width: 100%;
     justify-content: flex-end;
+  }
+
+  .chart-configuration {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 </style>

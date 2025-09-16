@@ -14,7 +14,6 @@
 
     <!-- 项目类型统计 -->
     <div class="statistics-section">
-      <h3 class="section-title">项目统计</h3>
       <div class="stats-grid">
         <div class="stat-card" v-for="stat in projectStats" :key="stat.type">
           <div class="stat-icon" :style="{ backgroundColor: stat.color }">
@@ -440,15 +439,14 @@ const saveProject = () => {
 }
 
 .stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  font-size: 22px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  margin-right: 16px;
-  color: white;
+  background: linear-gradient(135deg, #f9fafb 0%, #f0f0f0 100%);
+  border-radius: 12px;
 }
 
 .stat-content {

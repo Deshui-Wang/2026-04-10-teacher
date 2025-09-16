@@ -46,7 +46,6 @@
     <!-- 筛选和视图切换 -->
     <div class="filter-section">
       <div class="certification-filter">
-        <h3>认证类型筛选</h3>
         <div class="filter-options">
           <button 
             v-for="type in certificationTypesList" 
@@ -597,7 +596,7 @@ const getCertificationPrefix = (type) => {
 }
 
 .main-stat {
-  background: linear-gradient(135deg, #5856d6, #7e7eff);
+  /* background: linear-gradient(135deg, #5856d6, #7e7eff); */
   color: white;
 }
 
@@ -606,14 +605,14 @@ const getCertificationPrefix = (type) => {
 }
 
 .stat-icon {
-  font-size: 20px;
+  font-size: 22px;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #d9d9d9, #f5f5f5);
-  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, #f9fafb 0%, #f0f0f0 100%);
+  border-radius: 12px;
 }
 
 .stat-content {
@@ -628,7 +627,7 @@ const getCertificationPrefix = (type) => {
 }
 
 .main-stat .stat-number {
-  color: white;
+  color: #333;
 }
 
 .stat-label {
@@ -638,17 +637,17 @@ const getCertificationPrefix = (type) => {
 }
 
 .main-stat .stat-label {
-  color: rgba(255,255,255,0.9);
+  color: #333;
 }
 
 .stat-trend {
   display: flex;
-  align-items: center;
+  justify-content: center;
   gap: 4px;
   margin-top: 8px;
   font-size: 12px;
   font-weight: 500;
-  color: #34c759;
+  color: #333;
 }
 
 .trend-icon {
