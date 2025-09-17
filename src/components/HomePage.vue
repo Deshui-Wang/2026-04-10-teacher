@@ -1,5 +1,13 @@
 <template>
   <div class="home-page-container">
+    <!-- 用户信息栏 -->
+    <div class="user-info-bar">
+      <div class="user-welcome">
+        <span class="welcome-text">欢迎回来，</span>
+        <span class="username">{{ currentUser }}</span>
+      </div>
+    </div>
+    
     <!-- 标签导航 -->
     <div class="tab-navigation">
       <div class="tab-container">
@@ -24,9 +32,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import Dashboard from './Dashboard.vue'
 import Profile from './Profile.vue'
+
+const router = useRouter()
+
+// 当前用户
+const currentUser = ref('')
 
 // 标签配置
 const tabs = ref([
@@ -41,6 +55,12 @@ const currentComponent = computed(() => {
   const tab = tabs.value.find(t => t.key === activeTab.value)
   return tab ? tab.component : Dashboard
 })
+
+
+// 页面加载时获取用户信息
+onMounted(() => {
+  currentUser.value = localStorage.getItem('username') || '用户'
+})
 </script>
 
 <style scoped>
@@ -52,6 +72,61 @@ const currentComponent = computed(() => {
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
+}
+
+/* 用户信息栏样式 */
+.user-info-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 30px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.user-welcome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.welcome-text {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.username {
+  color: #5856d6;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.logout-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.logout-button svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* 标签导航样式 */
@@ -137,6 +212,29 @@ const currentComponent = computed(() => {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .user-info-bar {
+    padding: 12px 20px;
+  }
+  
+  .user-welcome {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .welcome-text {
+    font-size: 12px;
+  }
+  
+  .username {
+    font-size: 14px;
+  }
+  
+  .logout-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
   .tab-container {
     padding: 0 10px;
     gap: 4px;
@@ -172,4 +270,4 @@ const currentComponent = computed(() => {
     width: 100%;
   }
 }
-</style> 
+</style>

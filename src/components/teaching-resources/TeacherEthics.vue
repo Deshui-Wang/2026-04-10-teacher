@@ -316,7 +316,7 @@ function initAIChart() {
     },
     legend: { show: false },
     radar: {
-      indicator: aiIndicators.value.map(item => ({ name: item.name, max: 3 })),
+      indicator: aiIndicators.value.map(item => ({ name: item.name, max: 3, nameTextStyle: { color: '#333' } })),
       radius: '80%',
       center: ['50%', '50%'],
       splitArea: {
@@ -337,16 +337,6 @@ function initAIChart() {
           width: 1
         } 
       },
-      axisLabel: { 
-        color: '#666',
-        fontSize: 12,
-        formatter: function(value) {
-          if (value.length > 5) {
-            return value.split('').join('\n');
-          }
-          return value;
-        }
-      }
     },
     series: [
       {
@@ -396,7 +386,7 @@ function initTeachingChart() {
     },
     legend: { show: false },
     radar: {
-      indicator: teachingIndicators.value.map(item => ({ name: item.name, max: 3 })),
+      indicator: teachingIndicators.value.map(item => ({ name: item.name, max: 3, nameTextStyle: { color: '#333' } })),
       radius: '80%',
       center: ['50%', '50%'],
       splitArea: {
@@ -417,16 +407,6 @@ function initTeachingChart() {
           width: 1
         } 
       },
-      axisLabel: { 
-        color: '#666',
-        fontSize: 12,
-        formatter: function(value) {
-          if (value.length > 5) {
-            return value.split('').join('\n');
-          }
-          return value;
-        }
-      }
     },
     series: [
       {
@@ -476,7 +456,7 @@ function initServiceChart() {
     },
     legend: { show: false },
     radar: {
-      indicator: serviceIndicators.value.map(item => ({ name: item.name, max: 3 })),
+      indicator: serviceIndicators.value.map(item => ({ name: item.name, max: 3, nameTextStyle: { color: '#333' } })),
       radius: '80%',
       center: ['50%', '50%'],
       splitArea: {
@@ -497,16 +477,6 @@ function initServiceChart() {
           width: 1
         } 
       },
-      axisLabel: { 
-        color: '#666',
-        fontSize: 12,
-        formatter: function(value) {
-          if (value.length > 5) {
-            return value.split('').join('\n');
-          }
-          return value;
-        }
-      }
     },
     series: [
       {
@@ -556,7 +526,7 @@ function initResearchChart() {
     },
     legend: { show: false },
     radar: {
-      indicator: researchIndicators.value.map(item => ({ name: item.name, max: 300 })),
+      indicator: researchIndicators.value.map(item => ({ name: item.name, max: 300, nameTextStyle: { color: '#333' } })),
       radius: '80%',
       center: ['50%', '50%'],
       splitArea: {
@@ -577,16 +547,6 @@ function initResearchChart() {
           width: 1
         } 
       },
-      axisLabel: { 
-        color: '#666',
-        fontSize: 12,
-        formatter: function(value) {
-          if (value.length > 5) {
-            return value.split('').join('\n');
-          }
-          return value;
-        }
-      }
     },
     series: [
       {
@@ -636,7 +596,7 @@ function initQualityChart() {
     },
     legend: { show: false },
     radar: {
-      indicator: qualityIndicators.value.map(item => ({ name: item.name, max: 3 })),
+      indicator: qualityIndicators.value.map(item => ({ name: item.name, max: 3, nameTextStyle: { color: '#333' } })),
       radius: '80%',
       center: ['50%', '50%'],
       splitArea: {
@@ -657,16 +617,6 @@ function initQualityChart() {
           width: 1
         } 
       },
-      axisLabel: { 
-        color: '#666',
-        fontSize: 12,
-        formatter: function(value) {
-          if (value.length > 5) {
-            return value.split('').join('\n');
-          }
-          return value;
-        }
-      }
     },
     series: [
       {
@@ -937,7 +887,7 @@ onBeforeUnmount(() => {
   }
   
   .radar-chart {
-    width: 350px;
+    width: 450px;
     height: 350px;
   }
 }

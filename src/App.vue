@@ -86,6 +86,10 @@ export default {
   },
   computed: {
     shouldShowNavbar() {
+      // 在登录页面和智能体编辑页面隐藏导航栏
+      return this.$route.path !== "/login" && this.$route.path !== "/agent-editor"
+    },
+    shouldShowNavbarOld() {
       // 在智能体编辑页面隐藏导航栏
       return this.$route.path !== '/agent-editor'
     }

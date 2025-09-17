@@ -180,17 +180,17 @@
         border
         stripe
       >
-        <el-table-column prop="studentName" label="学生姓名" width="120" align="center" />
-        <el-table-column prop="studentId" label="学号" width="120" align="center" />
-        <el-table-column prop="class" label="班级" width="120" align="center" />
-        <el-table-column prop="course" label="课程" width="150" align="center" />
+        <el-table-column prop="studentName" label="学生姓名" align="center" />
+        <el-table-column prop="studentId" label="学号" align="center" />
+        <el-table-column prop="class" label="班级" align="center" />
+        <el-table-column prop="course" label="课程" align="center" />
         <el-table-column prop="score" label="成绩" width="100" sortable align="center">
           <template #default="{ row }">
             <span :class="getScoreClass(row.score)">{{ row.score }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="examDate" label="考试日期" width="120" align="center" />
-        <el-table-column label="成绩趋势" width="120" align="center">
+        <el-table-column prop="examDate" label="考试日期" align="center" />
+        <el-table-column label="成绩趋势" align="center" width="150" >
           <template #default="{ row }">
             <div class="trend-chart">
               <svg width="80" height="40" viewBox="0 0 80 40">

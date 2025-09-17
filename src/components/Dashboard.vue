@@ -240,17 +240,7 @@ const matchingChart = ref(null)
 const riskChart = ref(null)
 const notificationScroll = ref(null)
 const activeTitle = ref('副高级-副教授')
-const titleOptions = ['初级-助教', '中级-讲师', '副高级-副教授', '正高级-教授', '讲师']
-
-// 通知条数据
-const notifications = ref([
-  { content: '📋 2025年职称晋升申报已开始，请符合条件的教师及时提交材料，截止日期：3月31日' },
-  { content: '✅ 教学比赛报名审核结果已公布，请登录系统查看审核状态，如有疑问请联系教务处' },
-  { content: '🎓 青年教师发展计划报名启动，包含教学技能培训、科研能力提升等课程，报名截止：4月15日' },
-  { content: '📚 本学期教学观摩活动安排已发布，各院系可组织教师参与，提升教学水平' },
-  { content: '🔬 科研项目申报指南更新，新增人工智能、绿色能源等前沿领域，申报截止：5月20日' },
-  { content: '🏆 年度优秀教师评选活动即将开始，请各院系推荐候选人，材料提交截止：4月30日' }
-])
+const titleOptions = ['初级-助教', '中级-讲师', '副高级-副教授', '正高级-教授']
 
 // 新增：全校教师发展与考核关键数据
 const totalTeachers = ref(1247)
@@ -410,19 +400,6 @@ function generateQualityData() {
     { name: '学生评价', value: 2.0, color: '#a8e6cf' }
   ]
 }
- 
- const quickSections = ref([
-   { title: '教学经验', items: ['课程思政', '教学理念', '教学反思'] },
-   { title: '教学活动', items: ['实践进修', '教学比赛', '学生指导', '公共服务', '专家讲座', '其他活动'] },
-   { title: '成果奖励', items: ['论文案例', '荣誉称号', '指导学生获', '教学比赛获奖', '出版教材'] }
- ]);
- 
- // 成长轨迹数据
-const growthStages = [
-  '起步期', '立足期', '发展期', '突破期', '成熟期', '引领期', '卓越期', '传承期'
-]
-const currentStageIndex = 3 // 突破期
-const currentTitle = '高级讲师'
  
  // 目标完成情况（示例数据，可改为接口返回）
  const targetGoals = ref([
@@ -640,7 +617,7 @@ function initAIChart() {
     },
     legend: { show: false },
     radar: {
-      indicator: data.map(item => ({ name: item.name, max: 3 })),
+      indicator: data.map(item => ({ name: item.name, max: 3, nameTextStyle: { color: '#333' } })),
       radius: '80%',
       center: ['50%', '50%'],
       splitArea: {
@@ -661,17 +638,6 @@ function initAIChart() {
           width: 1
         } 
       },
-      axisLabel: { 
-        color: '#666',
-        fontSize: 12,
-        formatter: function(value) {
-          // 根据指标名称长度进行换行处理
-          if (value.length > 5) {
-            return value.split('').join('\n');
-          }
-          return value;
-        }
-      }
     },
     series: [
       {
@@ -720,7 +686,7 @@ function initTeachingChart() {
     },
     legend: { show: false },
     radar: {
-      indicator: data.map(item => ({ name: item.name, max: 3 })),
+      indicator: data.map(item => ({ name: item.name, max: 3, nameTextStyle: { color: '#333' } })),
       radius: '80%',
       center: ['50%', '50%'],
       splitArea: {
@@ -741,17 +707,6 @@ function initTeachingChart() {
           width: 1
         } 
       },
-      axisLabel: { 
-        color: '#666',
-        fontSize: 12,
-        formatter: function(value) {
-          // 根据指标名称长度进行换行处理
-          if (value.length > 5) {
-            return value.split('').join('\n');
-          }
-          return value;
-        }
-      }
     },
     series: [
       {
@@ -800,7 +755,7 @@ function initServiceChart() {
     },
     legend: { show: false },
     radar: {
-      indicator: data.map(item => ({ name: item.name, max: 3 })),
+      indicator: data.map(item => ({ name: item.name, max: 3, nameTextStyle: { color: '#333' } })),
       radius: '80%',
       center: ['50%', '50%'],
       splitArea: {
@@ -821,17 +776,6 @@ function initServiceChart() {
           width: 1
         } 
       },
-      axisLabel: { 
-        color: '#666',
-        fontSize: 12,
-        formatter: function(value) {
-          // 根据指标名称长度进行换行处理
-          if (value.length > 5) {
-            return value.split('').join('\n');
-          }
-          return value;
-        }
-      }
     },
     series: [
       {
@@ -939,7 +883,7 @@ function initQualityChart() {
     },
     legend: { show: false },
     radar: {
-      indicator: data.map(item => ({ name: item.name, max: 3 })),
+      indicator: data.map(item => ({ name: item.name, max: 3, nameTextStyle: { color: '#333' } })),
       radius: '80%',
       center: ['50%', '50%'],
       splitArea: {
@@ -960,17 +904,6 @@ function initQualityChart() {
           width: 1
         } 
       },
-      axisLabel: { 
-        color: '#666',
-        fontSize: 12,
-        formatter: function(value) {
-          // 根据指标名称长度进行换行处理
-          if (value.length > 5) {
-            return value.split('').join('\n');
-          }
-          return value;
-        }
-      }
     },
     series: [
       {
