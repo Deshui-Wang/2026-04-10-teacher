@@ -1,15 +1,14 @@
 <script>
-import MainNavbar from './components/MainNavbar.vue'
-import Footer from './components/Footer.vue'
-import AIAssistant from './components/AIAssistant.vue' // 引入 AI 助手组件
+import MainNavbar from './components/html-page/MainNavbar.vue'
+import Footer from './components/html-page/Footer.vue'
 import { ref, provide, onMounted, onUnmounted } from 'vue'
+import { isLoggedIn, currentUser, checkAuth } from './router/index.js'
 
 export default {
   name: 'App',
   components: {
     MainNavbar,
-    Footer,
-    AIAssistant // 注册 AI 助手组件
+    Footer
   },
   setup() {
     // 头像选择弹框状态
@@ -19,6 +18,11 @@ export default {
       avatarOptions: []
     })
     const selectedAvatarId = ref('avatar1')
+
+    // 提供全局状态给子组件
+    provide('isLoggedIn', isLoggedIn)
+    provide('currentUser', currentUser)
+    provide('checkAuth', checkAuth)
 
     // 创建事件总线
     const eventBus = {
@@ -75,6 +79,11 @@ export default {
       showAvatarSelector.value = false
     }
 
+    // 页面加载时检查认证状态
+    onMounted(() => {
+      checkAuth()
+    })
+
     return {
       showAvatarSelector,
       avatarSelectorData,
@@ -102,7 +111,7 @@ export default {
     <MainNavbar v-if="shouldShowNavbar" />
     <router-view />
     <Footer v-if="!$route.meta.hideFooter" />
-    <AIAssistant /> <!-- 使用 AI 助手组件 -->
+    <!-- 移除全局的 Agent 组件 -->
     
     <!-- 头像选择弹层 - 放在最外层，不会被导航标签挡住 -->
     <div v-if="showAvatarSelector" class="avatar-selector-overlay" @click="closeAvatarSelector">
