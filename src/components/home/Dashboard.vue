@@ -184,6 +184,7 @@ onBeforeUnmount(() => {
   background: #ffffff;
   padding: 24px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  border-radius: 12px;
 }
 
 /* 顶部横幅与应用快捷方式合并区域 */

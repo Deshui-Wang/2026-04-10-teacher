@@ -140,7 +140,6 @@ onMounted(() => {
 /* 欢迎信息区域 */
 .welcome-section {
   padding: 24px;
-  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -184,7 +183,6 @@ onMounted(() => {
 /* 重要事件提醒 */
 .events-section {
   padding: 10px 24px 0px 24px;
-  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -231,7 +229,6 @@ onMounted(() => {
 /* 今日工作内容 */
 .work-section {
   padding: 24px;
-  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
