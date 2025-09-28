@@ -202,7 +202,10 @@ const formatDate = (date) => {
 
 const parseLocalDate = (dateStr) => {
   const [year, month, day] = dateStr.split('-').map(Number)
-  return new Date(year, month - 1, day)
+  // 直接计算星期几，避免时区问题
+  const date = new Date(year, month - 1, day)
+  // 确保使用本地时间
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
 }
 
 // 日历相关数据
@@ -311,7 +314,9 @@ const classrooms = ['主楼101', '主楼102', '实验楼103', '教学二楼104',
 
 // 生成指定日期的课程安排（轮询使用基础课程数据）
 const generateCoursesForDate = (dateStr) => {
-  const date = parseLocalDate(dateStr)
+  const [year, month, day] = dateStr.split('-').map(Number)
+  // 直接计算星期几，避免时区问题
+  const date = new Date(year, month - 1, day)
   const dayOfWeek = date.getDay()
   
   // 只安排周一到周五的课程
@@ -388,9 +393,12 @@ const availableYears = computed(() => {
 // 获取一周的开始日期（周一）
 const getWeekStart = (date) => {
   const d = new Date(date)
-  const day = d.getDay()
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1) // 调整周日为-6
-  return new Date(d.setDate(diff))
+  const day = d.getDay() // 0=周日, 1=周一, ..., 6=周六
+  // 修复逻辑：周日(0)需要回到本周一，其他天正常计算
+  const diff = day === 0 ? d.getDate() - 6 : d.getDate() - day + 1
+  const weekStart = new Date(d)
+  weekStart.setDate(diff)
+  return weekStart
 }
 
 // 计算当前周的天数（周视图）
@@ -483,7 +491,7 @@ const nextWeek = () => {
 // 回到今天
 const goToToday = () => {
   const today = new Date()
-  currentDate.value = today
+  currentDate.value = new Date(today) // 确保创建新的Date对象
   selectedDate.value = formatDate(today)
 }
 
