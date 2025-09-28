@@ -194,6 +194,7 @@ const progressPercentage = computed(() => {
 .task-chain {
   display: flex;
   align-items: flex-start;
+  justify-content: center;
   gap: 40px;
   min-width: max-content;
   padding: 20px 0;
@@ -227,10 +228,10 @@ const progressPercentage = computed(() => {
 }
 
 .node-circle {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  border: 3px solid #e5e7eb;
+  border: 2px solid #e5e7eb;
   background: white;
   display: flex;
   align-items: center;
@@ -248,8 +249,8 @@ const progressPercentage = computed(() => {
 }
 
 .checkmark {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .node-label {

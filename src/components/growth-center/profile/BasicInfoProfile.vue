@@ -1,6 +1,6 @@
 <template>
   <div class="chart-card">
-    <h3>基本信息画像</h3>
+    <h3>基本信息画像 - 10年+专业标杆教学科研型教师</h3>
     <div class="basic-info-rings">
       <!-- 年龄组 -->
       <div class="ring-group">

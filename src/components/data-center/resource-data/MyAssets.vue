@@ -28,9 +28,6 @@
 
     <!-- 主内容区域 -->
     <div class="content-section">
-      <div class="section-header">
-        <h2>我的资产</h2>
-      </div>
 
       <!-- 汇总卡片 -->
       <div class="summary-grid">

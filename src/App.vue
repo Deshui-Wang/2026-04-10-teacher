@@ -1,6 +1,7 @@
 <script>
 import MainNavbar from './components/html-page/MainNavbar.vue'
 import Footer from './components/html-page/Footer.vue'
+import AIAssistant from './components/html-page/AIAssistant.vue'
 import { ref, provide, onMounted, onUnmounted } from 'vue'
 import { isLoggedIn, currentUser, checkAuth } from './router/index.js'
 
@@ -8,7 +9,8 @@ export default {
   name: 'App',
   components: {
     MainNavbar,
-    Footer
+    Footer,
+    AIAssistant
   },
   setup() {
     // 头像选择弹框状态
@@ -111,7 +113,8 @@ export default {
     <MainNavbar v-if="shouldShowNavbar" />
     <router-view />
     <Footer v-if="!$route.meta.hideFooter" />
-    <!-- 移除全局的 Agent 组件 -->
+    <!-- 小智人AI智能悬浮球 - 全局显示 -->
+    <AIAssistant />
     
     <!-- 头像选择弹层 - 放在最外层，不会被导航标签挡住 -->
     <div v-if="showAvatarSelector" class="avatar-selector-overlay" @click="closeAvatarSelector">
