@@ -12,9 +12,9 @@
               class="carousel-slide"
             >
               <img :src="banner.src" :alt="banner.alt" class="banner-image" />
-            </div>
           </div>
-          
+        </div>
+
           <!-- 轮播指示器 -->
           <div class="carousel-indicators">
             <button 
@@ -33,7 +33,7 @@
             <i class="fas fa-chevron-right"></i>
           </button>
         </div>
-      </div>
+            </div>
 
       <!-- 右侧应用快捷方式区域 (2/3) -->
       <div class="quick-access-section">
@@ -50,15 +50,15 @@
               <i class="fas fa-plus"></i>
             </div>
             <span class="add-text">添加常用</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
     <!-- 全部应用标题 -->
     <div class="all-apps-header">
       <h2>全部应用</h2>
-    </div>
+            </div>
 
     <!-- 应用网格 -->
     <div class="apps-grid">

@@ -1,6 +1,15 @@
 <template>
   <div class="chart-card">
     <h3>科研成本消耗与成果奖励 <span class="score-badge">{{ researchScore }}</span></h3>
+    <div class="comparison-toggle">
+      <button 
+        class="toggle-btn" 
+        :class="{ active: showComparison }"
+        @click="toggleComparison"
+      >
+        {{ showComparison ? '隐藏对比' : '显示对比' }}
+      </button>
+    </div>
     <div class="research-content">
       <!-- 左侧雷达图 -->
       <div class="chart-section">
@@ -14,9 +23,36 @@
             <div class="indicator-header">
               <div class="indicator-color" :style="{ backgroundColor: indicator.color }"></div>
               <span class="indicator-name">{{ indicator.name }}</span>
-              <span class="indicator-score">{{ indicator.value }}分</span>
+              <div class="score-comparison">
+                <span class="indicator-score">{{ indicator.value }}分</span>
+                <span v-if="showComparison" class="average-score">
+                  (平均{{ indicator.averageValue }}分)
+                </span>
+              </div>
             </div>
             <div class="indicator-description">{{ indicator.description }}</div>
+            <div v-if="showComparison" class="comparison-bar">
+              <div class="bar-container">
+                <div class="bar-label">个人</div>
+                <div class="progress-bar">
+                  <div 
+                    class="progress-fill personal" 
+                    :style="{ width: (indicator.value / 3 * 100) + '%' }"
+                  ></div>
+                </div>
+                <div class="bar-value">{{ indicator.value }}</div>
+              </div>
+              <div class="bar-container">
+                <div class="bar-label">平均</div>
+                <div class="progress-bar">
+                  <div 
+                    class="progress-fill average" 
+                    :style="{ width: (indicator.averageValue / 3 * 100) + '%' }"
+                  ></div>
+                </div>
+                <div class="bar-value">{{ indicator.averageValue }}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -34,8 +70,20 @@ const researchChart = ref(null)
 // 图表实例
 let researchChartInstance = null
 
+// 对比显示状态
+const showComparison = ref(false)
+
 // 科研与成果分值（6-9.5分之间随机）
 const researchScore = ref((Math.random() * 3.5 + 6).toFixed(1))
+
+// 切换对比显示
+const toggleComparison = () => {
+  showComparison.value = !showComparison.value
+  // 重新初始化图表以显示/隐藏对比数据
+  setTimeout(() => {
+    initResearchChart()
+  }, 100)
+}
 
 // 图表数据生成函数
 function generateResearchData() {
@@ -49,18 +97,39 @@ function generateResearchData() {
   ]
 }
 
+// 生成全校平均数据
+function generateAverageData() {
+  return [
+    { name: '科研项目', value: 1.6 },
+    { name: '经费奖金比率', value: 1.4 },
+    { name: '论文发表', value: 1.8 },
+    { name: '专利', value: 1.3 },
+    { name: '证书认证', value: 1.5 },
+    { name: '国际项目', value: 1.2 }
+  ]
+}
+
 // 计算属性：生成指标描述数据
 const researchIndicators = computed(() => {
   const data = generateResearchData()
-  return data.map(item => ({
-    ...item,
-    description: getIndicatorDescription(item.name, item.value)
-  }))
+  const averageData = generateAverageData()
+  
+  return data.map(item => {
+    const averageItem = averageData.find(avg => avg.name === item.name)
+    return {
+      ...item,
+      averageValue: averageItem ? averageItem.value : 1.3,
+      description: getIndicatorDescription(item.name, item.value, averageItem?.value)
+    }
+  })
 })
 
-// 根据指标名称和分值生成描述
-function getIndicatorDescription(name, value) {
-  const descriptions = {
+// 根据指标名称和分值生成描述（增加对比信息）
+function getIndicatorDescription(name, value, averageValue = 1.3) {
+  const isAboveAverage = value > averageValue
+  const difference = (value - averageValue).toFixed(1)
+  
+  const baseDescriptions = {
     '科研项目': value >= 2.1 ? 
       '在科研项目方面表现优秀，能够承担和完成各类科研项目，具备良好的项目管理和研究能力。' : 
       '需要加强科研项目申请和管理能力，提升项目研究水平，争取更多高质量科研项目。',
@@ -80,7 +149,17 @@ function getIndicatorDescription(name, value) {
       '在国际合作项目方面有一定经验，能够参与国际学术交流，具备一定的国际视野和合作能力。' : 
       '需要加强国际合作能力，积极参与国际学术交流，提升国际影响力和合作水平。'
   }
-  return descriptions[name] || '该指标需要进一步评估和改进。'
+  
+  const baseDescription = baseDescriptions[name] || '该指标需要进一步评估和改进。'
+  
+  if (showComparison.value) {
+    const comparisonText = isAboveAverage ? 
+      `\n\n相比全校平均水平高出${difference}分，表现优秀。` : 
+      `\n\n相比全校平均水平低${Math.abs(difference)}分，有提升空间。`
+    return baseDescription + comparisonText
+  }
+  
+  return baseDescription
 }
 
 // 图表初始化方法
@@ -90,17 +169,69 @@ function initResearchChart() {
   
   researchChartInstance = echarts.init(researchChart.value)
   const data = generateResearchData()
+  const averageData = generateAverageData()
+  
+  const seriesData = [{
+    value: data.map(item => item.value),
+    name: '个人科研能力',
+    itemStyle: {
+      color: '#007aff',
+      borderColor: '#007aff',
+      borderWidth: 2
+    },
+    areaStyle: {
+      color: 'rgba(0, 122, 255, 0.2)'
+    },
+    lineStyle: {
+      width: 2,
+      color: '#007aff'
+    }
+  }]
+  
+  // 如果显示对比，添加平均数据
+  if (showComparison.value) {
+    seriesData.push({
+      value: averageData.map(item => item.value),
+      name: '全校平均',
+      itemStyle: {
+        color: '#af52de',
+        borderColor: '#af52de',
+        borderWidth: 2
+      },
+      areaStyle: {
+        color: 'rgba(175, 82, 222, 0.1)'
+      },
+      lineStyle: {
+        width: 2,
+        color: '#af52de',
+        type: 'dashed'
+      }
+    })
+  }
   
   const option = {
     tooltip: {
       trigger: 'item',
-      formatter: '{a} <br/>{b}: {c}分',
+      formatter: function(params) {
+        if (params.seriesName === '个人科研能力') {
+          const index = params.dataIndex
+          return `${params.seriesName}<br/>${data[index].name}: ${params.value}分`
+        } else if (params.seriesName === '全校平均') {
+          const index = params.dataIndex
+          return `${params.seriesName}<br/>${averageData[index].name}: ${params.value}分`
+        }
+        return `${params.seriesName}<br/>${params.name}: ${params.value}分`
+      },
       backgroundColor: 'rgba(255, 255, 255, 0.95)',
       borderColor: '#e0e6f1',
       borderWidth: 1,
       textStyle: { color: '#333' }
     },
-    legend: { show: false },
+    legend: { 
+      show: showComparison.value,
+      bottom: 10,
+      data: showComparison.value ? ['个人科研能力', '全校平均'] : []
+    },
     radar: {
       indicator: data.map(item => ({ name: item.name, max: 3, nameTextStyle: { color: '#333' } })),
       radius: '80%',
@@ -128,22 +259,7 @@ function initResearchChart() {
       {
         name: '科研成本消耗与成果奖励',
         type: 'radar',
-        data: [{
-          value: data.map(item => item.value),
-          name: '科研能力指数',
-          itemStyle: {
-            color: '#007aff',
-            borderColor: '#007aff',
-            borderWidth: 2
-          },
-          areaStyle: {
-            color: 'rgba(0, 122, 255, 0.2)'
-          },
-          lineStyle: {
-            width: 2,
-            color: '#007aff'
-          }
-        }],
+        data: seriesData,
         animationDuration: 1000,
         animationEasing: 'cubicOut'
       }
@@ -241,6 +357,35 @@ onBeforeUnmount(() => {
   }
 }
 
+/* 对比切换按钮 */
+.comparison-toggle {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.toggle-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.toggle-btn.active {
+  background: linear-gradient(135deg, #007aff, #5ac8fa);
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+}
+
 /* 主要内容区域布局 */
 .research-content {
   display: flex;
@@ -328,6 +473,13 @@ onBeforeUnmount(() => {
   text-overflow: ellipsis;
 }
 
+.score-comparison {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
 .indicator-score {
   font-size: 13px;
   font-weight: 700;
@@ -339,6 +491,12 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
 }
 
+.average-score {
+  font-size: 11px;
+  color: #af52de;
+  font-weight: 500;
+}
+
 .indicator-description {
   font-size: 12px;
   color: #666;
@@ -348,6 +506,58 @@ onBeforeUnmount(() => {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  margin-bottom: 8px;
+}
+
+/* 对比进度条 */
+.comparison-bar {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.bar-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.bar-label {
+  font-size: 10px;
+  color: #666;
+  width: 24px;
+  flex-shrink: 0;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-fill.personal {
+  background: linear-gradient(90deg, #007aff, #5ac8fa);
+}
+
+.progress-fill.average {
+  background: linear-gradient(90deg, #af52de, #c77dff);
+}
+
+.bar-value {
+  font-size: 10px;
+  color: #666;
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
 }
 
 /* 响应式设计 */

@@ -1,6 +1,15 @@
 <template>
   <div class="chart-card">
     <h3>AI智能胜任力 <span class="score-badge">{{ aiScore }}</span></h3>
+    <div class="comparison-toggle">
+      <button 
+        class="toggle-btn" 
+        :class="{ active: showComparison }"
+        @click="toggleComparison"
+      >
+        {{ showComparison ? '隐藏对比' : '显示对比' }}
+      </button>
+    </div>
     <div class="ai-content">
       <!-- 左侧雷达图 -->
       <div class="chart-section">
@@ -14,9 +23,36 @@
             <div class="indicator-header">
               <div class="indicator-color" :style="{ backgroundColor: indicator.color }"></div>
               <span class="indicator-name">{{ indicator.name }}</span>
-              <span class="indicator-score">{{ indicator.value }}分</span>
+              <div class="score-comparison">
+                <span class="indicator-score">{{ indicator.value }}分</span>
+                <span v-if="showComparison" class="average-score">
+                  (平均{{ indicator.averageValue }}分)
+                </span>
+              </div>
             </div>
             <div class="indicator-description">{{ indicator.description }}</div>
+            <div v-if="showComparison" class="comparison-bar">
+              <div class="bar-container">
+                <div class="bar-label">个人</div>
+                <div class="progress-bar">
+                  <div 
+                    class="progress-fill personal" 
+                    :style="{ width: (indicator.value / 3 * 100) + '%' }"
+                  ></div>
+                </div>
+                <div class="bar-value">{{ indicator.value }}</div>
+              </div>
+              <div class="bar-container">
+                <div class="bar-label">平均</div>
+                <div class="progress-bar">
+                  <div 
+                    class="progress-fill average" 
+                    :style="{ width: (indicator.averageValue / 3 * 100) + '%' }"
+                  ></div>
+                </div>
+                <div class="bar-value">{{ indicator.averageValue }}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -34,8 +70,20 @@ const aiChart = ref(null)
 // 图表实例
 let aiChartInstance = null
 
+// 对比显示状态
+const showComparison = ref(false)
+
 // AI智能胜任力分值（6-9.5分之间随机）
 const aiScore = ref((Math.random() * 3.5 + 6).toFixed(1))
+
+// 切换对比显示
+const toggleComparison = () => {
+  showComparison.value = !showComparison.value
+  // 重新初始化图表以显示/隐藏对比数据
+  setTimeout(() => {
+    initAIChart()
+  }, 100)
+}
 
 // 图表数据生成函数
 function generateAIData() {
@@ -49,18 +97,39 @@ function generateAIData() {
   ]
 }
 
+// 生成全校平均数据
+function generateAverageData() {
+  return [
+    { name: '以人为本', value: 1.7 },
+    { name: '社会责任', value: 1.6 },
+    { name: '知识与技能', value: 1.8 },
+    { name: '教学与应用', value: 1.5 },
+    { name: '职业能力', value: 1.6 },
+    { name: '助力专业发展', value: 1.7 }
+  ]
+}
+
 // 计算属性：生成指标描述数据
 const aiIndicators = computed(() => {
   const data = generateAIData()
-  return data.map(item => ({
-    ...item,
-    description: getIndicatorDescription(item.name, item.value)
-  }))
+  const averageData = generateAverageData()
+  
+  return data.map(item => {
+    const averageItem = averageData.find(avg => avg.name === item.name)
+    return {
+      ...item,
+      averageValue: averageItem ? averageItem.value : 1.5,
+      description: getIndicatorDescription(item.name, item.value, averageItem?.value)
+    }
+  })
 })
 
-// 根据指标名称和分值生成描述
-function getIndicatorDescription(name, value) {
-  const descriptions = {
+// 根据指标名称和分值生成描述（增加对比信息）
+function getIndicatorDescription(name, value, averageValue = 1.5) {
+  const isAboveAverage = value > averageValue
+  const difference = (value - averageValue).toFixed(1)
+  
+  const baseDescriptions = {
     '以人为本': value >= 2.0 ? 
       '在AI教育中充分体现人文关怀，注重学生个性化发展，能够平衡技术应用与人文教育的关系。' : 
       '在AI教育中需要更多关注学生的人文素养培养，加强个性化教学理念的实践。',
@@ -80,7 +149,17 @@ function getIndicatorDescription(name, value) {
       '能够利用AI技术促进个人专业发展，具备良好的创新思维和前瞻性视野。' : 
       '在利用AI技术促进专业发展方面需要更多探索和实践。'
   }
-  return descriptions[name] || '该指标需要进一步评估和改进。'
+  
+  const baseDescription = baseDescriptions[name] || '该指标需要进一步评估和改进。'
+  
+  if (showComparison.value) {
+    const comparisonText = isAboveAverage ? 
+      `\n\n相比全校平均水平高出${difference}分，表现优秀。` : 
+      `\n\n相比全校平均水平低${Math.abs(difference)}分，有提升空间。`
+    return baseDescription + comparisonText
+  }
+  
+  return baseDescription
 }
 
 // 图表初始化方法
@@ -93,17 +172,69 @@ function initAIChart() {
     aiChartInstance = echarts.init(aiChart.value)
     console.log("AI Chart instance created:", aiChartInstance)
     const data = generateAIData()
+    const averageData = generateAverageData()
+    
+    const seriesData = [{
+      value: data.map(item => item.value),
+      name: '个人胜任力',
+      itemStyle: {
+        color: '#34c759',
+        borderColor: '#34c759',
+        borderWidth: 2
+      },
+      areaStyle: {
+        color: 'rgba(52, 199, 89, 0.2)'
+      },
+      lineStyle: {
+        width: 2,
+        color: '#34c759'
+      }
+    }]
+    
+    // 如果显示对比，添加平均数据
+    if (showComparison.value) {
+      seriesData.push({
+        value: averageData.map(item => item.value),
+        name: '全校平均',
+        itemStyle: {
+          color: '#ff9500',
+          borderColor: '#ff9500',
+          borderWidth: 2
+        },
+        areaStyle: {
+          color: 'rgba(255, 149, 0, 0.1)'
+        },
+        lineStyle: {
+          width: 2,
+          color: '#ff9500',
+          type: 'dashed'
+        }
+      })
+    }
     
     const option = {
       tooltip: {
         trigger: 'item',
-        formatter: '{a} <br/>{b}: {c}分',
+        formatter: function(params) {
+          if (params.seriesName === '个人胜任力') {
+            const index = params.dataIndex
+            return `${params.seriesName}<br/>${data[index].name}: ${params.value}分`
+          } else if (params.seriesName === '全校平均') {
+            const index = params.dataIndex
+            return `${params.seriesName}<br/>${averageData[index].name}: ${params.value}分`
+          }
+          return `${params.seriesName}<br/>${params.name}: ${params.value}分`
+        },
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
         borderColor: '#e0e6f1',
         borderWidth: 1,
         textStyle: { color: '#333' }
       },
-      legend: { show: false },
+      legend: { 
+        show: showComparison.value,
+        bottom: 10,
+        data: showComparison.value ? ['个人胜任力', '全校平均'] : []
+      },
       radar: {
         indicator: data.map(item => ({ name: item.name, max: 3, nameTextStyle: { color: '#333' } })),
         radius: '80%',
@@ -131,22 +262,7 @@ function initAIChart() {
         {
           name: 'AI智能胜任力',
           type: 'radar',
-          data: [{
-            value: data.map(item => item.value),
-            name: '胜任力指数',
-            itemStyle: {
-              color: '#34c759',
-              borderColor: '#34c759',
-              borderWidth: 2
-            },
-            areaStyle: {
-              color: 'rgba(52, 199, 89, 0.2)'
-            },
-            lineStyle: {
-              width: 2,
-              color: '#34c759'
-            }
-          }],
+          data: seriesData,
           animationDuration: 1000,
           animationEasing: 'cubicOut'
         }
@@ -248,6 +364,35 @@ onBeforeUnmount(() => {
   }
 }
 
+/* 对比切换按钮 */
+.comparison-toggle {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.toggle-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.toggle-btn.active {
+  background: linear-gradient(135deg, #ff6b6b, #ff9ff3);
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
 /* 主要内容区域布局 */
 .ai-content {
   display: flex;
@@ -335,6 +480,13 @@ onBeforeUnmount(() => {
   text-overflow: ellipsis;
 }
 
+.score-comparison {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
 .indicator-score {
   font-size: 13px;
   font-weight: 700;
@@ -346,6 +498,12 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
 }
 
+.average-score {
+  font-size: 11px;
+  color: #ff9500;
+  font-weight: 500;
+}
+
 .indicator-description {
   font-size: 12px;
   color: #666;
@@ -355,6 +513,58 @@ onBeforeUnmount(() => {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  margin-bottom: 8px;
+}
+
+/* 对比进度条 */
+.comparison-bar {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.bar-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.bar-label {
+  font-size: 10px;
+  color: #666;
+  width: 24px;
+  flex-shrink: 0;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-fill.personal {
+  background: linear-gradient(90deg, #34c759, #30d158);
+}
+
+.progress-fill.average {
+  background: linear-gradient(90deg, #ff9500, #ffad33);
+}
+
+.bar-value {
+  font-size: 10px;
+  color: #666;
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
 }
 
 /* 响应式设计 */

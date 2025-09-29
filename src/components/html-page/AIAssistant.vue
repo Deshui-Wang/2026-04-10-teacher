@@ -58,14 +58,78 @@
               <div class="tab-icon">
                 <img :src="tab.icon" :alt="tab.label" class="tab-icon-img" />
               </div>
-              <span class="tab-label">{{ tab.label }}</span>
-              <span v-if="tab.count" class="tab-count">({{ tab.count }})</span>
+              <div class="tab-text">
+                <span class="tab-label">{{ tab.label }}</span>
+                <span v-if="tab.count" class="tab-count">({{ tab.count }})</span>
+              </div>
             </button>
           </div>
         </div>
 
         <!-- 内容区域 -->
         <div class="content-area">
+          <!-- 默认状态 - 显示欢迎消息 -->
+          <div v-if="!activeTab" class="tab-content">
+            <div class="messages-content">
+              <div class="message-item">
+                <div class="message-avatar">
+                  <img src="/pic/ai icon.png" alt="AI助手" class="message-avatar-img" />
+                </div>
+                <div class="message-content">
+                  <div class="message-header">
+                    <span class="message-sender">小智人</span>
+                    <span class="message-time">刚刚</span>
+                  </div>
+                  <div class="message-text">您好！我是小智人AI助手，有什么可以帮助您的吗？</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 消息标签页内容 -->
+          <div v-if="activeTab === 'messages'" class="tab-content">
+            <div class="messages-content">
+              <div class="message-item">
+                <div class="message-avatar">
+                  <img src="/pic/ai icon.png" alt="AI助手" class="message-avatar-img" />
+                </div>
+                <div class="message-content">
+                  <div class="message-header">
+                    <span class="message-sender">小智人</span>
+                    <span class="message-time">刚刚</span>
+                  </div>
+                  <div class="message-text">您好！我是小智人AI助手，有什么可以帮助您的吗？</div>
+                </div>
+              </div>
+              
+              <div class="message-item">
+                <div class="message-avatar">
+                  <img src="/pic/ai icon.png" alt="AI助手" class="message-avatar-img" />
+                </div>
+                <div class="message-content">
+                  <div class="message-header">
+                    <span class="message-sender">小智人</span>
+                    <span class="message-time">2分钟前</span>
+                  </div>
+                  <div class="message-text">我注意到您最近在准备《高等数学》课程，需要我帮您整理教学大纲吗？</div>
+                </div>
+              </div>
+              
+              <div class="message-item">
+                <div class="message-avatar">
+                  <img src="/pic/ai icon.png" alt="AI助手" class="message-avatar-img" />
+                </div>
+                <div class="message-content">
+                  <div class="message-header">
+                    <span class="message-sender">小智人</span>
+                    <span class="message-time">5分钟前</span>
+                  </div>
+                  <div class="message-text">检测到您有3个待处理的任务，点击"任务"标签页查看详情。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- 任务标签页内容 -->
           <div v-if="activeTab === 'tasks'" class="tab-content">
             <div class="suggestions-box">
@@ -99,14 +163,6 @@
                   <p>访问更多AI功能</p>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <!-- 默认状态 -->
-          <div v-if="!activeTab" class="default-state">
-            <div class="welcome-content">
-              <h3>欢迎使用小智人AI助手</h3>
-              <p>请点击上方标签页选择功能</p>
             </div>
           </div>
         </div>
@@ -206,15 +262,21 @@ const router = useRouter()
 // 标签页配置 - 使用图片图标
 const tabs = ref([
   {
+    id: 'messages',
+    label: '消息',
+    count: 1,
+    icon: '/pic/xiaoxi.png'
+  },
+  {
     id: 'tasks',
     label: '任务',
     count: 3,
-    icon: '/pic/todo.png'
+    icon: '/pic/renwu.png'
   },
   {
     id: 'pocket',
-    label: '临时口袋',
-    count: 2,
+    label: 'AI笔记',
+    count: null,
     icon: '/pic/koudai.png'
   },
   {
@@ -667,7 +729,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column; /* 改为垂直布局 */
   align-items: center;
-  gap: 8px;
+  gap: 6px; /* 减少间距 */
   padding: 16px 12px; /* 增加内边距 */
   background: transparent;
   border: none;
@@ -688,8 +750,14 @@ onUnmounted(() => {
 }
 
 .nav-tab.active {
-  background: #667eea;
-  color: white;
+  background: rgba(102, 126, 234, 0.08);
+  color: #667eea;
+  transform: scale(0.95);
+}
+
+.nav-tab.active .tab-icon-img {
+  filter: none;
+  opacity: 1;
 }
 
 .tab-icon {
@@ -701,8 +769,8 @@ onUnmounted(() => {
 }
 
 .tab-icon-img {
-  width: 24px;
-  height: 24px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
   transition: all 0.2s ease;
 }
@@ -712,7 +780,13 @@ onUnmounted(() => {
 }
 
 .nav-tab.active .tab-icon-img {
-  filter: brightness(0) invert(1); /* 激活状态图标变白 */
+
+}
+
+.tab-text {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .tab-label {
@@ -724,7 +798,6 @@ onUnmounted(() => {
 .tab-count {
   font-size: 11px;
   opacity: 0.8;
-  margin-top: 2px;
 }
 
 /* 内容区域 */
@@ -861,6 +934,74 @@ onUnmounted(() => {
   margin: 0;
   font-size: 14px;
   color: #64748b;
+}
+
+/* 消息内容样式 */
+.messages-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.message-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.message-item:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.message-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.message-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.message-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.message-sender {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.message-time {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.message-text {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+  text-align: left;
 }
 
 /* 输入区域 - 重新设计布局 */
