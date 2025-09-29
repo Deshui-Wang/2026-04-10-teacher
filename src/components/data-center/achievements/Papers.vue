@@ -1,7 +1,7 @@
 <template>
   <div class="papers-container">
-    <!-- 筛选区域 -->
-    <div class="filter-section">
+    <!-- 隐藏原来的筛选区域，因为现在由父组件统一管理 -->
+    <!-- <div class="filter-section">
       <div class="filter-row">
         <div class="search-box">
           <input 
@@ -13,7 +13,7 @@
           <i class="search-icon">🔍</i>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- 内容区域 -->
     <div class="content-section">

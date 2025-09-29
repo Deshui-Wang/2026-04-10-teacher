@@ -4,7 +4,7 @@
     :class="{ active: activeTab === 'achievements' }"
     @click="$emit('tab-change', 'achievements')"
   >
-    <h3 class="card-title">教学成果</h3>
+    <h3 class="card-title">成果数据</h3>
     <div class="card-content">
       <div class="data-row">
         <div class="data-item">
@@ -17,7 +17,7 @@
         </div>
         <div class="data-item">
           <span class="data-value">5</span>
-          <span class="data-label">论文</span>
+          <span class="data-label">科研成果</span>
         </div>
       </div>
     </div>
