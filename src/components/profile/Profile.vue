@@ -22,6 +22,11 @@
             <span>成长经历</span>
           </router-link>
         </li>
+        <li class="nav-item">
+          <router-link to="/profile/my-archive" active-class="active" class="nav-link">
+            <span>我的档案</span>
+          </router-link>
+        </li>
       </ul>
     </aside>
 

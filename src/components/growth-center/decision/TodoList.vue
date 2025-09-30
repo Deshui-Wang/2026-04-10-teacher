@@ -1,7 +1,7 @@
 <template>
   <div class="todo-list-component">
     <div class="todo-header">
-      <h2 class="todo-title">成长任务进度 - 当前稍显缓慢</h2>
+      <h2 class="todo-title">成长任务进度 - 当前成长缓慢，请加油！</h2>
       <div class="progress-summary">
         <span class="progress-text">已完成 {{ completedCount }}/{{ totalCount }} 项任务</span>
         <div class="progress-bar">

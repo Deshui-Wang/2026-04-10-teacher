@@ -65,7 +65,14 @@
       <WorkloadQuantification v-if="activeSubTab === 'workload'" />
       
       <!-- 教学数据-班级页面 -->
-      <ClassManagement v-if="activeSubTab === 'classes'" />
+      <ClassManagement 
+        v-if="activeSubTab === 'classes'" 
+        @navigate-to-student="handleNavigateToStudent"
+        @navigate-to-homework="handleNavigateToHomework"
+        @navigate-to-grade="handleNavigateToGrade"
+        @navigate-to-attendance="handleNavigateToAttendance"
+        @navigate-to-interaction="handleNavigateToInteraction"
+      />
       
       <!-- 教学数据-学生页面 -->
       <StudentManagement v-if="activeSubTab === 'students'" />
@@ -105,7 +112,37 @@ defineProps({
   }
 })
 
-defineEmits(['sub-tab-change'])
+const emit = defineEmits(['sub-tab-change'])
+
+// 处理从班级管理跳转到学生管理
+const handleNavigateToStudent = (studentData) => {
+  console.log('跳转到学生管理，传递的数据:', studentData)
+  emit('sub-tab-change', 'students')
+}
+
+// 处理从班级管理跳转到作业管理
+const handleNavigateToHomework = (homeworkData) => {
+  console.log('跳转到作业管理，传递的数据:', homeworkData)
+  emit('sub-tab-change', 'assignments')
+}
+
+// 处理从班级管理跳转到成绩管理
+const handleNavigateToGrade = (gradeData) => {
+  console.log('跳转到成绩管理，传递的数据:', gradeData)
+  emit('sub-tab-change', 'grades')
+}
+
+// 处理从班级管理跳转到出勤管理
+const handleNavigateToAttendance = (attendanceData) => {
+  console.log('跳转到出勤管理，传递的数据:', attendanceData)
+  emit('sub-tab-change', 'attendance')
+}
+
+// 处理从班级管理跳转到课堂互动
+const handleNavigateToInteraction = (interactionData) => {
+  console.log('跳转到课堂互动，传递的数据:', interactionData)
+  emit('sub-tab-change', 'interaction')
+}
 </script>
 
 <style scoped>

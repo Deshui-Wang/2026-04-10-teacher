@@ -129,6 +129,11 @@ const routes = [
         path: 'growth-experience',
         name: 'GrowthExperience',
         component: GrowthExperience
+      },
+      {
+        path: 'my-archive',
+        name: 'ArchiveCenter',
+        component: ArchiveCenter
       }
     ]
   },
@@ -161,11 +166,6 @@ const routes = [
     path: '/homework-management',
     name: 'HomeworkManagement',
     component: HomeworkManagement
-  },
-  {
-    path: '/archive-center',
-    name: 'ArchiveCenter',
-    component: ArchiveCenter
   },
   {
     path: '/data-center',

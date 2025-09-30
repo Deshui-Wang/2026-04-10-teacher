@@ -7,7 +7,6 @@
     <ul class="nav-menu">
       <li class="nav-item" :class="{active: currentPath === '/'}" @click="goNav('/')">首页</li>      
       <li class="nav-item" :class="{active: currentPath.startsWith('/data-center')}" @click="goNav('/data-center')">数据中心</li>
-      <li class="nav-item" :class="{active: currentPath.startsWith('/archive-center')}" @click="goNav('/archive-center')">档案中心</li>
       <li class="nav-item evaluation-center-item" :class="{active: currentPath.startsWith('/EvaluationCenter')}" @click="goNav('/EvaluationCenter')">
         成长中心
         <div class="notification-dot" v-if="hasNewNotifications"></div>
