@@ -120,24 +120,12 @@
       </div>
     </div>
 
-    <!-- 报告预览模态框 -->
-    <div v-if="previewReportData" class="report-preview-modal" @click="closeReportPreview">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>{{ previewReportData.name }}</h3>
-          <button class="close-btn" @click="closeReportPreview">×</button>
-        </div>
-        <div class="modal-body">
-          <img v-if="previewReportData.thumbnail" :src="previewReportData.thumbnail" alt="报告预览" />
-          <div class="preview-info">
-            <p><strong>报告格式：</strong>{{ previewReportData.formatText }}</p>
-            <p><strong>文件大小：</strong>{{ formatFileSize(previewReportData.size) }}</p>
-            <p><strong>创建时间：</strong>{{ previewReportData.createTime }}</p>
-            <p><strong>报告简介：</strong>{{ previewReportData.description }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- 报告详细预览组件 -->
+    <ArchiveDetailPreview 
+      v-if="previewReportData" 
+      :reportData="previewReportData"
+      @close="closeReportPreview" 
+    />
 
     <!-- 报告创建模态框 -->
     <ReportCreationModal 
@@ -150,6 +138,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import ReportCreationModal from "./report-components/ReportCreationModal.vue"
+import ArchiveDetailPreview from "./ArchiveDetailPreview.vue"
 
 // 筛选条件
 const timeFilter = ref('all')
@@ -302,9 +291,92 @@ const getFormatIcon = (format) => {
   return icons[format] || '📁'
 }
 
-// 预览报告
+// 预览报告 - 生成完整的报告数据
 const previewReport = (report) => {
-  previewReportData.value = report
+  // 根据截图中的模块类型生成三个模块
+  const moduleTypes = [
+    {
+      name: '成果奖励',
+      icon: '🏆',
+      chartTitle: '成果奖励统计',
+      chartType: '柱状图',
+      chartData: [
+        { label: '论文', value: 85 },
+        { label: '专利', value: 65 },
+        { label: '证书', value: 90 },
+        { label: '项目', value: 75 }
+      ],
+      summary: '本学期在成果奖励方面表现突出，共获得各类奖项12项，其中国家级奖项2项，省级奖项5项，市级奖项5项。发表学术论文8篇，其中核心期刊论文3篇。申请专利3项，已授权2项。这些成果充分体现了教学与科研工作的高质量发展。',
+      metrics: [
+        { label: '总计奖项', value: '12项' },
+        { label: '核心论文', value: '3篇' },
+        { label: '授权专利', value: '2项' },
+        { label: '完成度', value: '85%' }
+      ]
+    },
+    {
+      name: '工作量统计',
+      icon: '📊',
+      chartTitle: '工作量分布',
+      chartType: '柱状图',
+      chartData: [
+        { label: '教学', value: 78 },
+        { label: '科研', value: 82 },
+        { label: '管理', value: 68 },
+        { label: '服务', value: 72 }
+      ],
+      summary: '本学期工作量饱满，教学工作时长累计368学时，超额完成教学任务20%。科研工作投入时间占比28%，主持科研项目2项，参与项目3项。承担班主任工作和教研室管理工作，服务学生和教师群体。整体工作量分布合理，各项工作均衡发展。',
+      metrics: [
+        { label: '教学学时', value: '368时' },
+        { label: '科研项目', value: '5项' },
+        { label: '管理工作', value: '2项' },
+        { label: '超额完成', value: '20%' }
+      ]
+    },
+    {
+      name: '数字素养',
+      icon: '💻',
+      chartTitle: '数字素养能力',
+      chartType: '柱状图',
+      chartData: [
+        { label: '信息技术', value: 88 },
+        { label: '数据分析', value: 92 },
+        { label: '工具应用', value: 85 },
+        { label: '创新能力', value: 80 }
+      ],
+      summary: '在数字化教学方面表现优秀，熟练运用各类教学软件和在线教学平台，积极探索智慧课堂建设。完成教育技术能力培训并获得高级证书，在数据分析和可视化方面具有较强能力。开发教学辅助工具3个，提升了教学效率和学生学习体验。',
+      metrics: [
+        { label: '掌握工具', value: '15种' },
+        { label: '开发应用', value: '3个' },
+        { label: '培训证书', value: '高级' },
+        { label: '综合评分', value: '88分' }
+      ]
+    }
+  ]
+
+  // 构建完整的预览数据
+  previewReportData.value = {
+    name: report.name,
+    createTime: report.createTime,
+    modules: moduleTypes,
+    overallSummary: {
+      overview: `${report.name}全面展示了教师在本学期的工作成果和专业发展情况。通过对成果奖励、工作量统计和数字素养三个核心维度的系统分析，可以看出教师在教学、科研和专业能力提升方面均取得了显著成绩。各项指标数据真实反映了教师的工作投入和成长轨迹，为后续的职业发展规划提供了重要参考依据。`,
+      highlights: [
+        '成果奖励丰硕，获得国家级、省级、市级奖项共12项，体现了较高的专业水平',
+        '工作量饱满且分布合理，教学学时超额完成20%，科研项目推进顺利',
+        '数字素养能力突出，掌握现代教育技术工具，积极推动智慧教学创新',
+        '论文发表质量高，核心期刊论文3篇，学术影响力持续提升',
+        '专利申请与授权进展良好，科研成果转化能力强'
+      ],
+      recommendations: [
+        '继续保持科研工作的高投入，力争在核心期刊发表更多高质量论文',
+        '加强跨学科交流与合作，拓展研究视野和研究领域',
+        '进一步提升数字化教学创新能力，开发更多教学辅助工具',
+        '注重工作与生活平衡，合理分配时间和精力，保持可持续发展',
+        '积极参与学术会议和专业培训，及时了解学科前沿动态'
+      ]
+    }
+  }
 }
 
 // 关闭报告预览
@@ -717,83 +789,6 @@ onMounted(() => {
 
 .download-btn:hover {
   background: #047857;
-}
-
-/* 报告预览模态框 */
-.report-preview-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  cursor: pointer;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 12px;
-  max-width: 600px;
-  max-height: 80vh;
-  overflow: hidden;
-  cursor: default;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #f0f0f0;
-  background: linear-gradient(135deg, #8b5cf6, #a855f7);
-  color: white;
-}
-
-.modal-header h3 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 4px;
-}
-
-.close-btn:hover {
-  color: #f3f4f6;
-}
-
-.modal-body {
-  padding: 20px;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
-.modal-body img {
-  width: 100%;
-  max-height: 300px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 16px;
-}
-
-.preview-info p {
-  margin: 0 0 8px 0;
-  font-size: 14px;
-  line-height: 1.6;
-  color: #333;
-}
-
-.preview-info strong {
-  color: #666;
 }
 
 /* 响应式设计 */

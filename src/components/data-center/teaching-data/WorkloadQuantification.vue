@@ -3,14 +3,6 @@
     <!-- 标题和上传按钮行 -->
     <div class="title-section">
       <h3 class="module-title">本周平均工作量：8.9小时/周（ 💛 工作量偏大，注意休息）</h3>
-      <el-button 
-        type="primary" 
-        @click="uploadSchedule"
-        class="upload-btn"
-        :icon="Upload"
-      >
-        上传课表
-      </el-button>
     </div>
     
     <!-- 第一部分：日历和当日课程 -->

@@ -745,14 +745,14 @@ td {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937;
+  color: #fff;
 }
 
 .close-btn {
   background: none;
   border: none;
   font-size: 24px;
-  color: #6b7280;
+  color: #fff;
   cursor: pointer;
   padding: 0;
   width: 30px;

@@ -286,7 +286,7 @@ const digitalLiteracyData = ref([
 
 .data-table th {
   padding: 16px 12px;
-  text-align: left;
+  text-align: center;
   font-weight: 600;
   color: #374151;
   white-space: nowrap;

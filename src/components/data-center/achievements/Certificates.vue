@@ -426,7 +426,7 @@ const certificateTypeMap = {
 const certificates = ref([
   {
     id: 1,
-    name: '高级中学教师资格证',
+    name: '教师资格证',
     number: 'JS2024001',
     organization: '教育部',
     issueDate: '2024-01-15',

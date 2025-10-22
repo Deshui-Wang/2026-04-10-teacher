@@ -110,6 +110,18 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column label="操作" align="center" width="100">
+          <template #default="{ row }">
+            <el-button 
+              type="primary" 
+              size="small" 
+              @click="viewStudentDetail(row)"
+              link
+            >
+              查看
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
 
       <!-- 分页 -->
@@ -125,6 +137,109 @@
         />
       </div>
     </div>
+
+    <!-- 学生成绩详情对话框 -->
+    <el-dialog
+      v-model="detailDialogVisible"
+      :title="`${currentStudent.studentName}的成绩详情`"
+      width="900px"
+      :close-on-click-modal="false"
+    >
+      <div v-if="currentStudent.studentName" class="student-detail">
+        <!-- 学生基本信息 -->
+        <div class="detail-header">
+          <div class="student-avatar-large">
+            <img :src="currentStudent.avatar" :alt="currentStudent.studentName" />
+          </div>
+          <div class="student-basic-info">
+            <h3>{{ currentStudent.studentName }}</h3>
+            <p><span class="label">学号：</span>{{ currentStudent.studentId }}</p>
+            <p><span class="label">班级：</span>{{ currentStudent.class }}</p>
+            <p><span class="label">当前课程：</span>{{ currentStudent.course }}</p>
+          </div>
+          <div class="student-stats">
+            <div class="stat-item">
+              <div class="stat-value">{{ currentStudent.averageScore }}</div>
+              <div class="stat-label">平均分</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ currentStudent.rank }}</div>
+              <div class="stat-label">班级排名</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ currentStudent.totalCourses }}</div>
+              <div class="stat-label">修读课程</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 成绩趋势图表 -->
+        <div class="detail-chart-section">
+          <h4>成绩趋势</h4>
+          <div ref="studentTrendChart" class="student-trend-chart"></div>
+        </div>
+
+        <!-- 各科成绩列表 -->
+        <div class="detail-table-section">
+          <h4>各科成绩明细</h4>
+          <el-table 
+            :data="currentStudent.courseGrades" 
+            style="width: 100%"
+            border
+            stripe
+          >
+            <el-table-column prop="course" label="课程名称" align="center" />
+            <el-table-column prop="score" label="当前成绩" align="center" width="100">
+              <template #default="{ row }">
+                <span :class="getScoreClass(row.score)">{{ row.score }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="previousScore" label="上次成绩" align="center" width="100" />
+            <el-table-column label="变化" align="center" width="100">
+              <template #default="{ row }">
+                <span :class="row.change >= 0 ? 'score-up' : 'score-down'">
+                  {{ row.change > 0 ? '+' : '' }}{{ row.change }}
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="examDate" label="考试日期" align="center" />
+            <el-table-column prop="status" label="状态" align="center" width="100">
+              <template #default="{ row }">
+                <el-tag 
+                  :type="row.score >= 60 ? 'success' : 'danger'"
+                  size="small"
+                >
+                  {{ row.score >= 60 ? '及格' : '不及格' }}
+                </el-tag>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+
+        <!-- 成绩分析 -->
+        <div class="detail-analysis">
+          <h4>成绩分析</h4>
+          <div class="analysis-content">
+            <div class="analysis-item">
+              <span class="analysis-label">优势科目：</span>
+              <span class="analysis-value">{{ currentStudent.bestCourse }}</span>
+            </div>
+            <div class="analysis-item">
+              <span class="analysis-label">薄弱科目：</span>
+              <span class="analysis-value">{{ currentStudent.weakCourse }}</span>
+            </div>
+            <div class="analysis-item">
+              <span class="analysis-label">进步最大：</span>
+              <span class="analysis-value">{{ currentStudent.mostImproved }}</span>
+            </div>
+            <div class="analysis-item">
+              <span class="analysis-label">学习建议：</span>
+              <span class="analysis-value">{{ currentStudent.suggestion }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -144,11 +259,32 @@ const anomalyType = ref('improvement')
 const currentPage = ref(1)
 const pageSize = ref(15)
 
+// 学生详情对话框
+const detailDialogVisible = ref(false)
+const currentStudent = ref({
+  studentName: '',
+  studentId: '',
+  class: '',
+  course: '',
+  avatar: '',
+  averageScore: 0,
+  rank: 0,
+  totalCourses: 0,
+  courseGrades: [],
+  bestCourse: '',
+  weakCourse: '',
+  mostImproved: '',
+  suggestion: '',
+  trendData: []
+})
+
 // 图表实例
 const scoreDistributionChart = ref(null)
 const trendChart = ref(null)
+const studentTrendChart = ref(null)
 let scoreChart = null
 let trendChartInstance = null
+let studentTrendChartInstance = null
 
 // 模拟数据
 const courseList = ['高等数学', '线性代数', '大学物理', '程序设计', '数据结构', '操作系统']
@@ -320,8 +456,108 @@ const getScoreClass = (score) => {
 }
 
 const viewStudentDetail = (row) => {
-  // 查看学生详情逻辑
-  console.log('查看学生详情:', row)
+  // 生成该学生的详细成绩数据
+  const studentImageIndex = (row.id % 5) + 1
+  
+  // 获取该学生的所有课程成绩
+  const studentAllGrades = allGrades.value.filter(g => g.studentId === row.studentId)
+  
+  // 生成各科成绩明细
+  const courseGrades = courseList.map((course, index) => {
+    const existingGrade = studentAllGrades.find(g => g.course === course)
+    if (existingGrade) {
+      return {
+        course: existingGrade.course,
+        score: existingGrade.score,
+        previousScore: Math.round(existingGrade.previousScore),
+        change: Math.round(existingGrade.score - existingGrade.previousScore),
+        examDate: existingGrade.examDate
+      }
+    } else {
+      // 如果该学生没有这门课程，生成一个模拟数据
+      const score = Math.round(Math.random() * 40 + 50)
+      const previousScore = Math.round(Math.random() * 40 + 50)
+      return {
+        course: course,
+        score: score,
+        previousScore: previousScore,
+        change: score - previousScore,
+        examDate: `2024-${String(Math.floor(Math.random() * 6) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`
+      }
+    }
+  })
+  
+  // 计算平均分
+  const avgScore = Math.round(courseGrades.reduce((sum, g) => sum + g.score, 0) / courseGrades.length)
+  
+  // 找出优势科目（分数最高）
+  const bestGrade = courseGrades.reduce((max, g) => g.score > max.score ? g : max)
+  
+  // 找出薄弱科目（分数最低）
+  const weakGrade = courseGrades.reduce((min, g) => g.score < min.score ? g : min)
+  
+  // 找出进步最大的科目
+  const mostImprovedGrade = courseGrades.reduce((max, g) => g.change > max.change ? g : max)
+  
+  // 生成学习建议
+  let suggestion = ''
+  if (avgScore >= 85) {
+    suggestion = '成绩优秀，继续保持！可以尝试更具挑战性的学习内容。'
+  } else if (avgScore >= 75) {
+    suggestion = '成绩良好，建议加强薄弱科目的学习，争取更大进步。'
+  } else if (avgScore >= 60) {
+    suggestion = `需要重点关注${weakGrade.course}，建议增加学习时间，寻求老师或同学帮助。`
+  } else {
+    suggestion = `成绩需要提高，建议制定详细的学习计划，重点攻克${weakGrade.course}等薄弱科目。`
+  }
+  
+  // 生成成绩趋势数据（近6次考试）
+  const trendData = []
+  const months = ['1月', '2月', '3月', '4月', '5月', '6月']
+  let currentScore = avgScore
+  for (let i = 0; i < 6; i++) {
+    const variation = (Math.random() - 0.5) * 10
+    currentScore = Math.max(50, Math.min(100, currentScore + variation))
+    trendData.push({
+      month: months[i],
+      score: Math.round(currentScore)
+    })
+  }
+  
+  // 计算班级排名（模拟）
+  const classStudents = allGrades.value.filter(g => g.class === row.class)
+  const uniqueStudents = [...new Set(classStudents.map(g => g.studentId))]
+  const studentAvgScores = uniqueStudents.map(studentId => {
+    const grades = classStudents.filter(g => g.studentId === studentId)
+    const avg = grades.reduce((sum, g) => sum + g.score, 0) / grades.length
+    return { studentId, avg }
+  })
+  studentAvgScores.sort((a, b) => b.avg - a.avg)
+  const rank = studentAvgScores.findIndex(s => s.studentId === row.studentId) + 1
+  
+  currentStudent.value = {
+    studentName: row.studentName,
+    studentId: row.studentId,
+    class: row.class,
+    course: row.course,
+    avatar: `/pic/student${String(studentImageIndex).padStart(2, '0')}.png`,
+    averageScore: avgScore,
+    rank: rank,
+    totalCourses: courseGrades.length,
+    courseGrades: courseGrades,
+    bestCourse: `${bestGrade.course} (${bestGrade.score}分)`,
+    weakCourse: `${weakGrade.course} (${weakGrade.score}分)`,
+    mostImproved: `${mostImprovedGrade.course} (${mostImprovedGrade.change > 0 ? '+' : ''}${mostImprovedGrade.change}分)`,
+    suggestion: suggestion,
+    trendData: trendData
+  }
+  
+  detailDialogVisible.value = true
+  
+  // 等待对话框渲染后初始化图表
+  nextTick(() => {
+    initStudentTrendChart()
+  })
 }
 
 const editScore = (row) => {
@@ -513,6 +749,87 @@ const updateCharts = () => {
   updateTrendChart()
 }
 
+// 初始化学生趋势图表
+const initStudentTrendChart = () => {
+  if (!studentTrendChart.value) return
+  
+  if (studentTrendChartInstance) {
+    studentTrendChartInstance.dispose()
+  }
+  
+  studentTrendChartInstance = echarts.init(studentTrendChart.value)
+  
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      }
+    },
+    grid: {
+      left: '50',
+      right: '30',
+      bottom: '30',
+      top: '30'
+    },
+    xAxis: {
+      type: 'category',
+      data: currentStudent.value.trendData.map(d => d.month),
+      axisLine: {
+        lineStyle: {
+          color: '#999'
+        }
+      }
+    },
+    yAxis: {
+      type: 'value',
+      min: 0,
+      max: 100,
+      name: '成绩',
+      nameTextStyle: {
+        color: '#666'
+      },
+      axisLine: {
+        lineStyle: {
+          color: '#999'
+        }
+      },
+      splitLine: {
+        lineStyle: {
+          type: 'dashed'
+        }
+      }
+    },
+    series: [
+      {
+        name: '平均分',
+        type: 'line',
+        data: currentStudent.value.trendData.map(d => d.score),
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 8,
+        lineStyle: {
+          color: '#5352ed',
+          width: 3
+        },
+        itemStyle: {
+          color: '#5352ed',
+          borderColor: '#fff',
+          borderWidth: 2
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(83, 82, 237, 0.4)' },
+            { offset: 1, color: 'rgba(83, 82, 237, 0.1)' }
+          ])
+        }
+      }
+    ]
+  }
+  
+  studentTrendChartInstance.setOption(option)
+}
+
 // 生命周期
 onMounted(() => {
   nextTick(() => {
@@ -636,13 +953,13 @@ watch(() => filteredGrades.value, () => {
 .stat-value {
   font-size: 28px;
   font-weight: bold;
-  color: #333;
+  color: #fff;
   line-height: 1;
 }
 
 .stat-label {
   font-size: 14px;
-  color: #666;
+  color: #fff;
   margin-top: 4px;
 }
 
@@ -927,6 +1244,168 @@ watch(() => filteredGrades.value, () => {
   padding: 20px;
   display: flex;
   justify-content: center;
+}
+
+/* 学生详情对话框 */
+.student-detail {
+  padding: 10px;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  margin-bottom: 24px;
+  color: white;
+}
+
+.student-avatar-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.student-avatar-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.student-basic-info {
+  flex: 1;
+}
+
+.student-basic-info h3 {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.student-basic-info p {
+  margin: 6px 0;
+  font-size: 14px;
+  opacity: 0.95;
+}
+
+.student-basic-info .label {
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.student-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.student-stats .stat-item {
+  text-align: center;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.student-stats .stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.student-stats .stat-label {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.detail-chart-section {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.detail-chart-section h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+.student-trend-chart {
+  height: 300px;
+  width: 100%;
+}
+
+.detail-table-section {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.detail-table-section h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+.score-up {
+  color: #52c41a;
+  font-weight: bold;
+}
+
+.score-down {
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+.detail-analysis {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.detail-analysis h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+.analysis-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.analysis-item {
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.analysis-label {
+  font-weight: 500;
+  color: #666;
+  white-space: nowrap;
+}
+
+.analysis-value {
+  color: #333;
+  flex: 1;
 }
 
 /* 响应式设计 */

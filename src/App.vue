@@ -21,6 +21,9 @@ export default {
     })
     const selectedAvatarId = ref('avatar1')
 
+    // AI助手面板状态
+    const aiPanelOpen = ref(false)
+
     // 提供全局状态给子组件
     provide('isLoggedIn', isLoggedIn)
     provide('currentUser', currentUser)
@@ -81,6 +84,11 @@ export default {
       showAvatarSelector.value = false
     }
 
+    // 处理AI助手面板状态变化
+    const handleAIPanelStateChange = (state) => {
+      aiPanelOpen.value = state.isOpen
+    }
+
     // 页面加载时检查认证状态
     onMounted(() => {
       checkAuth()
@@ -92,7 +100,9 @@ export default {
       selectedAvatarId,
       selectAvatar,
       confirmAvatarSelection,
-      closeAvatarSelector
+      closeAvatarSelector,
+      aiPanelOpen,
+      handleAIPanelStateChange
     }
   },
   computed: {
@@ -109,12 +119,12 @@ export default {
 </script>
 
 <template>
-  <div id="app">
+  <div id="app" :class="{ 'ai-panel-open': aiPanelOpen, 'ai-panel-closed': !aiPanelOpen }">
     <MainNavbar v-if="shouldShowNavbar" />
     <router-view />
     <Footer v-if="!$route.meta.hideFooter" />
     <!-- 小智人AI智能悬浮球 - 全局显示 -->
-    <AIAssistant />
+    <AIAssistant @panel-state-change="handleAIPanelStateChange" />
     
     <!-- 头像选择弹层 - 放在最外层，不会被导航标签挡住 -->
     <div v-if="showAvatarSelector" class="avatar-selector-overlay" @click="closeAvatarSelector">
@@ -155,6 +165,17 @@ export default {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: padding-right 0.3s ease;
+}
+
+/* AI助手收起时为悬浮球留出空间 */
+#app.ai-panel-closed {
+  padding-right: 80px;
+}
+
+/* AI助手展开时为面板留出空间 */
+#app.ai-panel-open {
+  padding-right: 470px;
 }
 
 #app > * {
@@ -326,6 +347,12 @@ export default {
 
 /* 移动端响应式样式 */
 @media (max-width: 768px) {
+  /* 移动端不需要为AI助手留出空间，因为会铺满屏幕 */
+  #app.ai-panel-closed,
+  #app.ai-panel-open {
+    padding-right: 0;
+  }
+
   .avatar-selector-modal {
     width: 95%;
     max-height: 90vh;

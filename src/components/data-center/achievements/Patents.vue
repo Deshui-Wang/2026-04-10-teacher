@@ -207,78 +207,96 @@
 
     <!-- 专利详情弹窗 -->
     <div v-if="showPatentModal" class="modal-overlay" @click="closePatentModal">
-      <div class="modal-content" @click.stop>
+      <div class="modal-content patent-reader" @click.stop>
         <div class="modal-header">
-          <h3>{{ selectedPatent?.name }}</h3>
+          <div class="patent-header-info">
+            <h3>{{ selectedPatent?.name }}</h3>
+            <div class="patent-meta">
+              <span class="meta-item">专利号：{{ selectedPatent?.patentNumber }}</span>
+              <span class="meta-divider">|</span>
+              <span class="meta-item">发明人：{{ selectedPatent?.inventor }}</span>
+              <span class="meta-divider">|</span>
+              <span class="meta-item">技术领域：{{ selectedPatent?.technicalField }}</span>
+              <span class="meta-divider">|</span>
+              <span 
+                class="status-badge" 
+                :class="getStatusBadgeClass(selectedPatent?.status)"
+              >
+                {{ getStatusName(selectedPatent?.status) }}
+              </span>
+            </div>
+          </div>
           <button class="close-btn" @click="closePatentModal">×</button>
         </div>
         <div class="modal-body">
-          <div class="patent-image">
-            <img 
-              :src="selectedPatent?.image" 
-              :alt="selectedPatent?.name"
-              @error="handleImageError"
-            >
-          </div>
-          <div class="patent-info">
-            <div class="info-item">
-              <span class="label">专利号：</span>
-              <span class="value">{{ selectedPatent?.patentNumber }}</span>
+          <div class="patent-content">
+            <!-- 摘要部分 -->
+            <div class="patent-section">
+              <h4 class="section-title">摘要</h4>
+              <p class="section-content">{{ selectedPatent?.content?.abstract }}</p>
             </div>
-            <div class="info-item">
-              <span class="label">申请号：</span>
-              <span class="value">{{ selectedPatent?.applicationNumber }}</span>
+
+            <!-- 技术问题 -->
+            <div class="patent-section">
+              <h4 class="section-title">技术问题</h4>
+              <p class="section-content">{{ selectedPatent?.content?.technicalProblem }}</p>
             </div>
-            <div class="info-item">
-              <span class="label">技术领域：</span>
-              <span class="value">{{ selectedPatent?.technicalField }}</span>
+
+            <!-- 技术方案 -->
+            <div class="patent-section">
+              <h4 class="section-title">技术方案</h4>
+              <p class="section-content">{{ selectedPatent?.content?.technicalSolution }}</p>
             </div>
-            <div class="info-item">
-              <span class="label">专利权人：</span>
-              <span class="value">{{ selectedPatent?.patentee }}</span>
+
+            <!-- 有益效果 -->
+            <div class="patent-section">
+              <h4 class="section-title">有益效果</h4>
+              <p class="section-content">{{ selectedPatent?.content?.beneficialEffects }}</p>
             </div>
-            <div class="info-item">
-              <span class="label">申请人：</span>
-              <span class="value">{{ selectedPatent?.applicant }}</span>
+
+            <!-- 权利要求 -->
+            <div class="patent-section">
+              <h4 class="section-title">权利要求</h4>
+              <p class="section-content claims-content">{{ selectedPatent?.content?.claims }}</p>
             </div>
-            <div class="info-item">
-              <span class="label">发明/设计人：</span>
-              <span class="value">{{ selectedPatent?.inventor }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">状态：</span>
-              <span class="value">
-                <span 
-                  class="status-badge" 
-                  :class="getStatusBadgeClass(selectedPatent?.status)"
-                >
-                  {{ getStatusName(selectedPatent?.status) }}
-                </span>
-              </span>
-            </div>
-            <div class="info-item">
-              <span class="label">保护期限：</span>
-              <span class="value">{{ selectedPatent?.protectionPeriod }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">代理信息：</span>
-              <span class="value">{{ selectedPatent?.agentInfo }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">专利描述：</span>
-              <span class="value">{{ selectedPatent?.description }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">资料附件：</span>
-              <div class="docs-list">
-                <span 
-                  v-for="(doc, index) in selectedPatent?.documents" 
-                  :key="index"
-                  class="doc-item"
-                  @click="viewDocument(doc)"
-                >
-                  📄 {{ doc.name }}
-                </span>
+
+            <!-- 专利信息 -->
+            <div class="patent-metadata">
+              <div class="metadata-grid">
+                <div class="metadata-item">
+                  <span class="metadata-label">申请号：</span>
+                  <span class="metadata-value">{{ selectedPatent?.applicationNumber }}</span>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">专利权人：</span>
+                  <span class="metadata-value">{{ selectedPatent?.patentee }}</span>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">申请人：</span>
+                  <span class="metadata-value">{{ selectedPatent?.applicant }}</span>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">保护期限：</span>
+                  <span class="metadata-value">{{ selectedPatent?.protectionPeriod }}</span>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">代理信息：</span>
+                  <span class="metadata-value">{{ selectedPatent?.agentInfo }}</span>
+                </div>
+              </div>
+              
+              <div class="patent-documents" v-if="selectedPatent?.documents?.length > 0">
+                <strong>相关附件：</strong>
+                <div class="docs-list">
+                  <span 
+                    v-for="(doc, index) in selectedPatent?.documents" 
+                    :key="index"
+                    class="doc-item"
+                    @click="viewDocument(doc)"
+                  >
+                    📄 {{ doc.name }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -403,6 +421,13 @@ const patents = ref([
     agentInfo: '北京某某专利代理事务所',
     description: '本发明公开了一种基于人工智能的智能教学系统，通过机器学习算法分析学生学习行为，提供个性化教学方案，提高教学效果。',
     image: '/pic/data.png',
+    content: {
+      abstract: '本发明涉及教育技术领域，特别是涉及一种基于人工智能的智能教学系统。该系统通过深度学习技术对学生的学习行为、作业完成情况、课堂互动数据等进行全面分析，建立学生个性化学习模型。系统能够自动识别学生的知识薄弱点，推荐适合的学习资源和练习题目，并根据学生学习进度动态调整教学难度。该系统还具备智能答疑功能，能够及时解答学生疑问，提供针对性的学习建议。本发明有效提高了教学效率和学习效果，促进了个性化教育的发展。',
+      technicalProblem: '现有的教学系统大多采用统一的教学方案，无法满足不同学生的个性化学习需求。传统教学模式难以实时跟踪学生的学习状态，教师无法及时发现学生的知识薄弱环节。此外，大规模班级教学使得教师难以为每个学生提供个性化指导，导致学习效率低下。\n\n同时，现有的在线教育平台虽然提供了丰富的学习资源，但缺乏智能化的学习路径规划和个性化推荐功能。学生在海量的学习资源中难以找到最适合自己的内容，学习效果参差不齐。因此，迫切需要一种能够智能分析学生学习行为、提供个性化教学方案的智能教学系统。',
+      technicalSolution: '本发明提供的智能教学系统包括数据采集模块、行为分析模块、个性化推荐模块和智能答疑模块。\n\n数据采集模块负责收集学生的学习行为数据，包括课堂出勤、作业完成情况、测验成绩、视频学习时长、互动次数等多维度数据。行为分析模块采用深度神经网络对收集的数据进行分析，建立学生知识图谱和学习能力模型。\n\n个性化推荐模块基于学生的学习模型，运用协同过滤算法和内容推荐算法，为每个学生推荐最适合的学习资源、练习题目和学习路径。系统会根据学生的实时学习反馈动态调整推荐策略，确保推荐内容始终符合学生当前的学习需求。\n\n智能答疑模块集成了自然语言处理技术，能够理解学生提出的问题，并从知识库中检索相关答案。对于复杂问题，系统会将问题转发给教师，并记录教师的解答以丰富知识库。',
+      beneficialEffects: '本发明具有以下有益效果：\n\n1. 实现了真正的个性化教学，系统能够为每个学生量身定制学习方案，显著提高学习效率。通过智能分析，系统可以准确识别学生的知识薄弱点，有针对性地推荐学习内容。\n\n2. 减轻了教师的工作负担，系统自动完成大量的数据分析和个性化推荐工作，让教师有更多时间专注于教学内容设计和学生互动。\n\n3. 提升了学生的学习主动性，个性化的学习内容和及时的学习反馈增强了学生的学习兴趣和自信心。\n\n4. 系统采用模块化设计，易于扩展和维护。可以方便地添加新的功能模块或接入第三方教育资源平台。\n\n5. 通过大数据分析，系统能够发现教学过程中的普遍性问题，为教学改革提供数据支持。',
+      claims: '1. 一种基于人工智能的智能教学系统，其特征在于，包括：数据采集模块、行为分析模块、个性化推荐模块和智能答疑模块；\n\n2. 根据权利要求1所述的智能教学系统，其特征在于，所述数据采集模块用于收集学生的多维度学习行为数据；\n\n3. 根据权利要求1所述的智能教学系统，其特征在于，所述行为分析模块采用深度学习技术建立学生个性化学习模型；\n\n4. 根据权利要求1所述的智能教学系统，其特征在于，所述个性化推荐模块基于学生学习模型提供定制化学习资源推荐；\n\n5. 根据权利要求1所述的智能教学系统，其特征在于，所述智能答疑模块集成自然语言处理技术实现智能问答。'
+    },
     documents: [
       { name: '专利证书.pdf', size: '1.2MB', uploadTime: '2024-01-10' },
       { name: '专利申请文件.pdf', size: '2.1MB', uploadTime: '2024-01-12' }
@@ -422,6 +447,13 @@ const patents = ref([
     agentInfo: '上海某某知识产权代理有限公司',
     description: '本实用新型涉及一种虚拟现实教学设备，通过VR技术为学生提供沉浸式学习体验，适用于各种教学场景。',
     image: '/pic/data.png',
+    content: {
+      abstract: '本实用新型公开了一种虚拟现实教学设备，属于教育技术装备领域。该设备包括VR显示头盔、手势识别控制器、三维声场系统和中央处理单元。VR显示头盔采用高分辨率OLED屏幕，提供120度视场角的沉浸式视觉体验。手势识别控制器能够精确捕捉用户的手部动作，实现自然的人机交互。三维声场系统模拟真实的空间音效，增强沉浸感。中央处理单元负责渲染三维场景、处理交互逻辑。本实用新型可广泛应用于物理实验、化学演示、历史场景重现等多种教学场景，极大提升了教学的直观性和趣味性。',
+      technicalProblem: '传统教学方式在演示抽象概念、危险实验、历史场景等内容时存在诸多局限。例如，物理和化学实验受限于实验室条件和安全因素，学生无法亲身体验某些高危实验。历史、地理等学科难以让学生身临其境地感受特定时代和场景。\n\n现有的多媒体教学设备虽然能够播放视频和图片，但缺乏交互性和沉浸感，学生仍然是被动接受信息。部分学校虽然引入了VR设备，但由于设备笨重、操作复杂、内容单一等问题，难以在日常教学中推广使用。因此，需要开发一种轻便易用、功能全面的虚拟现实教学设备。',
+      technicalSolution: '本实用新型提供的虚拟现实教学设备包括以下组成部分：\n\nVR显示头盔采用轻量化设计，重量仅为300克，长时间佩戴不会产生疲劳感。内置双OLED屏幕，单眼分辨率达到2K，刷新率90Hz，有效减少眩晕感。头盔配备瞳距自动调节功能，适应不同用户。\n\n手势识别控制器采用红外光学追踪技术，能够精确捕捉手部六自由度运动。控制器表面设有触觉反馈装置，当用户在虚拟场景中触碰物体时能够感受到振动反馈，增强真实感。\n\n三维声场系统采用HRTF（头相关传递函数）技术，根据声源位置实时计算音频参数，让用户能够准确判断声音来源方向。系统内置降噪麦克风，支持语音交互功能。\n\n中央处理单元采用高性能GPU，能够流畅渲染复杂的三维场景。设备支持无线传输，摆脱数据线束缚。内置大容量电池，续航时间达到4小时。',
+      beneficialEffects: '本实用新型具有以下有益效果：\n\n1. 提供沉浸式学习体验，学生可以在虚拟环境中亲身体验各种教学场景，显著提高学习兴趣和知识记忆效果。\n\n2. 突破了传统实验教学的限制，可以模拟高危险、高成本的实验，让学生在安全的环境中学习实验操作。\n\n3. 设备轻便易用，教师无需复杂培训即可上手操作。设备支持多人协同，可以实现班级集体VR教学。\n\n4. 支持丰富的教学内容，涵盖物理、化学、生物、历史、地理等多个学科。系统开放内容开发接口，教师可以根据教学需求定制VR教学内容。\n\n5. 采用人体工学设计，长时间使用不会造成不适。设备具有良好的兼容性，可以与现有的教学管理系统无缝对接。',
+      claims: '1. 一种虚拟现实教学设备，其特征在于，包括：VR显示头盔、手势识别控制器、三维声场系统和中央处理单元；\n\n2. 根据权利要求1所述的虚拟现实教学设备，其特征在于，所述VR显示头盔采用双OLED屏幕，单眼分辨率2K，刷新率90Hz；\n\n3. 根据权利要求1所述的虚拟现实教学设备，其特征在于，所述手势识别控制器采用红外光学追踪技术，支持六自由度运动捕捉；\n\n4. 根据权利要求1所述的虚拟现实教学设备，其特征在于，所述三维声场系统采用HRTF技术实现空间音频效果；\n\n5. 根据权利要求1所述的虚拟现实教学设备，其特征在于，设备重量轻便，支持无线传输，续航时间不少于4小时。'
+    },
     documents: [
       { name: '专利申请文件.pdf', size: '1.8MB', uploadTime: '2023-06-18' },
       { name: '技术交底书.docx', size: '1.5MB', uploadTime: '2023-06-22' }
@@ -441,6 +473,13 @@ const patents = ref([
     agentInfo: '广州某某专利代理有限公司',
     description: '本发明公开了一种在线教育平台的数据处理方法，通过优化数据处理算法，提高平台运行效率，改善用户体验。',
     image: '/pic/data.png',
+    content: {
+      abstract: '本发明涉及在线教育平台技术领域，特别涉及一种在线教育平台的数据处理方法。该方法通过建立分布式数据处理架构，采用流式计算技术实时处理海量用户行为数据。系统引入智能缓存机制，根据数据访问频率和重要性动态调整缓存策略。针对用户查询请求，采用索引优化和查询重写技术，显著降低响应时间。该方法还集成了数据预处理模块，能够自动清洗异常数据、填补缺失值。本发明有效提升了在线教育平台的数据处理能力和响应速度，改善了用户体验，支持更大规模的并发访问。',
+      technicalProblem: '随着在线教育的快速发展，教育平台的用户规模和数据量呈爆炸式增长。传统的数据处理方法面临诸多挑战：一是数据处理效率低下，用户访问高峰期系统响应缓慢，影响用户体验；二是数据存储和查询成本高昂，海量数据的存储和检索消耗大量计算资源；三是数据质量参差不齐，存在大量冗余、错误和缺失数据，影响数据分析的准确性。\n\n现有的在线教育平台多采用传统的关系数据库进行数据管理，在处理高并发请求时容易出现性能瓶颈。部分平台虽然引入了大数据技术，但缺乏针对教育场景的优化，无法充分发挥技术优势。因此，急需开发一种高效、可靠的在线教育平台数据处理方法。',
+      technicalSolution: '本发明提供的数据处理方法包括以下关键技术：\n\n首先，构建分布式数据处理架构。采用微服务架构设计，将数据处理功能拆分为多个独立服务模块，包括数据采集服务、数据清洗服务、数据存储服务、数据查询服务等。各服务模块之间通过消息队列进行异步通信，实现松耦合。\n\n其次，引入流式计算引擎处理实时数据。用户行为数据（如视频观看记录、练习提交、互动评论等）通过Kafka消息队列实时传输到流式计算引擎。引擎采用滑动窗口技术对数据进行聚合计算，生成实时统计指标。\n\n第三，实现智能缓存策略。系统根据数据的访问频率、时效性、重要性等维度计算缓存优先级。热点数据自动加载到Redis缓存中，设置合理的过期时间。对于用户个性化数据，采用分布式缓存确保数据一致性。\n\n第四，优化数据库查询性能。建立多级索引结构，针对常用查询条件创建组合索引。采用查询重写技术，将复杂查询转换为多个简单查询的组合。对于分析类查询，采用列式存储和预聚合技术加速计算。',
+      beneficialEffects: '本发明具有以下有益效果：\n\n1. 显著提升数据处理效率，系统能够支持百万级并发用户访问，用户请求响应时间从秒级降低到毫秒级。\n\n2. 降低了运营成本，通过智能缓存和查询优化，减少了数据库访问次数，降低了服务器负载和能耗。\n\n3. 提高了数据质量，自动化的数据清洗和校验机制确保了数据的准确性和完整性，为数据分析和决策提供可靠基础。\n\n4. 增强了系统的可扩展性，微服务架构使得系统能够灵活扩容，快速适应业务增长需求。\n\n5. 改善了用户体验，快速的系统响应和流畅的交互体验提升了用户满意度和平台粘性。',
+      claims: '1. 一种在线教育平台的数据处理方法，其特征在于，包括：构建分布式数据处理架构、引入流式计算引擎、实现智能缓存策略、优化数据库查询性能；\n\n2. 根据权利要求1所述的数据处理方法，其特征在于，采用微服务架构设计，将数据处理功能拆分为独立服务模块；\n\n3. 根据权利要求1所述的数据处理方法，其特征在于，采用流式计算技术实时处理用户行为数据；\n\n4. 根据权利要求1所述的数据处理方法，其特征在于，根据数据访问频率和重要性动态调整缓存策略；\n\n5. 根据权利要求1所述的数据处理方法，其特征在于，通过索引优化和查询重写技术提升查询性能。'
+    },
     documents: [
       { name: '专利证书.pdf', size: '1.5MB', uploadTime: '2022-12-08' }
     ]
@@ -459,6 +498,13 @@ const patents = ref([
     agentInfo: '深圳某某知识产权代理事务所',
     description: '本实用新型涉及一种智能批改系统，通过OCR技术和自然语言处理，实现作业自动批改，减轻教师工作负担。',
     image: '/pic/data.png',
+    content: {
+      abstract: '本实用新型公开了一种智能批改系统，包括图像采集模块、OCR识别模块、答案分析模块和反馈生成模块。图像采集模块支持多种输入方式，可以拍照上传或扫描作业。OCR识别模块采用深度学习算法，能够准确识别手写文字、数学公式、图表等多种内容。答案分析模块集成了自然语言处理和知识图谱技术，能够理解学生答案的语义，进行智能评判。反馈生成模块不仅给出对错判断，还能分析错误原因，提供改进建议。系统支持语文、数学、英语等多个学科的作业批改，准确率达到95%以上。本实用新型大幅减轻了教师的批改工作量，让教师有更多时间关注学生的个性化辅导。',
+      technicalProblem: '传统的作业批改方式完全依赖教师人工完成，存在诸多问题。首先，批改工作耗时费力，一个班级的作业批改往往需要数小时，占用教师大量时间。其次，人工批改容易出现疲劳导致的误判，特别是在批改大量作业时。第三，批改反馈不够及时，学生通常要等待一两天才能收到批改结果，影响学习进度。\n\n市面上虽然出现了一些自动批改工具，但功能较为单一，通常只能处理选择题等客观题型，对于主观题的批改能力有限。部分系统虽然引入了OCR技术，但识别准确率不高，特别是对手写文字和数学公式的识别效果不理想。因此，需要开发一种准确、高效、智能的作业批改系统。',
+      technicalSolution: '本实用新型的智能批改系统包括以下技术方案：\n\n图像采集模块支持手机拍照、平板扫描、专用扫描仪等多种输入方式。模块内置图像预处理功能，能够自动矫正倾斜、去除噪声、增强对比度，提高后续识别准确率。\n\nOCR识别模块采用基于深度卷积神经网络的识别算法。针对印刷体文字，识别准确率达到99%；针对手写文字，通过训练包含数百万样本的模型，识别准确率达到95%。模块特别针对数学公式进行优化，能够识别分数、根号、积分等复杂符号，并转换为LaTeX格式。\n\n答案分析模块是系统的核心。对于客观题，系统直接与标准答案进行匹配。对于主观题，系统采用自然语言处理技术分析答案的语义。例如，在语文阅读理解题中，系统提取答案中的关键词和论述逻辑，与参考答案进行语义相似度计算。系统还集成了学科知识图谱，能够判断答案中的知识点是否正确。\n\n反馈生成模块根据分析结果生成详细的批改反馈。除了标注对错外，系统还会指出错误的具体位置，分析可能的错误原因，并提供改进建议和相关知识点链接。',
+      beneficialEffects: '本实用新型具有以下有益效果：\n\n1. 大幅提升批改效率，系统能够在数秒内完成一份作业的批改，相比人工批改节省90%以上的时间。\n\n2. 确保批改的准确性和一致性，避免了人工批改中的主观偏差和疲劳误判，对所有学生采用统一的评判标准。\n\n3. 提供即时反馈，学生提交作业后可以立即获得批改结果，及时了解自己的学习情况，提高学习效率。\n\n4. 生成详细的学习分析报告，系统能够统计学生的知识点掌握情况、常见错误类型等，为教师的教学调整提供数据支持。\n\n5. 支持多学科应用，系统可以处理语文、数学、英语、物理、化学等多个学科的作业，具有广泛的适用性。',
+      claims: '1. 一种智能批改系统，其特征在于，包括：图像采集模块、OCR识别模块、答案分析模块和反馈生成模块；\n\n2. 根据权利要求1所述的智能批改系统，其特征在于，所述OCR识别模块采用深度学习算法，支持手写文字和数学公式识别；\n\n3. 根据权利要求1所述的智能批改系统，其特征在于，所述答案分析模块集成自然语言处理和知识图谱技术；\n\n4. 根据权利要求1所述的智能批改系统，其特征在于，所述反馈生成模块提供错误分析和改进建议；\n\n5. 根据权利要求1所述的智能批改系统，其特征在于，系统支持多学科作业批改，准确率达到95%以上。'
+    },
     documents: [
       { name: '专利申请文件.pdf', size: '2.3MB', uploadTime: '2024-03-01' },
       { name: '技术方案.docx', size: '1.1MB', uploadTime: '2024-03-03' }
@@ -478,6 +524,13 @@ const patents = ref([
     agentInfo: '成都某某专利代理事务所',
     description: '本实用新型公开了一种多媒体教学设备，集成了投影、音响、交互等功能，为现代化教学提供便利。',
     image: '/pic/data.png',
+    content: {
+      abstract: '本实用新型公开了一种多媒体教学设备，包括投影显示单元、音频播放单元、交互输入单元和中央控制单元。投影显示单元采用激光投影技术，亮度达到5000流明，支持4K分辨率显示。音频播放单元配备立体声扬声器和无线麦克风系统，提供清晰的音频效果。交互输入单元支持触控笔书写、手势操作和语音控制多种交互方式。中央控制单元集成了Windows和Android双系统，兼容各种教学软件。设备采用一体化设计，安装简便，操作直观。本实用新型为现代化教学提供了功能齐全、性能优越的多媒体解决方案。',
+      technicalProblem: '传统的多媒体教学设备存在诸多不足。首先，设备功能单一，需要配置多个独立设备（投影仪、音响、电子白板等），安装复杂，占用空间大。其次，不同设备之间的兼容性差，经常出现连接问题，影响教学进度。第三，操作复杂，教师需要学习多个设备的使用方法，增加了教学准备时间。\n\n市面上的多媒体教学设备虽然在逐步改进，但仍存在一些问题。部分一体机产品虽然集成了多种功能，但性能不够强大，无法流畅运行复杂的教学软件。一些高端产品虽然性能优越，但价格昂贵，普通学校难以承受。因此，需要开发一种功能全面、性能优越、价格合理的多媒体教学设备。',
+      technicalSolution: '本实用新型提供的多媒体教学设备采用以下技术方案：\n\n投影显示单元采用激光光源，相比传统灯泡光源，亮度更高、色彩更鲜艳、寿命更长（可达20000小时）。投影镜头支持电动对焦和梯形校正，能够快速调整画面。设备支持短焦投影，在1米距离即可投射100寸画面，适合小教室使用。\n\n音频播放单元配备40W立体声扬声器，采用DSP音频处理技术，确保教室每个角落都能听到清晰的声音。设备内置无线麦克风接收器，支持4支麦克风同时使用，满足多人教学需求。音频单元还具有降噪和回声消除功能，提高语音清晰度。\n\n交互输入单元在投影表面覆盖红外触控框，支持20点触控，多人可以同时操作。配备专用触控笔，支持压感识别，书写流畅自然。设备还集成了摄像头和麦克风阵列，支持手势识别和语音控制功能。\n\n中央控制单元采用Intel酷睿i5处理器，配备8GB内存和256GB固态硬盘，运行流畅。系统预装了常用的教学软件，并支持安装第三方应用。设备提供丰富的接口，包括HDMI、USB、网络接口等，方便连接各种外部设备。',
+      beneficialEffects: '本实用新型具有以下有益效果：\n\n1. 集成化设计简化了安装和使用，一台设备即可满足多媒体教学的所有需求，节省了教室空间和设备采购成本。\n\n2. 性能优越，激光投影技术提供明亮清晰的画面，即使在光线充足的教室也能正常使用。强大的处理器确保教学软件流畅运行。\n\n3. 交互功能丰富，支持触控、手写、手势、语音等多种交互方式，增强了课堂互动性，提升了教学效果。\n\n4. 操作简便，界面直观，教师无需专业培训即可上手使用。设备支持一键开关机，快速进入教学状态。\n\n5. 兼容性好，支持主流的教学软件和文件格式，可以方便地接入现有的教学资源库和管理系统。',
+      claims: '1. 一种多媒体教学设备，其特征在于，包括：投影显示单元、音频播放单元、交互输入单元和中央控制单元；\n\n2. 根据权利要求1所述的多媒体教学设备，其特征在于，所述投影显示单元采用激光光源，亮度达到5000流明；\n\n3. 根据权利要求1所述的多媒体教学设备，其特征在于，所述音频播放单元配备立体声扬声器和无线麦克风系统；\n\n4. 根据权利要求1所述的多媒体教学设备，其特征在于，所述交互输入单元支持多点触控、手写和语音控制；\n\n5. 根据权利要求1所述的多媒体教学设备，其特征在于，所述中央控制单元集成双系统，兼容各种教学软件。'
+    },
     documents: [
       { name: '专利证书.pdf', size: '1.8MB', uploadTime: '2021-08-10' }
     ]
@@ -976,6 +1029,10 @@ onMounted(() => {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
+.patent-reader {
+  max-width: 1000px;
+}
+
 .document-modal {
   max-width: 600px;
 }
@@ -987,15 +1044,40 @@ onMounted(() => {
 .modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e2e8f0;
+  align-items: flex-start;
+  padding: 24px 32px;
+  border-bottom: 2px solid #e2e8f0;
+  background: linear-gradient(to bottom, #f8f9ff, #ffffff);
+}
+
+.patent-header-info {
+  flex: 1;
+  margin-right: 20px;
 }
 
 .modal-header h3 {
-  margin: 0;
-  font-size: 18px;
+  margin: 0 0 12px 0;
+  font-size: 22px;
+  font-weight: 600;
   color: #1f2937;
+  line-height: 1.4;
+}
+
+.patent-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.meta-item {
+  color: #4b5563;
+}
+
+.meta-divider {
+  color: #d1d5db;
 }
 
 .close-btn {
@@ -1019,43 +1101,87 @@ onMounted(() => {
 }
 
 .modal-body {
-  padding: 24px;
-  max-height: 60vh;
+  padding: 0;
+  max-height: 70vh;
   overflow-y: auto;
 }
 
-.patent-image {
-  text-align: center;
-  margin-bottom: 20px;
+.patent-content {
+  padding: 32px 40px;
+  background: white;
 }
 
-.patent-image img {
-  max-width: 100%;
-  max-height: 400px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.patent-section {
+  margin-bottom: 32px;
 }
 
-.patent-info {
-  display: grid;
-  gap: 12px;
-}
-
-.info-item {
-  display: flex;
-  padding: 12px;
-  background: #f8fafc;
-  border-radius: 8px;
-}
-
-.info-item .label {
-  font-weight: 500;
-  color: #374151;
-  min-width: 120px;
-}
-
-.info-item .value {
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
   color: #1f2937;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e0f2fe;
+}
+
+.section-content {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #374151;
+  text-align: justify;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.claims-content {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #0ea5e9;
+}
+
+.patent-metadata {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-top: 32px;
+}
+
+.metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.metadata-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.metadata-label {
+  font-weight: 500;
+  color: #6b7280;
+  min-width: 100px;
+}
+
+.metadata-value {
+  color: #374151;
+}
+
+.patent-documents {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.patent-documents strong {
+  color: #1f2937;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 8px;
 }
 
 /* 文档查看器样式 */
@@ -1326,6 +1452,43 @@ onMounted(() => {
   .modal-content {
     margin: 20px;
     max-width: calc(100vw - 40px);
+  }
+
+  .patent-reader {
+    width: calc(100vw - 40px);
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+  }
+
+  .modal-header h3 {
+    font-size: 18px;
+  }
+
+  .patent-meta {
+    font-size: 12px;
+  }
+
+  .patent-content {
+    padding: 20px 16px;
+  }
+
+  .section-title {
+    font-size: 16px;
+  }
+
+  .section-content {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .metadata-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .claims-content {
+    padding: 16px;
   }
 }
 </style>

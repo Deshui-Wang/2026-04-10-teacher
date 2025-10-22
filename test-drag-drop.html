@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>拖拽功能测试</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .instructions {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .instructions h2 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .instructions ol {
+      margin-left: 20px;
+      line-height: 1.8;
+    }
+
+    .instructions li {
+      margin-bottom: 8px;
+    }
+
+    .test-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .test-item {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      cursor: grab;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .test-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+      border-color: #667eea;
+    }
+
+    .test-item:active {
+      cursor: grabbing;
+      opacity: 0.5;
+    }
+
+    .test-item.courseware {
+      border-left: 4px solid #3b82f6;
+    }
+
+    .test-item.class {
+      border-left: 4px solid #10b981;
+    }
+
+    .item-type {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .item-type.courseware {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .item-type.class {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .item-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+
+    .item-desc {
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .item-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      color: #475569;
+    }
+
+    .item-meta span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .item-meta strong {
+      color: #1e293b;
+      min-width: 80px;
+    }
+
+    .drop-zone {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      border-radius: 12px;
+      text-align: center;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s ease;
+      border: 3px dashed transparent;
+    }
+
+    .drop-zone.drag-over {
+      border-color: white;
+      background: linear-gradient(135deg, #5a6fd8 0%, #6a4290 100%);
+      transform: scale(1.02);
+    }
+
+    .drop-zone h2 {
+      margin-bottom: 16px;
+      font-size: 24px;
+    }
+
+    .drop-zone p {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .drop-zone-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .result {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .result h3 {
+      color: #667eea;
+      margin-bottom: 12px;
+    }
+
+    .result pre {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .status {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 12px;
+      display: inline-block;
+    }
+
+    .status.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status.info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .quick-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .quick-link:hover {
+      background: #5a6fd8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 小智人拖拽功能测试页面</h1>
+    
+    <div class="instructions">
+      <h2>📋 测试说明</h2>
+      <ol>
+        <li>将下面的测试项目（课件或班课）<strong>拖拽</strong>到"拖拽目标区域"</li>
+        <li>观察拖拽过程中的视觉反馈</li>
+        <li>松开鼠标后查看接收到的数据</li>
+        <li>这个测试页面用于验证拖拽数据传输是否正常</li>
+        <li><strong>实际使用时</strong>，请拖拽到右侧的小智人AI助手面板</li>
+      </ol>
+      <div class="status info">
+        💡 提示：每个测试项目都是可拖拽的，试试拖拽到下方的紫色区域！
+      </div>
+    </div>
+
+    <h2 style="margin-bottom: 16px; color: #333;">📚 测试项目</h2>
+    
+    <div class="test-items">
+      <!-- 课件测试项 -->
+      <div class="test-item courseware" draggable="true" id="courseware-1">
+        <span class="item-type courseware">📊 课件</span>
+        <div class="item-title">数据结构与算法 - 第3章</div>
+        <div class="item-desc">详细讲解树结构的基本概念、二叉树的性质、遍历方法及应用实例。</div>
+        <div class="item-meta">
+          <span><strong>所属课程：</strong>数据结构</span>
+          <span><strong>课件类型：</strong>课件</span>
+          <span><strong>更新时间：</strong>2025-10-15</span>
+        </div>
+      </div>
+
+      <div class="test-item courseware" draggable="true" id="courseware-2">
+        <span class="item-type courseware">📝 教案</span>
+        <div class="item-title">人工智能导论 - 机器学习基础</div>
+        <div class="item-desc">介绍机器学习的基本概念、监督学习与非监督学习的区别及常用算法。</div>
+        <div class="item-meta">
+          <span><strong>所属课程：</strong>人工智能导论</span>
+          <span><strong>课件类型：</strong>教案</span>
+          <span><strong>更新时间：</strong>2025-10-18</span>
+        </div>
+      </div>
+
+      <!-- 班课测试项 -->
+      <div class="test-item class" draggable="true" id="class-1">
+        <span class="item-type class">👥 班课</span>
+        <div class="item-title">计算机网络 - 计科2201班</div>
+        <div class="item-desc">本学期教学进度65%，学生整体表现良好，需要加强实验环节。</div>
+        <div class="item-meta">
+          <span><strong>课程编码：</strong>CS2024001</span>
+          <span><strong>课程类型：</strong>专业必修</span>
+          <span><strong>总学时：</strong>48</span>
+          <span><strong>总学分：</strong>3</span>
+          <span><strong>教学进度：</strong>65%</span>
+        </div>
+      </div>
+
+      <div class="test-item class" draggable="true" id="class-2">
+        <span class="item-type class">👥 班课</span>
+        <div class="item-title">数据库原理 - 软工2202班</div>
+        <div class="item-desc">本学期刚开始，需要关注学生的SQL基础，计划增加上机实践时间。</div>
+        <div class="item-meta">
+          <span><strong>课程编码：</strong>CS2024002</span>
+          <span><strong>课程类型：</strong>专业核心</span>
+          <span><strong>总学时：</strong>64</span>
+          <span><strong>总学分：</strong>4</span>
+          <span><strong>教学进度：</strong>15%</span>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="margin-bottom: 16px; color: #333;">🎯 拖拽目标区域</h2>
+    
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-zone-icon">📥</div>
+      <h2>拖拽到这里测试</h2>
+      <p>将上面的课件或班课项目拖拽到这里，查看接收到的数据</p>
+    </div>
+
+    <div class="result" id="result" style="display: none;">
+      <h3>✅ 接收到的数据：</h3>
+      <pre id="resultData"></pre>
+      <div class="status success">
+        ✓ 拖拽功能正常！数据传输成功！
+      </div>
+    </div>
+
+    <a href="#" class="quick-link" onclick="location.href='/#/DataCenter'; return false;">
+      🚀 前往数据中心测试实际功能
+    </a>
+  </div>
+
+  <script>
+    // 测试数据
+    const testData = {
+      'courseware-1': {
+        type: 'courseware',
+        id: 'cw-001',
+        name: '数据结构与算法 - 第3章',
+        description: '详细讲解树结构的基本概念、二叉树的性质、遍历方法及应用实例。',
+        courseName: '数据结构',
+        coursewareType: '课件'
+      },
+      'courseware-2': {
+        type: 'courseware',
+        id: 'cw-002',
+        name: '人工智能导论 - 机器学习基础',
+        description: '介绍机器学习的基本概念、监督学习与非监督学习的区别及常用算法。',
+        courseName: '人工智能导论',
+        coursewareType: '教案'
+      },
+      'class-1': {
+        type: 'class',
+        id: 'cls-001',
+        code: 'CS2024001',
+        name: '计算机网络',
+        className: '计科2201班',
+        courseType: '专业必修',
+        totalHours: 48,
+        totalCredits: 3,
+        progress: 65
+      },
+      'class-2': {
+        type: 'class',
+        id: 'cls-002',
+        code: 'CS2024002',
+        name: '数据库原理',
+        className: '软工2202班',
+        courseType: '专业核心',
+        totalHours: 64,
+        totalCredits: 4,
+        progress: 15
+      }
+    }
+
+    // 为每个测试项添加拖拽事件
+    document.querySelectorAll('.test-item').forEach(item => {
+      item.addEventListener('dragstart', (e) => {
+        const data = testData[item.id]
+        e.dataTransfer.setData('application/json', JSON.stringify(data))
+        e.dataTransfer.effectAllowed = 'copy'
+        console.log('开始拖拽:', data)
+      })
+
+      item.addEventListener('dragend', (e) => {
+        console.log('拖拽结束')
+      })
+    })
+
+    // 拖拽目标区域
+    const dropZone = document.getElementById('dropZone')
+    const result = document.getElementById('result')
+    const resultData = document.getElementById('resultData')
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'copy'
+      dropZone.classList.add('drag-over')
+    })
+
+    dropZone.addEventListener('dragleave', (e) => {
+      dropZone.classList.remove('drag-over')
+    })
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault()
+      dropZone.classList.remove('drag-over')
+      
+      try {
+        const data = e.dataTransfer.getData('application/json')
+        if (data) {
+          const draggedData = JSON.parse(data)
+          console.log('接收到拖拽数据:', draggedData)
+          
+          // 显示结果
+          result.style.display = 'block'
+          resultData.textContent = JSON.stringify(draggedData, null, 2)
+          
+          // 滚动到结果区域
+          result.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        }
+      } catch (error) {
+        console.error('处理拖拽数据失败:', error)
+        alert('处理拖拽数据失败: ' + error.message)
+      }
+    })
+  </script>
+</body>
+</html>
+

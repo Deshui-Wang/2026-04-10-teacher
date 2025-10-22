@@ -19,7 +19,12 @@
       </div>
 
       <!-- 课程视图 - 按课程分组，每个课程下的班级单独显示 -->
-      <div v-if="viewMode === 'course'" class="courses-table">
+      <div 
+        v-if="viewMode === 'course'" 
+        class="courses-table"
+        :class="{ 'dragging': isDragging }"
+        @mousedown="handleMouseDown"
+      >
         <div class="table-header">
           <div class="header-cell">课程编码</div>
           <div class="header-cell">课程名称</div>
@@ -32,7 +37,14 @@
         </div>
         <div class="table-body">
           <template v-for="course in coursesList" :key="course.id">
-            <div v-for="className in course.classes" :key="`${course.id}-${className}`" class="table-row">
+            <div 
+              v-for="className in course.classes" 
+              :key="`${course.id}-${className}`" 
+              class="table-row"
+              draggable="true"
+              @dragstart="handleDragStart({ ...course, className }, $event)"
+              @dragend="handleDragEnd"
+            >
               <div class="table-cell">{{ course.code }}</div>
               <div class="table-cell">{{ course.name }}</div>
               <div class="table-cell">
@@ -98,7 +110,12 @@
       </div>
         
       <!-- 班级视图 -->
-      <div v-else class="classes-table">
+      <div 
+        v-else 
+        class="classes-table"
+        :class="{ 'dragging': isDragging }"
+        @mousedown="handleMouseDown"
+      >
         <div class="table-header">
           <div class="header-cell">班级名称</div>
           <div class="header-cell">课程编码</div>
@@ -110,7 +127,14 @@
           <div class="header-cell">操作</div>
         </div>
         <div class="table-body">
-          <div v-for="classItem in classesList" :key="`${classItem.className}-${classItem.code}`" class="table-row">
+          <div 
+            v-for="classItem in classesList" 
+            :key="`${classItem.className}-${classItem.code}`" 
+            class="table-row"
+            draggable="true"
+            @dragstart="handleDragStart(classItem, $event)"
+            @dragend="handleDragEnd"
+          >
             <div class="table-cell class-name-cell">{{ classItem.className }}</div>
             <div class="table-cell">{{ classItem.code }}</div>
             <div class="table-cell">{{ classItem.name }}</div>
@@ -188,6 +212,13 @@ const emit = defineEmits([
   'navigate-to-attendance',
   'navigate-to-interaction'
 ])
+
+// 拖拽相关状态
+const isDragging = ref(false)
+const dragStartX = ref(0)
+const dragStartY = ref(0)
+const scrollStartX = ref(0)
+const scrollStartY = ref(0)
 
 // 视图模式
 const viewMode = ref('course')
@@ -365,6 +396,115 @@ const getProgressClass = (progress) => {
   if (progress >= 40) return "progress-low"
   return "progress-very-low"
 }
+
+// HTML5 拖拽到小智人对话框的方法
+const handleDragStart = (item, event) => {
+  console.log('开始拖拽班课:', item.name, item.className)
+  
+  // 设置拖拽数据
+  const dragData = {
+    type: 'class',
+    id: item.id,
+    code: item.code,
+    name: item.name,
+    className: item.className,
+    courseType: item.type,
+    totalHours: item.totalHours,
+    totalCredits: item.totalCredits,
+    progress: item.progress
+  }
+  
+  event.dataTransfer.setData('application/json', JSON.stringify(dragData))
+  event.dataTransfer.effectAllowed = 'copy'
+  
+  // 设置拖拽时的样式
+  event.target.style.opacity = '0.5'
+}
+
+const handleDragEnd = (event) => {
+  // 恢复样式
+  event.target.style.opacity = '1'
+  console.log('拖拽结束')
+}
+
+// 鼠标拖拽滚动相关方法
+const handleMouseDown = (e) => {
+  // 检查是否点击在可拖拽的行上 - 如果是，不启用滚动拖拽
+  const target = e.target
+  const row = target.closest('.table-row')
+  if (row) {
+    // 点击在行上，不启用滚动拖拽，让 HTML5 draggable 接管
+    return
+  }
+  
+  // 检查是否点击在可交互元素上
+  if (target.tagName === 'BUTTON' || 
+      target.closest('button') || 
+      target.tagName === 'INPUT' ||
+      target.closest('input') ||
+      target.classList.contains('action-buttons') ||
+      target.closest('.action-buttons')) {
+    return
+  }
+
+  const container = e.currentTarget
+  console.log('Mouse down on container:', container.className)
+  console.log('Container scroll:', container.scrollLeft, container.scrollTop)
+  
+  isDragging.value = true
+  dragStartX.value = e.clientX
+  dragStartY.value = e.clientY
+  scrollStartX.value = container.scrollLeft
+  scrollStartY.value = container.scrollTop
+  
+  // 添加全局鼠标移动和释放监听器
+  document.addEventListener('mousemove', handleMouseMove, { passive: false })
+  document.addEventListener('mouseup', handleMouseUp)
+  
+  // 防止文本选择和默认行为
+  e.preventDefault()
+  e.stopPropagation()
+}
+
+const handleMouseMove = (e) => {
+  if (!isDragging.value) return
+  
+  const deltaX = dragStartX.value - e.clientX
+  const deltaY = dragStartY.value - e.clientY
+  
+  console.log('Moving:', deltaX, deltaY)
+  
+  // 获取当前激活的容器元素
+  const container = viewMode.value === 'course' 
+    ? document.querySelector('.courses-table') 
+    : document.querySelector('.classes-table')
+  
+  if (!container) {
+    console.log('Container not found!')
+    return
+  }
+  
+  // 更新滚动位置
+  const newScrollLeft = scrollStartX.value + deltaX
+  const newScrollTop = scrollStartY.value + deltaY
+  
+  console.log('Setting scroll to:', newScrollLeft, newScrollTop)
+  
+  container.scrollLeft = newScrollLeft
+  container.scrollTop = newScrollTop
+  
+  // 防止默认行为
+  e.preventDefault()
+}
+
+const handleMouseUp = () => {
+  console.log('Mouse up')
+  isDragging.value = false
+  
+  // 移除全局监听器
+  document.removeEventListener('mousemove', handleMouseMove)
+  document.removeEventListener('mouseup', handleMouseUp)
+}
 </script>
 
 <style scoped>
@@ -424,16 +564,27 @@ const getProgressClass = (progress) => {
 .courses-table,
 .classes-table {
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 600px;
+  cursor: grab;
+  user-select: none;
+  transition: cursor 0.2s;
+}
+
+.courses-table.dragging,
+.classes-table.dragging {
+  cursor: grabbing;
 }
 
 .table-header {
   display: grid;
-  grid-template-columns: 100px 1fr 100px 100px 100px 100px 1fr 1fr;
+  grid-template-columns: 100px 200px 100px 150px 100px 100px 200px 350px;
   gap: 16px;
-  padding: 12px 0;
+  padding: 12px 16px;
   border-bottom: 2px solid #f0f0f0;
   font-weight: 600;
   color: #333;
+  min-width: 1200px;
 }
 
 .table-body {
@@ -443,15 +594,23 @@ const getProgressClass = (progress) => {
 
 .table-row {
   display: grid;
-  grid-template-columns: 100px 1fr 100px 100px 100px 100px 1fr 1fr;
+  grid-template-columns: 100px 200px 100px 150px 100px 100px 200px 350px;
   gap: 16px;
-  padding: 16px 0;
+  padding: 16px;
   border-bottom: 1px solid #f0f0f0;
   align-items: center;
+  min-width: 1200px;
+  cursor: grab;
+  transition: all 0.2s;
+}
+
+.table-row:active {
+  cursor: grabbing;
 }
 
 .table-row:hover {
   background: #f8f9fa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .table-cell {

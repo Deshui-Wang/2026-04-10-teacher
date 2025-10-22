@@ -6,7 +6,7 @@
         <h1 class="report-title">AI智能分析报告</h1>
         <p class="report-subtitle">张婉婷副教授 - 教学能力评估</p>
         <div class="report-meta">
-          <span class="report-date">报告日期：2025年9月25日</span>
+          <span class="report-date">报告日期：2025年10月21日</span>
           <span class="report-type">AI智能分析报告</span>
         </div>
         <button class="suggestions-btn" @click="scrollToSuggestions">

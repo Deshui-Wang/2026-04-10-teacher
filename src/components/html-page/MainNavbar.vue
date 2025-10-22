@@ -8,7 +8,7 @@
       <li class="nav-item" :class="{active: currentPath === '/'}" @click="goNav('/')">首页</li>      
       <li class="nav-item" :class="{active: currentPath.startsWith('/data-center')}" @click="goNav('/data-center')">数据中心</li>
       <li class="nav-item evaluation-center-item" :class="{active: currentPath.startsWith('/EvaluationCenter')}" @click="goNav('/EvaluationCenter')">
-        成长中心
+        发展中心
         <div class="notification-dot" v-if="hasNewNotifications"></div>
       </li>
       <li class="nav-item" :class="{active: currentPath.startsWith('/learning-square')}" @click="goNav('/learning-square')">协作空间</li>
@@ -20,7 +20,8 @@
     </ul>
     <div class="nav-user" @click="toggleUserMenu">
       <img src="/pic/teacher/66.jpg" class="user-avatar" alt="用户头像" />
-      <span class="user-name">{{ displayName }}</span>
+      <!-- <span class="user-name">{{ displayName }}</span> -->
+      <i class="el-icon-arrow-right user-arrow"></i>
       <i class="el-icon-arrow-down" :class="{ 'is-reverse': showUserMenu }"></i>
       
       <!-- 用户下拉菜单 -->
@@ -67,7 +68,7 @@ const showUserMenu = ref(false)
 // 导航函数
 const goNav = (path) => {
   router.push(path)
-  // 点击成长中心后清除提醒
+  // 点击发展中心后清除提醒
   if (path === '/EvaluationCenter') {
     hasNewNotifications.value = false
   }
@@ -249,9 +250,9 @@ onUnmounted(() => {
 }
 
 .user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  border-radius: 10%;
   object-fit: cover;
 }
 
@@ -259,6 +260,16 @@ onUnmounted(() => {
   font-size: 14px;
   font-weight: 500;
   color: #374151;
+}
+
+.user-arrow {
+  font-size: 14px;
+  color: #8b5cf6;
+  transition: transform 0.2s;
+}
+
+.nav-user:hover .user-arrow {
+  transform: translateX(2px);
 }
 
 .el-icon-arrow-down {
@@ -319,7 +330,7 @@ onUnmounted(() => {
   color: #dc2626;
 }
 
-/* 成长中心提醒点 */
+/* 发展中心提醒点 */
 .evaluation-center-item {
   position: relative;
 }
