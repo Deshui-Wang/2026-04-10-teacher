@@ -2,7 +2,7 @@
   <div class="main-navbar">
     <div class="nav-left">
       <img src="/pic/logo.ico" class="logo" alt="logo" />
-      <span class="system-title">教师教学档案袋</span>
+      <span class="system-title">教师AI智能档案袋</span>
     </div>
     <ul class="nav-menu">
       <li class="nav-item" :class="{active: currentPath === '/'}" @click="goNav('/')">首页</li>      
@@ -12,11 +12,8 @@
         <div class="notification-dot" v-if="hasNewNotifications"></div>
       </li>
       <li class="nav-item" :class="{active: currentPath.startsWith('/learning-square')}" @click="goNav('/learning-square')">协作空间</li>
-      <li class="nav-item tch-ai-item" :class="{active: currentPath.startsWith('/tch-ai')}" @click="goNav('/tch-ai')">
-        <span class="tch-ai-text">超智人</span>
-        <div class="tch-ai-glow"></div>
-      </li>
       <li class="nav-item" :class="{active: currentPath.startsWith('/profile')}" @click="goNav('/profile')">个人中心</li>
+      <li class="nav-item" @click="goToAdmin">管理后台</li>
     </ul>
     <div class="nav-user" @click="toggleUserMenu">
       <img src="/pic/teacher/66.jpg" class="user-avatar" alt="用户头像" />
@@ -72,6 +69,11 @@ const goNav = (path) => {
   if (path === '/EvaluationCenter') {
     hasNewNotifications.value = false
   }
+}
+
+// 跳转到管理后台
+const goToAdmin = () => {
+  window.open('https://aidata.cailian.net', '_blank')
 }
 
 // 切换用户菜单
@@ -182,55 +184,6 @@ onUnmounted(() => {
   background: #f0f5ff;
   color: #8b5cf6;
   font-weight: 600;
-}
-
-/* Tch AI+ 特殊样式 */
-.tch-ai-item {
-  position: relative;
-  overflow: hidden;
-  background: transparent;
-  border: 2px solid transparent;
-  box-shadow: none;
-}
-
-.tch-ai-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.5s;
-}
-
-.tch-ai-item:hover::before {
-  left: 100%;
-}
-
-.tch-ai-text {
-  position: relative;
-  z-index: 2;
-  color: #8b5cf6;
-  font-weight: 600;
-}
-
-.tch-ai-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 120%;
-  height: 120%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
-  border-radius: 50%;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 1;
-}
-
-.tch-ai-item:hover .tch-ai-glow {
-  opacity: 1;
 }
 
 /* 用户信息区域 */

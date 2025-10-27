@@ -26,8 +26,8 @@
             <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <h1 class="login-title">教师成长树</h1>
-        <p class="login-subtitle">欢迎回来，请登录您的账户</p>
+        <h1 class="login-title">教师AI智能档案袋</h1>
+        <p class="login-subtitle">您辛苦了，欢迎回来，请登录您的账户</p>
       </div>
       
       <!-- 登录表单 -->
@@ -126,6 +126,41 @@
         </div>
       </form>
     </div>
+    
+    <!-- 测试账号提示气泡 -->
+    <div class="test-account-bubble" v-if="showBubble">
+      <button class="close-bubble" @click="showBubble = false">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div class="bubble-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="bubble-content">
+        <h4 class="bubble-title">测试账号</h4>
+        <div class="bubble-info">
+          <p class="bubble-text">
+            <strong>账号：</strong>zhangwanting
+          </p>
+          <p class="bubble-text">
+            <strong>密码：</strong>123456
+          </p>
+        </div>
+        <button class="quick-fill-btn" @click="quickFill">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 15V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          一键填入
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -151,6 +186,7 @@ const errors = reactive({
 // 状态
 const showPassword = ref(false)
 const isLoading = ref(false)
+const showBubble = ref(true)
 
 // 粒子数据
 const particles = ref([])
@@ -265,6 +301,15 @@ const handleRegister = () => {
   alert('请联系管理员申请注册')
 }
 
+// 一键填入测试账号
+const quickFill = () => {
+  formData.username = 'zhangwanting'
+  formData.password = '123456'
+  // 清除之前的错误
+  errors.username = ''
+  errors.password = ''
+}
+
 // 页面加载时生成粒子
 onMounted(() => {
   generateParticles()
@@ -279,7 +324,8 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -633,7 +679,180 @@ onMounted(() => {
   color: #764ba2;
 }
 
+/* 测试账号气泡 */
+.test-account-bubble {
+  position: fixed;
+  left: calc(50vw + 280px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 24px;
+  width: 260px;
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  z-index: 10;
+  animation: slideInRight 0.6s ease-out;
+  transition: all 0.3s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+.test-account-bubble::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-right: 12px solid rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(-2px 0 4px rgba(0, 0, 0, 0.1));
+}
+
+.close-bubble {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #ef4444;
+}
+
+.close-bubble:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: rotate(90deg);
+}
+
+.close-bubble svg {
+  width: 14px;
+  height: 14px;
+}
+
+.bubble-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.bubble-icon svg {
+  width: 24px;
+  height: 24px;
+  color: white;
+}
+
+.bubble-content {
+  width: 100%;
+}
+
+.bubble-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+}
+
+.bubble-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bubble-text {
+  font-size: 14px;
+  color: #475569;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.bubble-text strong {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.quick-fill-btn {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.quick-fill-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.quick-fill-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.quick-fill-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
 /* 响应式设计 */
+@media (max-width: 1024px) {
+  .test-account-bubble {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: 20px;
+    transform: translateX(-50%);
+    width: 280px;
+  }
+  
+  .test-account-bubble::before {
+    left: 50%;
+    top: -12px;
+    transform: translateX(-50%);
+    border-right: 12px solid transparent;
+    border-left: 12px solid transparent;
+    border-bottom: 12px solid rgba(255, 255, 255, 0.95);
+    border-top: none;
+  }
+}
+
 @media (max-width: 480px) {
   .login-card {
     margin: 20px;
@@ -652,6 +871,11 @@ onMounted(() => {
   .logo-icon {
     width: 30px;
     height: 30px;
+  }
+  
+  .test-account-bubble {
+    width: calc(100% - 40px);
+    max-width: 320px;
   }
 }
 
