@@ -113,18 +113,26 @@ export default {
     shouldShowNavbarOld() {
       // 在智能体编辑页面隐藏导航栏
       return this.$route.path !== '/agent-editor'
+    },
+    shouldShowAIAssistant() {
+      // 只在登录状态下显示AI助手，登录页面不显示
+      return isLoggedIn.value && this.$route.path !== "/login"
     }
   }
 }
 </script>
 
 <template>
-  <div id="app" :class="{ 'ai-panel-open': aiPanelOpen, 'ai-panel-closed': !aiPanelOpen }">
+  <div id="app" :class="{ 
+    'ai-panel-open': aiPanelOpen && shouldShowAIAssistant, 
+    'ai-panel-closed': !aiPanelOpen && shouldShowAIAssistant,
+    'is-login-page': $route.path === '/login'
+  }">
     <MainNavbar v-if="shouldShowNavbar" />
     <router-view />
     <Footer v-if="!$route.meta.hideFooter" />
-    <!-- 小智人AI智能悬浮球 - 全局显示 -->
-    <AIAssistant @panel-state-change="handleAIPanelStateChange" />
+    <!-- 小智人AI智能悬浮球 - 只在登录后显示 -->
+    <AIAssistant v-if="shouldShowAIAssistant" @panel-state-change="handleAIPanelStateChange" />
     
     <!-- 头像选择弹层 - 放在最外层，不会被导航标签挡住 -->
     <div v-if="showAvatarSelector" class="avatar-selector-overlay" @click="closeAvatarSelector">
@@ -176,6 +184,11 @@ export default {
 /* AI助手展开时为面板留出空间 */
 #app.ai-panel-open {
   padding-right: 470px;
+}
+
+/* 登录页面不需要为AI助手预留空间 */
+#app.is-login-page {
+  padding-right: 0 !important;
 }
 
 #app > * {

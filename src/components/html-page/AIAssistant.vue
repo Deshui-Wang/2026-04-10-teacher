@@ -811,7 +811,8 @@ const handleClickOutside = (event) => {
 watch(() => route.path, (newPath) => {
   console.log('路由变化:', newPath)
   
-  const autoOpenPages = ['/EvaluationCenter', '/tch-ai', '/ai-thinking']
+  // 移除 /EvaluationCenter，不再自动打开AI助手
+  const autoOpenPages = ['/tch-ai', '/ai-thinking']
   
   if (autoOpenPages.includes(newPath) && !isPanelVisible.value) {
     console.log('自动打开面板')
