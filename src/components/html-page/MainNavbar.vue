@@ -1,7 +1,7 @@
 <template>
   <div class="main-navbar">
     <div class="nav-left">
-      <img src="/pic/logo.ico" class="logo" alt="logo" />
+      <img src="/pic/logo.png" class="logo" alt="logo" />
       <span class="system-title">教师AI智能档案袋</span>
     </div>
     <ul class="nav-menu">
@@ -135,11 +135,12 @@ onUnmounted(() => {
 .main-navbar {
   width: 100%;
   height: 72px;
-  background: #fff;
+  background: #f8f9fa;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border-bottom: 1px solid #e5e7eb;
   padding: 0 20px;
   margin-bottom: 16px;
 }
@@ -158,7 +159,7 @@ onUnmounted(() => {
 .system-title {
   font-size: 20px;
   font-weight: bold;
-  color: #8b5cf6;
+  color: #5579ff;
 }
 
 .nav-menu {
@@ -172,7 +173,7 @@ onUnmounted(() => {
 
 .nav-item {
   font-size: 16px;
-  color: #333;
+  color: #5182f0;
   cursor: pointer;
   padding: 8px 18px;
   border-radius: 6px;
@@ -181,8 +182,8 @@ onUnmounted(() => {
 }
 
 .nav-item.active, .nav-item:hover {
-  background: #f0f5ff;
-  color: #8b5cf6;
+  background: #d9e8f6;
+  color: #5856d6;
   font-weight: 600;
 }
 
@@ -199,7 +200,7 @@ onUnmounted(() => {
 }
 
 .nav-user:hover {
-  background: #f8f9fa;
+  background: #e5e7eb;
 }
 
 .user-avatar {
@@ -212,12 +213,12 @@ onUnmounted(() => {
 .user-name {
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+  color: #1f2937;
 }
 
 .user-arrow {
   font-size: 14px;
-  color: #8b5cf6;
+  color: #4b5563;
   transition: transform 0.2s;
 }
 
@@ -227,7 +228,7 @@ onUnmounted(() => {
 
 .el-icon-arrow-down {
   font-size: 12px;
-  color: #9ca3af;
+  color: #6b7280;
   transition: transform 0.2s;
 }
 

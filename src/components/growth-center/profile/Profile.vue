@@ -142,7 +142,7 @@ const generateReport = () => {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   color: white;
   border: none;
   border-radius: 8px;

@@ -839,12 +839,11 @@ onUnmounted(() => {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* 悬浮球样式 - 紧贴右侧 */
+/* 悬浮球样式 - 右下角 */
 .floating-ball {
   position: fixed;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  right: 20px;
+  bottom: 20px;
   width: 64px;
   height: 64px;
   cursor: pointer;
@@ -938,8 +937,8 @@ onUnmounted(() => {
 .tooltip {
   position: absolute;
   right: 80px;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: 50%;
+  transform: translateY(50%);
   background: rgba(0, 0, 0, 0.9);
   color: white;
   padding: 12px 16px;
@@ -968,7 +967,7 @@ onUnmounted(() => {
 
 /* 悬浮球交互效果 */
 .floating-ball:hover {
-  transform: translateY(-50%) scale(1.05);
+  transform: translateY(-5px) scale(1.05);
 }
 
 .floating-ball:hover .ball-main {
@@ -987,7 +986,7 @@ onUnmounted(() => {
 .floating-ball:hover .tooltip {
   opacity: 1;
   visibility: visible;
-  transform: translateY(-50%) translateX(-8px);
+  transform: translateY(50%) translateX(-8px);
 }
 
 
@@ -1848,15 +1847,14 @@ onUnmounted(() => {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .floating-ball {
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 16px;
+    bottom: 16px;
     width: 56px;
     height: 56px;
   }
   
   .floating-ball:hover {
-    transform: translateY(-50%) scale(1.05);
+    transform: translateY(-5px) scale(1.05);
   }
   
   .ball-main {

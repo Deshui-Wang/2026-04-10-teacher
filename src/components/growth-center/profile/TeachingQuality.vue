@@ -538,7 +538,7 @@ onBeforeUnmount(() => {
 }
 
 .toggle-btn {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   color: white;
   border: none;
   padding: 8px 16px;

@@ -474,7 +474,7 @@ const handleConfirm = () => {
 }
 
 .modal-header {
-  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   color: white;
   padding: 20px 24px;
   display: flex;
@@ -790,7 +790,7 @@ const handleConfirm = () => {
 }
 
 .confirm-btn {
-  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   color: white;
 }
 

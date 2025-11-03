@@ -215,7 +215,7 @@ const handleAddEducation = (educationData) => {
 
 /* 添加教育奖励按钮样式 */
 .add-award-btn {
-  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   color: white;
   border: none;
   padding: 12px 24px;

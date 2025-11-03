@@ -5,7 +5,6 @@
       <div class="section-header">工作年限：9年2个月</div>
       <div class="spacer"></div>
       <div class="action-buttons">
-        <button class="btn btn-edit">编辑</button>
         <button class="btn btn-add">添加工作经历</button>
       </div>
     </div>
@@ -251,7 +250,7 @@ const workExperience = ref([
 }
 
 .btn-add {
-  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
     color: white;
     border: none;
     padding: 12px 24px;

@@ -3,7 +3,7 @@
     <!-- 当前目标模块 -->
     <div class="current-target-section">
       <div class="target-header">
-        <h3 class="target-section-title">当前目标</h3>
+        <h3 class="target-section-title">进行中的目标</h3>
         <button class="set-target-btn" @click="openTargetSetting">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
@@ -56,7 +56,6 @@
     </div>
 
     <div class="todo-header">
-      <h2 class="todo-title">目标达成进度 - {{ currentTargetName }}</h2>
       <div class="progress-summary">
         <span class="progress-text">已完成 {{ completedCount }}/{{ totalCount }} 项任务</span>
         <div class="progress-bar">
@@ -76,8 +75,6 @@
           class="task-item"
           :class="{ 'last-task': index === tasks.length - 1 }"
         >
-          <!-- 任务连接线 -->
-          <div class="task-line" v-if="index < tasks.length - 1"></div>
           
           <!-- 任务节点 -->
           <div class="task-node">
@@ -414,11 +411,9 @@ const progressPercentage = computed(() => {
 
 .todo-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  margin-bottom: 32px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #f3f4f6;
+  padding: 16px 43px;
 }
 
 /* 当前目标模块 */
@@ -449,7 +444,7 @@ const progressPercentage = computed(() => {
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   color: white;
   border: none;
   border-radius: 8px;
@@ -478,7 +473,7 @@ const progressPercentage = computed(() => {
 .target-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 16px;
   background: white;
   border: 2px solid #e5e7eb;
@@ -494,7 +489,7 @@ const progressPercentage = computed(() => {
 }
 
 .target-item.active {
-  border-color: #8b5cf6;
+  border-color: #6f74fb;
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(59, 130, 246, 0.05));
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
 }
@@ -510,6 +505,7 @@ const progressPercentage = computed(() => {
   font-size: 16px;
   font-weight: 600;
   color: #1f2937;
+  text-align: left;
 }
 
 .target-meta {
@@ -637,7 +633,7 @@ const progressPercentage = computed(() => {
 }
 
 .progress-bar {
-  width: 200px;
+  width: 80vh;
   height: 8px;
   background: #f3f4f6;
   border-radius: 4px;
@@ -646,7 +642,7 @@ const progressPercentage = computed(() => {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #8b5cf6, #3b82f6);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -671,9 +667,9 @@ const progressPercentage = computed(() => {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 40px;
+  gap: 15px;
   width: 100%;
-  padding: 20px 0;
+  padding: 20px 20px;
 }
 
 .task-item {
@@ -692,7 +688,7 @@ const progressPercentage = computed(() => {
 .task-line {
   position: absolute;
   top: 100%;
-  left: 15px;
+  left: 47px;
   width: 2px;
   height: 40px;
   background: linear-gradient(180deg, #8b5cf6, #e5e7eb);
@@ -701,11 +697,12 @@ const progressPercentage = computed(() => {
 
 .task-node {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  align-items: baseline;
   flex-shrink: 0;
   z-index: 2;
   position: relative;
+  gap: 12px;
 }
 
 .node-circle {
@@ -725,8 +722,8 @@ const progressPercentage = computed(() => {
 }
 
 .node-circle.completed {
-  background: #10b981;
-  border-color: #10b981;
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
+  border-color: linear-gradient(135deg, #26b2fd, #6f74fb);
 }
 
 .checkmark {
@@ -736,8 +733,8 @@ const progressPercentage = computed(() => {
 
 .node-label {
   font-size: 16px;
-  font-weight: 600;
-  color: #1f2937;
+  font-weight: 500;
+  color: #666;
   text-align: center;
   line-height: 1.4;
 }
@@ -753,7 +750,7 @@ const progressPercentage = computed(() => {
 
 .subtask-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   padding: 12px 16px;
   background: #f9fafb;
@@ -787,8 +784,8 @@ const progressPercentage = computed(() => {
 }
 
 .subtask-circle.completed {
-  background: #10b981;
-  border-color: #10b981;
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
+  border-color: linear-gradient(135deg, #26b2fd, #6f74fb);
 }
 
 .subtask-content {
@@ -809,10 +806,12 @@ const progressPercentage = computed(() => {
   font-size: 12px;
   color: #9ca3af;
   font-weight: 500;
+  text-align: right;
 }
 
 .subtask-status.completed {
   color: #10b981;
+  text-align: right;
 }
 
 /* 响应式设计 */

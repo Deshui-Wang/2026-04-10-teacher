@@ -298,7 +298,7 @@ const resetFilters = () => {
   font-weight: 700;
   color: #1f2937;
   margin: 0;
-  background: linear-gradient(135deg, #1976d2 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -364,9 +364,9 @@ const resetFilters = () => {
 
 .filter-btn {
   padding: 10px 22px;
-  border: 1px solid #1976d2;
+  border: 1px solid #6f74fb;
   background: white;
-  color: #1976d2;
+  color: #6f74fb;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
@@ -381,7 +381,7 @@ const resetFilters = () => {
 }
 
 .filter-btn.active {
-  background: #1976d2;
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   color: white;
   box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
 }
@@ -540,12 +540,12 @@ const resetFilters = () => {
 }
 
 .btn-join {
-  background: #1976d2;
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   color: white;
 }
 
 .btn-join:hover {
-  background: #66a0d9;
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }

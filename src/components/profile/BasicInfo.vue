@@ -128,7 +128,7 @@
 
 /* 编辑按钮 */
 .edit-btn {
-  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   color: white;
   border: none;
   padding: 8px 16px;

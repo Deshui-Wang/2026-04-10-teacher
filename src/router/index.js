@@ -27,6 +27,12 @@ import WorkloadQuantification from '../components/data-center/teaching-data/Work
 import TeachingResume from '../components/data-center/teaching-data/TeachingResume.vue'
 import TeacherEthics from '../components/growth-center/TeacherEthics.vue'
 import Courseware from '../components/data-center/resource-data/Courseware.vue'
+import Video from '../components/data-center/resource-data/Video.vue'
+import Dubbing from '../components/data-center/resource-data/Dubbing.vue'
+import KnowledgeGraph from '../components/data-center/resource-data/KnowledgeGraph.vue'
+import AbilityGraph from '../components/data-center/resource-data/AbilityGraph.vue'
+import DigitalHuman from '../components/data-center/resource-data/DigitalHuman.vue'
+import AgentList from '../components/data-center/resource-data/Agent.vue'
 import Attendance from '../components/data-center/teaching-data/Attendance.vue'
 import HomeworkManagement from '../components/data-center/teaching-data/HomeworkManagement.vue'
 
@@ -156,6 +162,36 @@ const routes = [
     path: '/courseware',
     name: 'Courseware',
     component: Courseware
+  },
+  {
+    path: '/video',
+    name: 'Video',
+    component: Video
+  },
+  {
+    path: '/dubbing',
+    name: 'Dubbing',
+    component: Dubbing
+  },
+  {
+    path: '/knowledge-graph',
+    name: 'KnowledgeGraph',
+    component: KnowledgeGraph
+  },
+  {
+    path: '/ability-graph',
+    name: 'AbilityGraph',
+    component: AbilityGraph
+  },
+  {
+    path: '/digital-human',
+    name: 'DigitalHuman',
+    component: DigitalHuman
+  },
+  {
+    path: '/agent-list',
+    name: 'AgentList',
+    component: AgentList
   },
   {
     path: '/attendance',

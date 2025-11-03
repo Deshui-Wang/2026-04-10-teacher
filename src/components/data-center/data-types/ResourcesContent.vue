@@ -91,29 +91,29 @@
       <!-- 资源数据-我的资产页面 -->
       <MyAssets v-if="activeSubTab === 'my-assets'" />
       
-      <!-- 资源数据-工作流页面 (待开发) -->
-      <!-- <Workflow v-if="activeSubTab === 'workflow'" /> -->
+      <!-- 资源数据-工作流页面 -->
+      <Workflow v-if="activeSubTab === 'workflow'" />
       
-      <!-- 资源数据-知识库页面 (待开发) -->
-      <!-- <KnowledgeBase v-if="activeSubTab === 'knowledge-base'" /> -->
+      <!-- 资源数据-知识库页面 -->
+      <KnowledgeBase v-if="activeSubTab === 'knowledge-base'" />
       
-      <!-- 资源数据-视频页面 (待开发) -->
-      <!-- <Video v-if="activeSubTab === 'video'" /> -->
+      <!-- 资源数据-视频页面 -->
+      <Video v-if="activeSubTab === 'video'" />
       
-      <!-- 资源数据-配音页面 (待开发) -->
-      <!-- <VoiceOver v-if="activeSubTab === 'voice-over'" /> -->
+      <!-- 资源数据-配音页面 -->
+      <Dubbing v-if="activeSubTab === 'voice-over'" />
       
-      <!-- 资源数据-知识图谱页面 (待开发) -->
-      <!-- <KnowledgeGraph v-if="activeSubTab === 'knowledge-graph'" /> -->
+      <!-- 资源数据-知识图谱页面 -->
+      <KnowledgeGraph v-if="activeSubTab === 'knowledge-graph'" />
       
-      <!-- 资源数据-能力图谱页面 (待开发) -->
-      <!-- <AbilityGraph v-if="activeSubTab === 'ability-graph'" /> -->
+      <!-- 资源数据-能力图谱页面 -->
+      <AbilityGraph v-if="activeSubTab === 'ability-graph'" />
       
-      <!-- 资源数据-数字人页面 (待开发) -->
-      <!-- <DigitalHuman v-if="activeSubTab === 'digital-human'" /> -->
+      <!-- 资源数据-数字人页面 -->
+      <DigitalHuman v-if="activeSubTab === 'digital-human'" />
       
-      <!-- 资源数据-智能体页面 (待开发) -->
-      <!-- <Agent v-if="activeSubTab === 'agent'" /> -->
+      <!-- 资源数据-智能体页面 -->
+      <Agent v-if="activeSubTab === 'agent'" />
     </div>
   </div>
 </template>
@@ -122,6 +122,14 @@
 import Courseware from '@/components/data-center/resource-data/Courseware.vue'
 import Courses from '@/components/data-center/resource-data/Courses.vue'
 import MyAssets from '@/components/data-center/resource-data/MyAssets.vue'
+import Workflow from '@/components/data-center/resource-data/Workflow.vue'
+import KnowledgeBase from '@/components/data-center/resource-data/KnowledgeBase.vue'
+import Video from '@/components/data-center/resource-data/Video.vue'
+import Dubbing from '@/components/data-center/resource-data/Dubbing.vue'
+import KnowledgeGraph from '@/components/data-center/resource-data/KnowledgeGraph.vue'
+import AbilityGraph from '@/components/data-center/resource-data/AbilityGraph.vue'
+import DigitalHuman from '@/components/data-center/resource-data/DigitalHuman.vue'
+import Agent from '@/components/data-center/resource-data/Agent.vue'
 
 defineProps({
   activeSubTab: {

@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import Profile from './profile/Profile.vue'
 import Report from './report/Report.vue'
 import Resource from './decision/Resource.vue'
@@ -86,8 +86,18 @@ const handleSwitchToReport = () => {
 }
 
 // 监听自定义事件，用于从Report页面切换到Decision页面
-const handleSwitchToDecision = () => {
+const handleSwitchToDecision = async () => {
   switchTab('decision')
+  // 等待DOM更新后滚动到页面顶部
+  await nextTick()
+  // 添加小延迟确保组件完全渲染
+  setTimeout(() => {
+    // 使用平滑滚动到页面顶部，确保能看到顶部导航栏
+    window.scrollTo({ 
+      top: 0, 
+      behavior: 'smooth' 
+    })
+  }, 100)
 }
 
 onMounted(() => {
@@ -152,7 +162,7 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 0;
@@ -180,7 +190,7 @@ onUnmounted(() => {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   display: flex;
   align-items: center;
   justify-content: center;

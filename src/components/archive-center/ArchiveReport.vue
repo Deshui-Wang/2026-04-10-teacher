@@ -486,7 +486,7 @@ onMounted(() => {
 }
 
 .create-btn {
-  background: linear-gradient(135deg, #1976d2, #1890ff);
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   color: white;
   border: none;
   padding: 10px 20px;
