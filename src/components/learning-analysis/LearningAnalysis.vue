@@ -44,6 +44,10 @@
           </div>
         </div>
 
+        <div class="filter-group">
+          <button class="generate-report-btn" @click="generateReport">生成报告</button>
+        </div>
+
       </div>
     </div>
 
@@ -196,6 +200,20 @@ const goStudent = () => {
   }
 }
 
+// 生成报告
+const generateReport = () => {
+  // 传递筛选条件到报告页面
+  router.push({
+    name: 'LearningReport',
+    query: {
+      college: selectedCollege.value,
+      major: selectedMajor.value,
+      class: selectedClass.value,
+      searchName: searchName.value
+    }
+  })
+}
+
 const isActive = (prefix) => route.path.startsWith(prefix)
 </script>
 
@@ -340,8 +358,8 @@ h1 {
 .search-btn {
     padding: 6px 20px;
     border-radius: 8px;
-    border: 1px solid #7c3aed;
-    background-color: #7c3aed;
+    border: 1px solid #7c3aed00;
+    background: linear-gradient(135deg, #26b2fd, #6f74fb);
     color: #ffffff;
     font-size: 14px;
     font-weight: 500;
@@ -352,13 +370,38 @@ h1 {
 
 .search-btn:hover {
     background-color: #6d28d9;
-    border-color: #6d28d9;
     box-shadow: 0 2px 4px rgba(124, 58, 237, 0.2);
 }
 
 .search-btn:active {
     background-color: #5b21b6;
     border-color: #5b21b6;
+    transform: translateY(1px);
+}
+
+.generate-report-btn {
+    padding: 6px 20px;
+    border-radius: 8px;
+    border: 1px solid #10b981;
+    background-color: #ccf0e4;
+    color: #10b981;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.generate-report-btn:hover {
+    background-color: #059669;
+    border-color: #059669;
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.generate-report-btn:active {
+    background-color: #047857;
+    border-color: #047857;
     transform: translateY(1px);
 }
 

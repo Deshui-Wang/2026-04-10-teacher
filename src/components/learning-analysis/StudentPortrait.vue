@@ -11,7 +11,7 @@
 
     <div class="student-info-card">
       <div class="student-info-header">
-        <div class="avatar-large">{{ avatarInitial }}</div>
+        <img :src="studentAvatar" :alt="studentName" class="avatar-large" />
         <div class="student-basic-info">
           <div class="student-name-row">
             <h3 class="student-name">{{ studentName }}</h3>
@@ -132,6 +132,13 @@
       </div>
     </div>
 
+    <section class="card subject-scores-card">
+      <div class="card-head">
+        <h3>各科成绩</h3>
+      </div>
+      <div ref="subjectScoresChartRef" class="echart-container"></div>
+    </section>
+
     <div class="grid">
       <section class="card">
         <div class="card-head">
@@ -248,7 +255,11 @@ const studentName = computed(() => {
   return `学生${studentId.value}`
 })
 
-const avatarInitial = computed(() => `${String(studentName.value).slice(0,1)}`)
+// 根据学生ID随机分配头像（确保同一学生总是使用同一张图片）
+const studentAvatar = computed(() => {
+  const avatarIndex = (parseInt(studentId.value) % 5) + 1
+  return `/pic/student0${avatarIndex}.png`
+})
 
 // 计算开始时间到现在的天数
 const getDaysFromStart = (startDate) => {
@@ -441,6 +452,17 @@ const generateStudentData = (id) => {
   const completedProjects = studentProjects.filter(p => p.status === '结题').length
   const researchIndex = Math.round(Math.min(100, (activeProjects * 25) + (completedProjects * 20) + (simpleRandom(seed, 300) * 15)))
   
+  // 各科成绩数据
+  const subjects = ['高等数学', '线性代数', '概率论', 'Python编程', '机器学习', '深度学习', '数据结构', '算法设计']
+  const subjectScores = subjects.map((subject, idx) => {
+    const baseScore = 70 + (seed * 2) + (idx * 1.5)
+    const variation = (simpleRandom(seed, idx * 50) * 20) - 10
+    return {
+      name: subject,
+      score: Math.round(Math.max(60, Math.min(100, baseScore + variation)))
+    }
+  })
+  
   return {
     // 学生基本信息
     studentGrade,
@@ -478,7 +500,8 @@ const generateStudentData = (id) => {
     matchRate,
     majorMatchIndicators,
     matchDescription,
-    studentProjects
+    studentProjects,
+    subjectScores
   }
 }
 
@@ -512,6 +535,7 @@ const matchRate = computed(() => studentData.value.matchRate)
 const majorMatchIndicators = computed(() => studentData.value.majorMatchIndicators)
 const matchDescription = computed(() => studentData.value.matchDescription)
 const studentProjects = computed(() => studentData.value.studentProjects)
+const subjectScores = computed(() => studentData.value.subjectScores)
 
 // charts refs
 const personalTrendRef = ref(null)
@@ -520,8 +544,9 @@ const homeworkChartRef = ref(null)
 const attendanceChartRef = ref(null)
 const interestWordCloudRef = ref(null)
 const intelligentAbilityChartRef = ref(null)
+const subjectScoresChartRef = ref(null)
 
-let personalTrendChart, personalEmotionChart, homeworkChart, attendanceChart, interestWordCloudChart, intelligentAbilityChart
+let personalTrendChart, personalEmotionChart, homeworkChart, attendanceChart, interestWordCloudChart, intelligentAbilityChart, subjectScoresChart
 
 const initCharts = () => {
   const data = studentData.value
@@ -899,6 +924,93 @@ const initCharts = () => {
       }
     ]
   })
+
+  // 各科成绩柱状图
+  if (subjectScoresChart) subjectScoresChart.dispose()
+  subjectScoresChart = echarts.init(subjectScoresChartRef.value)
+  const subjectNames = data.subjectScores.map(item => item.name)
+  const scores = data.subjectScores.map(item => item.score)
+  subjectScoresChart.setOption({
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: function(params) {
+        const param = params[0]
+        return param.name + '<br/>' + param.seriesName + ': ' + param.value + '分'
+      }
+    },
+    grid: {
+      left: 60,
+      right: 30,
+      bottom: 60,
+      top: 20,
+      containLabel: false
+    },
+    xAxis: {
+      type: 'category',
+      data: subjectNames,
+      axisLabel: {
+        fontSize: 11,
+        rotate: 15,
+        interval: 0,
+        color: '#0f172a'
+      },
+      axisLine: {
+        lineStyle: { color: '#e2e8f0' }
+      }
+    },
+    yAxis: {
+      type: 'value',
+      name: '分数',
+      min: 0,
+      max: 100,
+      nameTextStyle: {
+        fontSize: 12,
+        color: '#0f172a'
+      },
+      axisLabel: {
+        fontSize: 11,
+        color: '#0f172a',
+        formatter: '{value}'
+      },
+      axisLine: {
+        lineStyle: { color: '#e2e8f0' }
+      },
+      splitLine: {
+        lineStyle: { color: '#f1f5f9', type: 'dashed' }
+      }
+    },
+    series: [
+      {
+        name: '各科成绩',
+        type: 'bar',
+        data: scores.map(score => ({
+          value: score,
+          itemStyle: {
+            color: score >= 90 ? '#22c55e' :
+                   score >= 80 ? '#3b82f6' :
+                   score >= 70 ? '#f59e0b' :
+                   score >= 60 ? '#f97316' : '#ef4444'
+          }
+        })),
+        barWidth: 35,
+        label: {
+          show: true,
+          position: 'top',
+          formatter: '{c}',
+          fontSize: 11,
+          color: '#0f172a',
+          fontWeight: 500
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: 'rgba(0, 0, 0, 0.3)'
+          }
+        }
+      }
+    ]
+  })
 }
 
 const resize = () => {
@@ -908,6 +1020,7 @@ const resize = () => {
   attendanceChart && attendanceChart.resize()
   interestWordCloudChart && interestWordCloudChart.resize()
   intelligentAbilityChart && intelligentAbilityChart.resize()
+  subjectScoresChart && subjectScoresChart.resize()
 }
 
 // 监听学生ID变化，重新初始化图表
@@ -932,6 +1045,7 @@ onBeforeUnmount(() => {
   attendanceChart && attendanceChart.dispose()
   interestWordCloudChart && interestWordCloudChart.dispose()
   intelligentAbilityChart && intelligentAbilityChart.dispose()
+  subjectScoresChart && subjectScoresChart.dispose()
 })
 </script>
 
@@ -950,13 +1064,13 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 8px;
+  margin-bottom: 18px;
 }
 
 .title-wrap h2 {
   margin: 0;
-  font-size: 20px;
-  color: #0f172a;
+  font-size: 18px;
+  color: #2563eb;
 }
 
 .title-wrap .sub {
@@ -1000,15 +1114,10 @@ onBeforeUnmount(() => {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 32px;
+  object-fit: cover;
   flex-shrink: 0;
   box-shadow: 0 4px 12px rgba(102, 126, 234, .3);
+  border: 2px solid #ffffff;
 }
 
 .student-basic-info {
@@ -1153,6 +1262,10 @@ onBeforeUnmount(() => {
 .stat.success {
   background: #ecfdf5;
   border-color: #a7f3d0;
+}
+
+.subject-scores-card {
+  margin-bottom: 12px;
 }
 
 .grid {
@@ -1486,7 +1599,6 @@ onBeforeUnmount(() => {
   .avatar-large {
     width: 60px;
     height: 60px;
-    font-size: 24px;
   }
 
   .student-name {

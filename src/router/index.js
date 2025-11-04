@@ -17,6 +17,7 @@ import ArchiveCenter from '../components/archive-center/ArchiveCenter.vue'
 import LearningAnalysis from '../components/learning-analysis/LearningAnalysis.vue'
 import LearningGroupPortrait from '../components/learning-analysis/GroupPortrait.vue'
 import LearningStudentPortrait from '../components/learning-analysis/StudentPortrait.vue'
+import LearningReport from '../components/learning-analysis/Report.vue'
 
 // 个人主页与子页面
 import Profile from '../components/profile/Profile.vue'
@@ -98,6 +99,11 @@ const routes = [
         path: 'student/:id',
         name: 'LearningStudentPortrait',
         component: LearningStudentPortrait
+      },
+      {
+        path: 'report',
+        name: 'LearningReport',
+        component: LearningReport
       }
     ]
   },

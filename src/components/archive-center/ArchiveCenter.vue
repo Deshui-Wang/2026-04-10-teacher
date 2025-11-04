@@ -9,20 +9,12 @@
       </div>
       <div class="progress-card-wrapper">
         <div class="progress-card">
-          <div class="progress-card-icon-container">
-            <div class="progress-card-icon">
-              <div class="document-icon">
-                <div class="document-icon-lines"></div>
-                <div class="task-badge">档案</div>
-              </div>
-            </div>
-          </div>
           <p class="progress-percentage">已完成 85%</p>
           <div class="progress-bar-container">
             <div class="progress-bar" style="width: 85%"></div>
           </div>
           <button class="refresh-button">
-            <span class="refresh-icon">📊</span>
+            <span class="refresh-icon">📝</span>
             <span>去完成</span>
           </button>
         </div>
@@ -99,7 +91,7 @@ import ArchiveReport from '@/components/archive-center/ArchiveReport.vue'
 }
 
 .progress-card {
-  background: white;
+  background: #ffffff45;
   border-radius: 16px;
   padding: 24px;
   width: 260px;
@@ -107,7 +99,7 @@ import ArchiveReport from '@/components/archive-center/ArchiveReport.vue'
   text-align: center;
   color: #1f2937;
   position: relative;
-  padding-top: 50px;
+  padding-top: 30px;
 }
 
 .progress-card-icon-container {
@@ -169,7 +161,7 @@ import ArchiveReport from '@/components/archive-center/ArchiveReport.vue'
 .progress-percentage {
   font-size: 16px;
   font-weight: 600;
-  color: #374151;
+  color: #ffffff;
   margin: 0 0 12px 0;
 }
 
@@ -178,12 +170,12 @@ import ArchiveReport from '@/components/archive-center/ArchiveReport.vue'
   background: #e5e7eb;
   border-radius: 3px;
   overflow: hidden;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .progress-bar {
   height: 100%;
-  background: #1976d2;
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
   border-radius: 3px;
   transition: width 0.5s ease-in-out;
 }
@@ -191,7 +183,7 @@ import ArchiveReport from '@/components/archive-center/ArchiveReport.vue'
 .refresh-button {
   background: none;
   border: none;
-  color: #1976d2;
+  color: #ffffff;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
