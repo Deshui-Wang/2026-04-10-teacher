@@ -12,6 +12,7 @@
         <div class="notification-dot" v-if="hasNewNotifications"></div>
       </li>
       <li class="nav-item" :class="{active: currentPath.startsWith('/learning-square')}" @click="goNav('/learning-square')">协作空间</li>
+      <li class="nav-item" :class="{active: currentPath.startsWith('/learning-analysis')}" @click="goNav('/learning-analysis')">学情分析</li>
       <li class="nav-item" :class="{active: currentPath.startsWith('/profile')}" @click="goNav('/profile')">个人中心</li>
       <li class="nav-item" @click="goToAdmin">管理后台</li>
     </ul>

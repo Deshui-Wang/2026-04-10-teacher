@@ -14,6 +14,9 @@ import Login from '../components/login/Login.vue'
 import LoginDemo from '../components/login/LoginDemo.vue'
 import DataCenter from '../components/data-center/data-types/DataCenter.vue'
 import ArchiveCenter from '../components/archive-center/ArchiveCenter.vue'
+import LearningAnalysis from '../components/learning-analysis/LearningAnalysis.vue'
+import LearningGroupPortrait from '../components/learning-analysis/GroupPortrait.vue'
+import LearningStudentPortrait from '../components/learning-analysis/StudentPortrait.vue'
 
 // 个人主页与子页面
 import Profile from '../components/profile/Profile.vue'
@@ -79,6 +82,24 @@ const routes = [
     path: '/learning-square',
     name: 'LearningSquare',
     component: LearningSquare
+  },
+  {
+    path: '/learning-analysis',
+    name: 'LearningAnalysis',
+    component: LearningAnalysis,
+    redirect: '/learning-analysis/group',
+    children: [
+      {
+        path: 'group',
+        name: 'LearningGroupPortrait',
+        component: LearningGroupPortrait
+      },
+      {
+        path: 'student/:id',
+        name: 'LearningStudentPortrait',
+        component: LearningStudentPortrait
+      }
+    ]
   },
   {
     path: '/tch-ai',
