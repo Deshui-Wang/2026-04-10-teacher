@@ -1,742 +1,499 @@
 <template>
-  <div class="chart-card">
-    <h3>基本信息画像 - 10年+专业标杆教学科研型教师</h3>
-    <div class="basic-info-rings">
-      <!-- 年龄组 -->
-      <div class="ring-group">
-        <div class="ring-container">
-          <div class="ring-wrapper">
-            <div ref="ageChart" class="ring-chart"></div>
+  <div class="teacher-dashboard-container">
+    <div class="teacher-dashboard">
+      <!-- Left Column -->
+      <div class="dashboard-column left-column">
+        <!-- Student Stats Card -->
+        <div class="info-card student-stats-card">
+          <h4 class="card-title">学生统计</h4>
+          <div class="stats-row">
+            <div class="stat-item">
+              <span class="stat-label">学生好评率</span>
+              <span class="stat-value">98%</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">督导好评率</span>
+              <span class="stat-value">95%</span>
+            </div>
           </div>
-          <div class="ring-label">年龄</div>
-          <div class="ring-info">38岁</div>
+          <div class="gender-distribution">
+            <div class="gender-item">
+              <div ref="ageChart" class="gender-chart"></div>
+              <div class="gender-label">38岁</div>
+            </div>
+            <div class="gender-item">
+              <div ref="experienceChart" class="gender-chart"></div>
+              <div class="gender-label">教龄14年</div>
+            </div>
+          </div>
         </div>
-        <div class="legend-container">
-          <div v-for="item in ageData" :key="item.name" class="legend-item">
-            <div class="legend-color" :style="{ backgroundColor: item.current ? '#ff6b6b' : item.color }"></div>
-            <span class="legend-text">{{ item.name }}</span>
-            <span class="legend-percentage">{{ item.value }}%</span>
+
+        <!-- Class Distribution Card -->
+        <div class="info-card class-distribution-card">
+          <h4 class="card-title">教学产出</h4>
+          <div class="distribution-summary">
+            <div class="summary-item">
+              <span class="summary-value">25 <span class="summary-unit">项</span></span>
+              <span class="summary-label">科研成果</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-value">58 <span class="summary-unit">个</span></span>
+              <span class="summary-label">课件开发</span>
+            </div>
+          </div>
+          <div ref="outputChart" class="distribution-chart"></div>
+        </div>
+      </div>
+
+      <!-- Center Column -->
+      <div class="dashboard-column center-column">
+        <div class="teacher-portrait">
+          <h2 class="teacher-name">张婉婷 老师</h2>
+          <div class="teacher-info">
+            <span>工号: 20230034</span>
+            <span>职位: 讲师</span>
+            <span>部门: 机电工程学院</span>
+          </div>
+          <div class="teacher-avatar-container">
+            <img src="/pic/teacher/66.jpg" alt="李深 老师" class="teacher-avatar" />
+            <div class="avatar-ring"></div>
+          </div>
+          <div class="identity-switch">
+            <span class="identity-tag">普通教职工</span>
+            <span class="identity-tag">心理辅导员</span>
           </div>
         </div>
       </div>
-      
-      <!-- 性别组 -->
-      <div class="ring-group">
-        <div class="ring-container">
-          <div class="ring-wrapper">
-            <div ref="genderChart" class="ring-chart"></div>
+
+      <!-- Right Column -->
+      <div class="dashboard-column right-column">
+        <!-- Awards Card -->
+        <div class="info-card awards-card">
+          <h4 class="card-title">获奖荣誉</h4>
+          <div class="awards-summary">
+            <div class="summary-highlight primary">
+              <div class="highlight-label">优秀评比总数</div>
+              <div class="highlight-value">12 <span class="summary-unit">次</span></div>
+            </div>
+            <div class="summary-highlight secondary">
+              <div class="highlight-label">获奖最多班级</div>
+              <div class="highlight-value">智造22_1</div>
+            </div>
           </div>
-          <div class="ring-label">性别</div>
-          <div class="ring-info">女</div>
+          <div ref="awardsChart" class="awards-chart"></div>
         </div>
-        <div class="legend-container">
-          <div v-for="item in genderData" :key="item.name" class="legend-item">
-            <div class="legend-color" :style="{ backgroundColor: item.current ? '#ff6b6b' : item.color }"></div>
-            <span class="legend-text">{{ item.name }}</span>
-            <span class="legend-percentage">{{ item.value }}%</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 学历组 -->
-      <div class="ring-group">
-        <div class="ring-container">
-          <div class="ring-wrapper">
-            <div ref="educationChart" class="ring-chart"></div>
-          </div>
-          <div class="ring-label">学历</div>
-          <div class="ring-info">硕士</div>
-        </div>
-        <div class="legend-container">
-          <div v-for="item in educationData" :key="item.name" class="legend-item">
-            <div class="legend-color" :style="{ backgroundColor: item.current ? '#ff6b6b' : item.color }"></div>
-            <span class="legend-text">{{ item.name }}</span>
-            <span class="legend-percentage">{{ item.value }}%</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 职称组 -->
-      <div class="ring-group">
-        <div class="ring-container">
-          <div class="ring-wrapper">
-            <div ref="titleChart" class="ring-chart"></div>
-          </div>
-          <div class="ring-label">职称</div>
-          <div class="ring-info">副教授</div>
-        </div>
-        <div class="legend-container">
-          <div v-for="item in titleData" :key="item.name" class="legend-item">
-            <div class="legend-color" :style="{ backgroundColor: item.current ? '#ff6b6b' : item.color }"></div>
-            <span class="legend-text">{{ item.name }}</span>
-            <span class="legend-percentage">{{ item.value }}%</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 教龄组 -->
-      <div class="ring-group">
-        <div class="ring-container">
-          <div class="ring-wrapper">
-            <div ref="experienceChart" class="ring-chart"></div>
-          </div>
-          <div class="ring-label">教龄</div>
-          <div class="ring-info">14年</div>
-        </div>
-        <div class="legend-container">
-          <div v-for="item in experienceData" :key="item.name" class="legend-item">
-            <div class="legend-color" :style="{ backgroundColor: item.current ? '#ff6b6b' : item.color }"></div>
-            <span class="legend-text">{{ item.name }}</span>
-            <span class="legend-percentage">{{ item.value }}%</span>
+
+        <!-- Student Care Card -->
+        <div class="info-card student-care-card">
+          <h4 class="card-title">学生影响</h4>
+          <div class="care-summary">
+            <div class="care-item">
+              <div class="care-value">96%</div>
+              <div class="care-label">学生毕业率</div>
+            </div>
+            <div class="care-item">
+              <div class="care-value">92%</div>
+              <div class="care-label">学生就业率</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
-import * as echarts from 'echarts'
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import * as echarts from 'echarts';
 
-// 图表 refs
-const ageChart = ref(null)
-const genderChart = ref(null)
-const educationChart = ref(null)
-const titleChart = ref(null)
-const experienceChart = ref(null)
+// Chart refs
+const ageChart = ref(null);
+const experienceChart = ref(null);
+const outputChart = ref(null);
+const awardsChart = ref(null);
 
-// 图表实例
-let ageChartInstance = null
-let genderChartInstance = null
-let educationChartInstance = null
-let titleChartInstance = null
-let experienceChartInstance = null
 
-// 生成基本信息画像数据
-function generateBasicInfoData() {
-  return {
-    age: [
-      { name: '20-30岁', value: 15, current: false, color: '#90EE90' },
-      { name: '30-40岁', value: 35, current: true, color: '#32CD32' },
-      { name: '40-50岁', value: 28, current: false, color: '#228B22' },
-      { name: '50-60岁', value: 18, current: false, color: '#9ACD32' },
-      { name: '60岁以上', value: 4, current: false, color: '#20B2AA' }
-    ],
-    gender: [
-      { name: '男', value: 60, current: false, color: '#4169E1' },
-      { name: '女', value: 40, current: true, color: '#FF69B4' }
-    ],
-    education: [
-      { name: '本科', value: 20, current: false, color: '#191970' },
-      { name: '研究生', value: 35, current: true, color: '#8A2BE2' },
-      { name: '博士', value: 30, current: false, color: '#A52A2A' },
-      { name: '博士后', value: 12, current: false, color: '#87CEEB' },
-      { name: '科研专家', value: 3, current: false, color: '#FF8C00' }
-    ],
-    title: [
-      { name: '助教', value: 25, current: false, color: '#F5DEB3' },
-      { name: '讲师', value: 40, current: false, color: '#FF8C00' },
-      { name: '副教授', value: 28, current: true, color: '#A52A2A' },
-      { name: '教授', value: 7, current: false, color: '#FF8C00' }
-    ],
-    experience: [
-      { name: '1-5年', value: 20, current: false, color: '#90EE90' },
-      { name: '6-10年', value: 30, current: false, color: '#32CD32' },
-      { name: '11-15年', value: 25, current: true, color: '#228B22' },
-      { name: '16-25年', value: 18, current: false, color: '#9ACD32' },
-      { name: '26-35年', value: 5, current: false, color: '#20B2AA' },
-      { name: '35年以上', value: 2, current: false, color: '#191970' }
-    ]
+// Chart instances
+let ageChartInstance = null;
+let experienceChartInstance = null;
+let outputChartInstance = null;
+let awardsChartInstance = null;
+
+
+const initCharts = () => {
+  // Age Chart
+  if (ageChart.value) {
+    ageChartInstance = echarts.init(ageChart.value);
+    ageChartInstance.setOption({
+      series: [
+        {
+          type: 'gauge',
+          startAngle: 90,
+          endAngle: -270,
+          pointer: { show: false },
+          progress: { show: true, overlap: false, roundCap: true, clip: false, itemStyle: { color: '#FF69B4' } },
+          axisLine: { lineStyle: { width: 10, color: [[1, '#E6EBF8']] } },
+          splitLine: { show: false },
+          axisTick: { show: false },
+          axisLabel: { show: false },
+          data: [{ value: 52, name: '女性占比' }],
+          title: { show: false },
+          detail: { show: false },
+        },
+      ],
+    });
   }
-}
 
-// 计算属性获取数据
-const ageData = computed(() => generateBasicInfoData().age)
-const genderData = computed(() => generateBasicInfoData().gender)
-const educationData = computed(() => generateBasicInfoData().education)
-const titleData = computed(() => generateBasicInfoData().title)
-const experienceData = computed(() => generateBasicInfoData().experience)
-
-// 环形图初始化方法
-function initAgeChart() {
-  if (!ageChart.value) return
-  if (ageChartInstance) { try { ageChartInstance.dispose() } catch {} }
-  
-  ageChartInstance = echarts.init(ageChart.value)
-  const data = generateBasicInfoData().age
-  
-  const option = {
-    tooltip: {
-      trigger: 'item',
-      formatter: function(params) {
-        const isCurrent = params.data.isCurrent
-        return `
-          <div style="font-weight: 600; margin-bottom: 8px; color: ${isCurrent ? '#ff6b6b' : '#333'};">
-            ${params.data.name}
-            ${isCurrent ? ' (当前教师)' : ''}
-          </div>
-          <div style="display: flex; align-items: center; margin: 4px 0;">
-            <span style="margin-right: 8px;">占比:</span>
-            <span style="font-weight: 600; color: ${isCurrent ? '#ff6b6b' : '#5856d6'};">${params.data.value}%</span>
-          </div>
-        `
-      },
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      borderColor: '#e0e6f1',
-      borderWidth: 1,
-      textStyle: { color: '#333' }
-    },
-    series: [{
-      type: 'pie',
-      radius: ['50%', '80%'],
-      center: ['50%', '50%'],
-      data: data.map(item => ({
-        value: item.value,
-        name: item.name,
-        isCurrent: item.current,
-        itemStyle: {
-          color: item.current ? '#ff6b6b' : item.color,
-          borderWidth: 3,
-          borderColor: '#fff',
-          shadowBlur: 8,
-          shadowColor: item.current ? 'rgba(255, 107, 107, 0.3)' : 'rgba(0, 0, 0, 0.1)'
-        }
-      })),
-      label: {
-        show: false
-      },
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 15,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.3)'
-        }
-      },
-      animationType: 'scale',
-      animationEasing: 'elasticOut',
-      animationDelay: function (idx) {
-        return Math.random() * 200
-      }
-    }]
+  // Experience Chart
+  if (experienceChart.value) {
+    experienceChartInstance = echarts.init(experienceChart.value);
+    experienceChartInstance.setOption({
+      series: [
+        {
+          type: 'gauge',
+          startAngle: 90,
+          endAngle: -270,
+          pointer: { show: false },
+          progress: { show: true, overlap: false, roundCap: true, clip: false, itemStyle: { color: '#4169E1' } },
+          axisLine: { lineStyle: { width: 10, color: [[1, '#E6EBF8']] } },
+          splitLine: { show: false },
+          axisTick: { show: false },
+          axisLabel: { show: false },
+          data: [{ value: 48, name: '男性占比' }],
+          title: { show: false },
+          detail: { show: false },
+        },
+      ],
+    });
   }
-  
-  ageChartInstance.setOption(option)
-}
 
-function initGenderChart() {
-  if (!genderChart.value) return
-  if (genderChartInstance) { try { genderChartInstance.dispose() } catch {} }
-  
-  genderChartInstance = echarts.init(genderChart.value)
-  const data = generateBasicInfoData().gender
-  
-  const option = {
-    tooltip: {
-      trigger: 'item',
-      formatter: function(params) {
-        const isCurrent = params.data.isCurrent
-        return `
-          <div style="font-weight: 600; margin-bottom: 8px; color: ${isCurrent ? '#ff6b6b' : '#333'};">
-            ${params.data.name}
-            ${isCurrent ? ' (当前教师)' : ''}
-          </div>
-          <div style="display: flex; align-items: center; margin: 4px 0;">
-            <span style="margin-right: 8px;">占比:</span>
-            <span style="font-weight: 600; color: ${isCurrent ? '#ff6b6b' : '#5856d6'};">${params.data.value}%</span>
-          </div>
-        `
-      },
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      borderColor: '#e0e6f1',
-      borderWidth: 1,
-      textStyle: { color: '#333' }
-    },
-    series: [{
-      type: 'pie',
-      radius: ['50%', '80%'],
-      center: ['50%', '50%'],
-      data: data.map(item => ({
-        value: item.value,
-        name: item.name,
-        isCurrent: item.current,
-        itemStyle: {
-          color: item.current ? '#ff6b6b' : item.color,
-          borderWidth: 3,
-          borderColor: '#fff',
-          shadowBlur: 8,
-          shadowColor: item.current ? 'rgba(255, 107, 107, 0.3)' : 'rgba(0, 0, 0, 0.1)'
-        }
-      })),
-      label: {
-        show: false
-      },
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 15,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.3)'
-        }
-      },
-      animationType: 'scale',
-      animationEasing: 'elasticOut',
-      animationDelay: function (idx) {
-        return Math.random() * 200
-      }
-    }]
+  // Output Chart
+  if (outputChart.value) {
+    outputChartInstance = echarts.init(outputChart.value);
+    outputChartInstance.setOption({
+      grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+      xAxis: { type: 'value', show: false },
+      yAxis: { type: 'category', data: ['科研成果', '课件开发'], axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: '#666' } },
+      series: [
+        {
+          name: '产出',
+          type: 'bar',
+          data: [25, 58],
+          barWidth: 15,
+          itemStyle: { color: '#3b82f6', borderRadius: 10 },
+          label: { show: true, position: 'right', color: '#333' },
+        },
+      ],
+    });
   }
-  
-  genderChartInstance.setOption(option)
-}
 
-function initEducationChart() {
-  if (!educationChart.value) return
-  if (educationChartInstance) { try { educationChartInstance.dispose() } catch {} }
-  
-  educationChartInstance = echarts.init(educationChart.value)
-  const data = generateBasicInfoData().education
-  
-  const option = {
-    tooltip: {
-      trigger: 'item',
-      formatter: function(params) {
-        const isCurrent = params.data.isCurrent
-        return `
-          <div style="font-weight: 600; margin-bottom: 8px; color: ${isCurrent ? '#ff6b6b' : '#333'};">
-            ${params.data.name}
-            ${isCurrent ? ' (当前教师)' : ''}
-          </div>
-          <div style="display: flex; align-items: center; margin: 4px 0;">
-            <span style="margin-right: 8px;">占比:</span>
-            <span style="font-weight: 600; color: ${isCurrent ? '#ff6b6b' : '#5856d6'};">${params.data.value}%</span>
-          </div>
-        `
-      },
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      borderColor: '#e0e6f1',
-      borderWidth: 1,
-      textStyle: { color: '#333' }
-    },
-    series: [{
-      type: 'pie',
-      radius: ['50%', '80%'],
-      center: ['50%', '50%'],
-      data: data.map(item => ({
-        value: item.value,
-        name: item.name,
-        isCurrent: item.current,
-        itemStyle: {
-          color: item.current ? '#ff6b6b' : item.color,
-          borderWidth: 3,
-          borderColor: '#fff',
-          shadowBlur: 8,
-          shadowColor: item.current ? 'rgba(255, 107, 107, 0.3)' : 'rgba(0, 0, 0, 0.1)'
-        }
-      })),
-      label: {
-        show: false
-      },
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 15,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.3)'
-        }
-      },
-      animationType: 'scale',
-      animationEasing: 'elasticOut',
-      animationDelay: function (idx) {
-        return Math.random() * 200
-      }
-    }]
+  // Awards Chart
+  if (awardsChart.value) {
+    awardsChartInstance = echarts.init(awardsChart.value);
+    awardsChartInstance.setOption({
+      grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+      xAxis: { type: 'category', data: ['国家奖金', '省级奖金', '校级奖金'], axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: '#999' } },
+      yAxis: { type: 'value', show: false },
+      series: [
+        {
+          name: '获奖级别',
+          type: 'bar',
+          data: [8, 12, 26],
+          barWidth: 20,
+          itemStyle: { color: '#8b5cf6', borderRadius: [10, 10, 0, 0] },
+        },
+      ],
+    });
   }
-  
-  educationChartInstance.setOption(option)
-}
 
-function initTitleChart() {
-  if (!titleChart.value) return
-  if (titleChartInstance) { try { titleChartInstance.dispose() } catch {} }
   
-  titleChartInstance = echarts.init(titleChart.value)
-  const data = generateBasicInfoData().title
-  
-  const option = {
-    tooltip: {
-      trigger: 'item',
-      formatter: function(params) {
-        const isCurrent = params.data.isCurrent
-        return `
-          <div style="font-weight: 600; margin-bottom: 8px; color: ${isCurrent ? '#ff6b6b' : '#333'};">
-            ${params.data.name}
-            ${isCurrent ? ' (当前教师)' : ''}
-          </div>
-          <div style="display: flex; align-items: center; margin: 4px 0;">
-            <span style="margin-right: 8px;">占比:</span>
-            <span style="font-weight: 600; color: ${isCurrent ? '#ff6b6b' : '#5856d6'};">${params.data.value}%</span>
-          </div>
-        `
-      },
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      borderColor: '#e0e6f1',
-      borderWidth: 1,
-      textStyle: { color: '#333' }
-    },
-    series: [{
-      type: 'pie',
-      radius: ['50%', '80%'],
-      center: ['50%', '50%'],
-      data: data.map(item => ({
-        value: item.value,
-        name: item.name,
-        isCurrent: item.current,
-        itemStyle: {
-          color: item.current ? '#ff6b6b' : item.color,
-          borderWidth: 3,
-          borderColor: '#fff',
-          shadowBlur: 8,
-          shadowColor: item.current ? 'rgba(255, 107, 107, 0.3)' : 'rgba(0, 0, 0, 0.1)'
-        }
-      })),
-      label: {
-        show: false
-      },
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 15,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.3)'
-        }
-      },
-      animationType: 'scale',
-      animationEasing: 'elasticOut',
-      animationDelay: function (idx) {
-        return Math.random() * 200
-      }
-    }]
-  }
-  
-  titleChartInstance.setOption(option)
-}
+};
 
-function initExperienceChart() {
-  if (!experienceChart.value) return
-  if (experienceChartInstance) { try { experienceChartInstance.dispose() } catch {} }
-  
-  experienceChartInstance = echarts.init(experienceChart.value)
-  const data = generateBasicInfoData().experience
-  
-  const option = {
-    tooltip: {
-      trigger: 'item',
-      formatter: function(params) {
-        const isCurrent = params.data.isCurrent
-        return `
-          <div style="font-weight: 600; margin-bottom: 8px; color: ${isCurrent ? '#ff6b6b' : '#333'};">
-            ${params.data.name}
-            ${isCurrent ? ' (当前教师)' : ''}
-          </div>
-          <div style="display: flex; align-items: center; margin: 4px 0;">
-            <span style="margin-right: 8px;">占比:</span>
-            <span style="font-weight: 600; color: ${isCurrent ? '#ff6b6b' : '#5856d6'};">${params.data.value}%</span>
-          </div>
-        `
-      },
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      borderColor: '#e0e6f1',
-      borderWidth: 1,
-      textStyle: { color: '#333' }
-    },
-    series: [{
-      type: 'pie',
-      radius: ['50%', '80%'],
-      center: ['50%', '50%'],
-      data: data.map(item => ({
-        value: item.value,
-        name: item.name,
-        isCurrent: item.current,
-        itemStyle: {
-          color: item.current ? '#ff6b6b' : item.color,
-          borderWidth: 3,
-          borderColor: '#fff',
-          shadowBlur: 8,
-          shadowColor: item.current ? 'rgba(255, 107, 107, 0.3)' : 'rgba(0, 0, 0, 0.1)'
-        }
-      })),
-      label: {
-        show: false
-      },
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 15,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.3)'
-        }
-      },
-      animationType: 'scale',
-      animationEasing: 'elasticOut',
-      animationDelay: function (idx) {
-        return Math.random() * 200
-      }
-    }]
-  }
-  
-  experienceChartInstance.setOption(option)
-}
-
-// 初始化所有图表
-function initCharts() {
-  initAgeChart()
-  initGenderChart()
-  initEducationChart()
-  initTitleChart()
-  initExperienceChart()
-}
-
-// 销毁所有图表
-function disposeCharts() {
-  [ageChartInstance, genderChartInstance, educationChartInstance, titleChartInstance, experienceChartInstance].forEach(chart => {
+const disposeCharts = () => {
+  [ageChartInstance, experienceChartInstance, outputChartInstance, awardsChartInstance].forEach(chart => {
     if (chart) {
-      try { chart.dispose() } catch {}
+      try {
+        chart.dispose();
+      } catch (e) {
+        console.error(e);
+      }
     }
-  })
-  ageChartInstance = null
-  genderChartInstance = null
-  educationChartInstance = null
-  titleChartInstance = null
-  experienceChartInstance = null
-}
+  });
+};
 
-// 监听窗口大小变化，重新渲染图表
-function handleResize() {
-  [ageChartInstance, genderChartInstance, educationChartInstance, titleChartInstance, experienceChartInstance].forEach(chart => {
+const handleResize = () => {
+  [ageChartInstance, experienceChartInstance, outputChartInstance, awardsChartInstance].forEach(chart => {
     if (chart) {
-      try { chart.resize() } catch {}
+      try {
+        chart.resize();
+      } catch (e) {
+        console.error(e);
+      }
     }
-  })
-}
+  });
+};
 
 onMounted(() => {
-  initCharts()
-  window.addEventListener('resize', handleResize)
-})
+  initCharts();
+  window.addEventListener('resize', handleResize);
+});
 
-onBeforeUnmount(() => { 
-  disposeCharts()
-  window.removeEventListener('resize', handleResize)
-})
+onBeforeUnmount(() => {
+  disposeCharts();
+  window.removeEventListener('resize', handleResize);
+});
 </script>
 
 <style scoped>
-.chart-card {
-  background: rgba(255,255,255,0.9);
-  border-radius: 16px;
+.teacher-dashboard-container {
   padding: 24px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
-  border: 1px solid rgba(255,255,255,0.4);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
+  background-color: #EDF2FD;
 }
 
-.chart-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+.teacher-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  gap: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
-.chart-card h3 {
-  font-size: 20px;
+.dashboard-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.info-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+  font-size: 18px;
   font-weight: 600;
   color: #333;
   margin: 0 0 20px 0;
-  text-align: left;
 }
 
-/* 基本信息画像环形图样式 */
-.basic-info-rings {
+/* Left Column */
+.student-stats-card .stats-row {
   display: flex;
   justify-content: space-around;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 20px 0;
+  margin-bottom: 20px;
 }
 
-/* 每组环形图的外框样式 */
-.ring-group {
-  border: 1px solid #f0f0f0;
-  border-radius: 12px;
-  padding: 16px;
-  background: linear-gradient(135deg, #fafafa, #f5f5f5);
-  transition: all 0.3s ease;
-  flex: 1;
-  min-width: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+.student-stats-card .stat-item {
+  text-align: center;
 }
 
-.ring-group:hover {
-  border-color: #e0e0e0;
-  background: linear-gradient(135deg, #f8f8f8, #f0f0f0);
-  transform: translateY(-2px);
-}
-
-.ring-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-}
-
-/* 环形图外框样式 */
-.ring-wrapper {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.ring-wrapper:hover {
-  border-color: #d0d0d0;
-  background: linear-gradient(135deg, #fdfdfd, #f5f5f5);
-}
-
-.ring-chart {
-  width: 120px;
-  height: 120px;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.ring-chart:hover {
-  transform: scale(1.05);
-}
-
-.ring-label {
+.student-stats-card .stat-label {
   font-size: 14px;
-  font-weight: 600;
-  color: #333;
-  text-align: center;
-  margin-bottom: 4px;
+  color: #666;
 }
 
-.ring-info {
-  font-size: 18px;
+.student-stats-card .stat-value {
+  font-size: 24px;
   font-weight: 700;
-  color: #5856d6;
-  text-align: center;
-  background: linear-gradient(135deg, #5856d6, #7e7eff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 2px 4px rgba(88, 86, 214, 0.2);
-}
-
-/* 图例样式 */
-.legend-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-top: 8px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.legend-item:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.legend-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.legend-text {
-  font-size: 12px;
   color: #333;
-  flex: 1;
+}
+
+.gender-distribution {
+  display: flex;
+  justify-content: space-around;
+}
+
+.gender-item {
+  text-align: center;
+}
+
+.gender-chart {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 10px;
+}
+
+.gender-label {
+  font-size: 14px;
+  color: #333;
+}
+
+.class-distribution-card .distribution-summary {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.class-distribution-card .summary-item {
+  text-align: center;
+}
+
+.class-distribution-card .summary-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+}
+
+.class-distribution-card .summary-unit {
+  font-size: 14px;
+  color: #666;
+}
+
+.class-distribution-card .summary-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.distribution-chart {
+  height: 120px;
+}
+
+/* Center Column */
+.center-column {
+  justify-content: center;
+}
+
+.teacher-portrait {
+  text-align: center;
+  position: relative;
+}
+
+.teacher-name {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.teacher-info {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.teacher-info span {
+  margin: 0 10px;
+}
+
+.teacher-avatar-container {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin: 0 auto 20px;
+}
+
+.teacher-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-ring {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: calc(100% + 20px);
+  height: calc(100% + 20px);
+  border: 2px dashed #3b82f6;
+  border-radius: 50%;
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.identity-switch {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.identity-tag {
+  padding: 8px 16px;
+  border: 1px solid #3b82f6;
+  border-radius: 20px;
+  background: #fff;
+  color: #3b82f6;
+  font-size: 14px;
   font-weight: 500;
 }
 
-.legend-percentage {
-  font-size: 12px;
+/* Right Column */
+.awards-card .awards-summary {
+  display: flex;
+  gap: 20px;
+}
+
+.awards-card .summary-highlight {
+  flex: 1;
+  padding: 15px;
+  border-radius: 12px;
+  color: #fff;
+}
+
+.awards-card .summary-highlight.primary {
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+}
+
+.awards-card .summary-highlight.secondary {
+  background: linear-gradient(135deg, #10b981, #34d399);
+}
+
+.awards-card .highlight-label {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.awards-card .highlight-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.awards-chart {
+  height: 150px;
+}
+
+.student-care-card .care-summary {
+  display: flex;
+  justify-content: space-around;
+}
+
+.student-care-card .care-item {
+  text-align: center;
+}
+
+.student-care-card .care-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+}
+
+.student-care-card .care-label {
+  font-size: 14px;
   color: #666;
-  font-weight: 600;
-  min-width: 35px;
-  text-align: right;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .basic-info-rings {
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .ring-group {
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    min-width: auto;
-    align-items: flex-start;
-  }
-  
-  .ring-container {
-    flex-shrink: 0;
-  }
-  
-  .ring-wrapper {
-    width: 100px;
-    height: 100px;
-  }
-  
-  .ring-chart {
-    width: 80px;
-    height: 80px;
-  }
-  
-  .legend-container {
-    flex: 1;
-    margin-left: 16px;
-  }
+/* Radar Chart Section */
+.radar-section {
+  grid-column: 1 / -1;
 }
 
-@media (max-width: 480px) {
-  .ring-group {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .ring-wrapper {
-    width: 80px;
-    height: 80px;
-  }
-  
-  .ring-chart {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .legend-container {
-    margin-left: 0;
-    margin-top: 12px;
+.radar-chart {
+  height: 400px;
+}
+
+@media (max-width: 1200px) {
+  .teacher-dashboard {
+    grid-template-columns: 1fr;
   }
 }
 </style>

@@ -3,7 +3,7 @@
     <div class="modal-content" @click.stop>
       <!-- 模态框头部 -->
       <div class="modal-header">
-        <h2>创建申报材料</h2>
+        <h2>创建个人档案</h2>
         <button class="close-btn" @click="closeModal">×</button>
       </div>
 
@@ -16,7 +16,7 @@
               type="text" 
               id="reportName" 
               v-model="reportForm.name" 
-              placeholder="张婉婷的报告"
+              placeholder="张婉婷的教学报告"
               class="form-input"
             />
           </div>
@@ -26,30 +26,35 @@
         <div class="form-section report-selection-section">
           <div class="section-header-with-desc">
             <div class="section-header-content">
-              <h3>选择现有报告（可选）</h3>
+              <h3>选择档案类型及现有报告（可选）</h3>
               <p class="section-description">可以选择已有的AI分析报告，将其内容填充到申报材料中</p>
             </div>
           </div>
           <div class="report-selector">
-            <select v-model="selectedReportIndex" class="form-select" @change="onReportSelected">
-              <option value="">-- 不选择报告，从空白创建 --</option>
-              <option 
-                v-for="(report, index) in availableReports" 
-                :key="report.originalIndex"
-                :value="report.originalIndex"
-                :disabled="report.status === 'generating'"
-              >
-                {{ report.date }} - {{ report.title }} 
-                <span v-if="report.status === 'generating'">(生成中...)</span>
-                <span v-else-if="report.status === 'completed'">✓</span>
-              </option>
-            </select>
+            <div class="selector-field">
+              <select v-model="selectedReportType" class="form-select" @change="onReportTypeChange">
+                <option value="">选择档案类型</option>
+                <option v-for="type in reportTypes" :key="type" :value="type">{{ type }}</option>
+              </select>
+            </div>
+            <div class="selector-field">
+              <select v-model="selectedReportIndex" class="form-select" @change="onReportSelected">
+                <option value="">-- {{ selectedReportType ? `选择${archiveToReportMap[selectedReportType] || '报告'}` : '从空白创建' }} --</option>
+                <option 
+                  v-for="report in availableReports" 
+                  :key="report.originalIndex"
+                  :value="report.originalIndex"
+                >
+                  {{ report.date }} - {{ report.title }} 
+                </option>
+              </select>
+            </div>
             <button 
               v-if="selectedReportIndex !== ''" 
               class="load-report-btn" 
               @click="loadReportContent"
             >
-              填充报告内容
+              填充内容
             </button>
           </div>
           <div v-if="selectedReportIndex !== '' && !isReportLoaded" class="report-info">
@@ -69,7 +74,7 @@
         <!-- 模块编辑区域 -->
         <div class="modules-section">
           <div class="section-header">
-            <h3>报告模块</h3>
+            <h3>档案模块</h3>
             <button class="add-module-btn" @click="addNewModule" :disabled="!reportForm.name.trim()">
               + 添加模块
             </button>
@@ -82,25 +87,22 @@
               :key="module.id"
               class="module-item"
             >
-              <!-- 模块头部 - 包含模块类型选择和操作按钮 -->
+              <!-- 模块头部 - 展示模块名称和操作按钮 -->
               <div class="module-header">
-                <div class="module-type-selector">
-                  <select v-model="module.type" class="form-select" @change="onModuleTypeChange(module)">
-                    <option value="">选择模块类型</option>
-                    <option 
-                      v-for="moduleType in availableModuleTypes" 
-                      :key="moduleType.id"
-                      :value="moduleType.id"
-                    >
-                      {{ moduleType.name }}
-                    </option>
-                  </select>
+                <div class="module-name-display">
+                  <span class="module-icon">📄</span>
+                  <input 
+                    v-if="module.isCustom" 
+                    v-model="module.name" 
+                    class="name-edit-input" 
+                    placeholder="请输入模块名称"
+                  />
+                  <h4 v-else>{{ module.name }}</h4>
                 </div>
                 <div class="module-actions">
                   <button class="edit-btn" @click="editModule(index)" :class="{ active: editingModuleIndex === index }">
                     {{ editingModuleIndex === index ? '完成编辑' : '编辑' }}
                   </button>
-                  <button class="remove-btn" @click="removeModule(index)">删除</button>
                 </div>
               </div>
 
@@ -108,13 +110,76 @@
               <div v-if="editingModuleIndex === index" class="module-edit-area">
                 <div class="edit-form">
 
-                  <!-- 图表设置和预览区域 -->
-                  <div class="chart-configuration">
+                  <!-- 文字内容编辑（始终显示） -->
+                  <div class="form-group document-editor-container">
+                    <label>本分类详细内容</label>
+                    <div class="mock-editor-toolbar">
+                      <div class="toolbar-group">
+                        <span class="tool">B</span>
+                        <span class="tool">I</span>
+                        <span class="tool">U</span>
+                        <span class="tool-divider"></span>
+                        <span class="tool">H1</span>
+                        <span class="tool">H2</span>
+                        <span class="tool-divider"></span>
+                        <span class="tool">List</span>
+                        <span class="tool">Align</span>
+                      </div>
+                      <div class="toolbar-group">
+                        <span class="tool-info">编辑器模式</span>
+                      </div>
+                    </div>
+                    <textarea 
+                      v-model="module.summary" 
+                      placeholder="请输入详细描述内容"
+                      class="form-textarea summary-textarea document-style-textarea"
+                      rows="12"
+                    ></textarea>
+                  </div>
+
+                  <!-- 图表控制按钮 -->
+                  <div class="chart-toggle-bar">
+                    <button 
+                      v-if="module.chartType === 'none'" 
+                      class="add-chart-btn"
+                      @click="module.chartType = 'bar'"
+                    >
+                      + 添加可视化图表
+                    </button>
+                    <button 
+                      v-else 
+                      class="remove-chart-btn"
+                      @click="module.chartType = 'none'"
+                    >
+                      移除可视化图表
+                    </button>
+                  </div>
+
+                  <!-- 培训档案特有字段（位于图表之上，内容之下） -->
+                  <div v-if="module.type === 'training-online' || module.type === 'training-offline'" class="training-fields active-edit-fields">
+                    <div class="setting-row">
+                      <div class="setting-item special-field">
+                        <label>培训学时</label>
+                        <input type="number" v-model="module.trainingHours" class="form-input" placeholder="请输入学时" />
+                      </div>
+                      <div class="setting-item special-field">
+                        <label>培训结果</label>
+                        <input type="text" v-model="module.trainingResult" class="form-input" placeholder="及格/优秀/结业等" />
+                      </div>
+                    </div>
+                    <div class="form-group special-field">
+                      <label>培训报告/相关证明</label>
+                      <input type="text" v-model="module.trainingReport" class="form-input" placeholder="请输入或上传报告链接" />
+                    </div>
+                  </div>
+
+                  <!-- 图表设置和预览区域（仅在开启图表时显示） -->
+                  <div v-if="module.chartType !== 'none'" class="chart-configuration animated-fade-in">
                     <!-- 左侧：图表预览和设置 -->
                     <div class="chart-left-panel">
                       <div class="chart-preview-section">
-                        <label>图表预览区</label>
-                        <div class="chart-preview-container">
+                        <label>数据可视化预览</label>
+                        <div class="chart-preview-container small-preview">
                           <ReportModulePreview
                             :module-type="module.type"
                             :chart-type="module.chartType"
@@ -123,17 +188,13 @@
                             :show-labels="module.showLabels"
                           />
                         </div>
-                        
                       </div>
-                      
-
                     </div>
                     <div class="chart-settings">
                         <div class="setting-row">
                           <div class="setting-item">
                             <label>图表类型</label>
                             <select v-model="module.chartType" class="form-select">
-                              <option value="none">无图表</option>
                               <option value="bar">柱状图</option>
                               <option value="line">折线图</option>
                               <option value="pie">饼图</option>
@@ -167,21 +228,7 @@
                             </label>
                           </div>
                         </div>
-                      </div>
-                    <!-- 右侧：总结说明 -->
-                    <div class="chart-right-panel">
-                      <div class="form-group">
-                        <label>针对本模块数据的总结说明</label>
-                        <textarea 
-                          v-model="module.summary" 
-                          placeholder="请输入针对本模块数据的总结说明"
-                          class="form-textarea summary-textarea"
-                          rows="8"
-                        ></textarea>
-                      </div>
-                    </div>                    
-
-
+                    </div>
                   </div>
                 </div>
               </div>
@@ -196,10 +243,21 @@
                   </span>
                 </div>
                 <div class="preview-content">
-                  <p class="preview-description">{{ module.description || '暂无描述' }}</p>
                   <div v-if="module.summary" class="preview-summary">
-                    <p class="summary-preview">{{ module.summary.substring(0, 150) }}{{ module.summary.length > 150 ? '...' : '' }}</p>
+                    <p class="summary-preview">{{ module.summary.substring(0, 300) }}{{ module.summary.length > 300 ? '...' : '' }}</p>
                   </div>
+                  
+                  <!-- 培训档案特有字段预览 -->
+                  <div v-if="(module.type === 'training-online' || module.type === 'training-offline') && (module.trainingHours || module.trainingResult || module.trainingReport)" class="preview-special-info">
+                    <div class="info-row">
+                      <span v-if="module.trainingHours" class="info-tag">学时: {{ module.trainingHours }}</span>
+                      <span v-if="module.trainingResult" class="info-tag">结果: {{ module.trainingResult }}</span>
+                    </div>
+                    <div v-if="module.trainingReport" class="info-row report-link">
+                      <span>报告: {{ module.trainingReport }}</span>
+                    </div>
+                  </div>
+
                   <div v-if="module.chartType && module.chartType !== 'none'" class="preview-chart">
                     <div class="chart-preview-container">
                       <ReportModulePreview
@@ -212,6 +270,13 @@
                     </div>
                   </div>
                 </div>
+              </div>
+
+              <!-- 模块底部操作区域（始终显示） -->
+              <div class="module-item-footer">
+                <button class="remove-btn-minimal" @click="removeModule(index)">
+                  删除
+                </button>
               </div>
             </div>
           </div>
@@ -229,18 +294,18 @@
       <div class="modal-footer">
         <button class="cancel-btn" @click="closeModal">取消</button>
         <button 
-          class="preview-btn" 
+          class="preview-btn action-btn secondary" 
           @click="previewReport" 
           :disabled="!canPreview"
         >
-          预览报告
+          预览
         </button>
         <button 
-          class="save-btn" 
+          class="save-btn action-btn primary" 
           @click="saveReport" 
           :disabled="!canSave"
         >
-          保存报告
+          保存
         </button>
       </div>
     </div>
@@ -248,8 +313,20 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import ReportModulePreview from './ReportModulePreview.vue'
+
+// 定义 props
+const props = defineProps({
+  initialData: {
+    type: Object,
+    default: null
+  }
+})
+
+const router = useRouter()
+
 
 // 格式化日期函数
 const formatDate = () => {
@@ -260,43 +337,52 @@ const formatDate = () => {
   return `${year}年${month}月${day}日`
 }
 
-// 从 Report.vue 中导入的报告数据
+// 报告类型选项
+const reportTypes = ['教学档案', '成长档案', '培训档案']
+
+// 档案类型到报告类型的映射
+const archiveToReportMap = {
+  '教学档案': '教学报告',
+  '成长档案': '发展成果报告',
+  '培训档案': '培训学习报告'
+}
+
 // 报告历史数据
 const reportHistory = ref([
   {
     date: formatDate(),
-    title: '教学能力综合评估',
-    type: 'AI智能分析',
+    title: '2025年秋季学期教学能力综合评估',
+    type: '教学报告',
     status: 'generating'
   },
   {
     date: '2025-06-15',
-    title: '学期教学总结报告',
-    type: '定期评估',
+    title: '2025年春季学期教学总结报告',
+    type: '教学报告',
     status: 'completed'
   },
   {
     date: '2025-03-20',
-    title: '专业发展能力分析',
-    type: '专项评估',
+    title: '专业技术职务晋升发展成果分析',
+    type: '发展成果报告',
     status: 'completed'
   },
   {
     date: '2024-12-10',
-    title: '课程建设成效评估',
-    type: '项目评估',
+    title: '高校教师数字化教学能力培训总结',
+    type: '培训学习报告',
     status: 'completed'
   },
   {
     date: '2024-09-01',
-    title: '年度教学工作总结',
-    type: '年度报告',
+    title: '2023-2024学年度教学工作量核定报告',
+    type: '教学报告',
     status: 'completed'
   },
   {
     date: '2024-06-15',
-    title: '学生满意度调研报告',
-    type: '调研分析',
+    title: '中青年骨干教师海外访学成果评估',
+    type: '发展成果报告',
     status: 'completed'
   }
 ])
@@ -447,24 +533,68 @@ const reportContents = {
   }
 }
 
-// 可用的报告列表（只显示已完成的报告，并保留原始索引）
+// 选中的报告类型
+const selectedReportType = ref('')
+
+// 可用的报告列表（只显示已完成的报告，并保留原始索引，且根据选中的类型进行过滤）
 const availableReports = computed(() => {
+  const targetType = archiveToReportMap[selectedReportType.value] || ''
   return reportHistory.value
     .map((report, originalIndex) => ({ ...report, originalIndex }))
-    .filter(report => report.status === 'completed' || !report.status)
+    .filter(report => {
+      const isCompleted = report.status === 'completed' || !report.status
+      const matchesType = !selectedReportType.value || report.type === targetType
+      return isCompleted && matchesType
+    })
 })
 
-// 定义可用的模块类型
-const availableModuleTypes = [
-  { id: 'assets', name: '资产' },
-  { id: 'achievements', name: '成果奖励' },
-  { id: 'digital-literacy', name: '数字素养' },
-  { id: 'workload-stats', name: '工作量统计' },
-  { id: 'ethics', name: '师德师风' },
-  { id: 'student-data', name: '学生数据' },
-  { id: 'courseware-research', name: '课件教案研发数据' },
-  { id: 'teaching-experience', name: '教学经验数据' }
-]
+// 定义每个档案类型的模块映射
+const archiveModuleMap = {
+  '教学档案': [
+    { id: 'personal-info', name: '个人基本资料' },
+    { id: 'teaching-basic', name: '基础资质材料' },
+    { id: 'teaching-implementation', name: '教学实施材料' },
+    { id: 'teaching-reform', name: '教学改革材料' },
+    { id: 'teaching-practice', name: '实践教学材料' },
+    { id: 'student-development', name: '学生发展材料' }
+  ],
+  '成长档案': [
+    { id: 'personal-info', name: '个人基本资料' },
+    { id: 'growth-practice', name: '企业实践' },
+    { id: 'growth-competition', name: '技能竞赛' },
+    { id: 'growth-guidance', name: '指导学生' },
+    { id: 'growth-research', name: '教科研成果' }
+  ],
+  '培训档案': [
+    { id: 'personal-info', name: '个人基本资料' },
+    { id: 'training-online', name: '线上培训' },
+    { id: 'training-offline', name: '线下培训' }
+  ]
+}
+
+// Mock 内容映射
+const mockContentMap = {
+  'personal-info': '【个人基本资料】\n\n一、基础身份\n• 姓名：张婉婷\n• 性别：女\n• 年龄：36岁\n\n二、专业背景\n• 学历：博士研究生\n• 职称：副教授\n• 教龄：12年\n\n三、组织归属\n• 所属学院：计算机与软件学院\n• 所属教研组：人工智能教研组\n\n四、简要介绍\n深耕职教领域多年，致力于AI与专业课程的深度融合，多次获得省级教学能力大赛奖项，具有丰富的“双师型”教师实操经验。',
+  'teaching-basic': '【基础资质概况】\n\n本年度已完成教师资格定期注册，持有“高级讲师”职称证书。年度岗位考核评定为“优秀”。\n\n• 核心课程：负责《软件工程》、《深入浅出Vue.js》等专业课。\n• 教学工作量：累计授课超过400学时，教学事故0记录。\n• 个人荣誉：荣获校级“优秀骨干教师”称号。',
+  'teaching-implementation': '【教学实施总结报告】\n\n本学期教学进度完全符合大纲要求，教学计划执行率100%。\n\n1. 教学方法改革：全面推行项目驱动教学法（PBL），课堂活跃度提升40%。\n2. 资源建设：更新了全套教学课件，新增实战案例库12个。\n3. 达成度分析：学生课程平均分显著提升，期末优秀率由去年的15%增长至今年的22%。',
+  'teaching-reform': '【教学改革与创新项目】\n\n主持校级重点教改课题《人工智能辅助编程教学模式的构建与实践》。\n\n• 成果产出：公开发表省级教改论文2篇。\n• 模式创新：构建了“产教融合-项目导入-AI纠错”的三位一体评价体系。\n• 数字化转型：成功引入AI助手辅助代码批改，反馈时效缩短了80%。',
+  'teaching-practice': '【实践教学与校企合作】\n\n本年度校外实习实训工作开展顺利，实现了教学与就业的闭环。\n\n• 企业导师：聘请3位行业资深专家担任产业导师，开展专题讲座5场。\n• 基地建设：新增校外校企共建实习基地2处。\n• 实训成果：120名学生圆满完成企业顶岗实训，企业满意度评分达9.5/10。',
+  'student-development': '【学生综合发展报告】\n\n本年度所带班级在学风建设与竞赛获奖方面表现优异。\n\n1. 竞赛获奖：指导学生在“蓝桥杯”总决赛中获得国家级二等奖。\n2. 升学情况：班级整体就业率达到96%，其中5人考入名企技术岗。\n3. 素养提升：组织开展技术沙龙12场，学生自主探究能力显著增强。',
+  'growth-practice': '【年度企业实践纪要】\n\n暑期参加了华为云生态合作伙伴专项赋能培训及为期一个月的企业挂职实践。\n\n• 岗位职责：担任项目组架构设计助理，深度参与了OA系统数字化升级项目。\n• 技术收获：掌握了微服务架构下服务治理的真实落地场景。\n• 教学转化：将项目中3个典型的数据库死锁场景转化为教学微课。',
+  'growth-competition': '【教师专业竞赛记录】\n\n参加了2025年全国职业院校教师教学能力大赛，展现了良好的数智化素养。\n\n• 获奖等级：荣获“国家级二等奖”。\n• 核心竞争力：通过备赛，系统掌握了VR课堂模拟手段，提升了复杂知识点的视觉化传达效率。',
+  'growth-guidance': '【学生竞赛指导简报】\n\n致力于培养高素质技术技能人才，形成了“以赛促学”的长效机制。\n\n• 指导规模：常年指导算法社团成员30余名。\n• 关键战绩：指导学生获得全国大学生数学建模设计大赛一等奖1项。\n• 梯队建设：成功孵化了大二、大三竞赛阶梯队，确保了专业实力的持续性。',
+  'growth-research': '【年度教科研工作综述】\n\n聚焦于“AI+教育”领域的前沿技术应用研究，取得了阶段性突破。\n\n• 纵向项目：主持市厅级科研项目《基于LLM的编程教学情感分析研究》。\n• 论文发表：在《电化教育研究》等核心刊物发表综述1篇。\n• 知识产权：获得实用新型专利1项，软件著作权2项。',
+  'training-online': '【线上培训学习档案】\n\n参加了“职业院校教师素质提高计划”数字化教学能力专题培训。\n\n• 学习时长：累计学习48学时，在线测试成绩98分。\n• 核心模块：涵盖数字化资源设计、混合式教学评估、AI辅助备课等12个专题。\n• 获得证书：授予“数字化先锋教师”专项结业证书。',
+  'training-offline': '【线下高级研修班纪要】\n\n赴杭州参加了为期一周的“新一代信息技术双师型骨干教师研修班”。\n\n• 研修形式：采取现场观摩、大咖讲座、分组探讨、方案路演等形式。\n• 研修亮点：实地考察了阿里总部数字化展厅，深刻理解了未来社区与职教场景的融合方案。\n• 产出成果：主笔完成了《数字化实训室建设方案》，已提交教务处审阅。'
+}
+
+// 扁平化所有模块类型供查找名称
+const allModuleTypes = Object.values(archiveModuleMap).flat()
+
+// 计算当前可选的模块类型
+const availableModuleTypes = computed(() => {
+  return archiveModuleMap[selectedReportType.value] || []
+})
 
 // 配色方案
 const colorSchemes = [
@@ -492,10 +622,34 @@ const selectedReportIndex = ref('')
 // 报告是否已加载
 const isReportLoaded = ref(false)
 
+// 组件挂载时检查是否有初始数据
+onMounted(() => {
+  if (props.initialData) {
+    // 填充报告名称
+    if (props.initialData.name) {
+      reportForm.name = props.initialData.name
+    }
+    
+    // 填充报告类型
+    if (props.initialData.reportType) {
+      selectedReportType.value = props.initialData.reportType
+    }
+    
+    // 填充模块列表
+    if (props.initialData.modules && props.initialData.modules.length > 0) {
+      reportModules.value = props.initialData.modules.map(module => ({
+        ...module,
+        id: module.id || Date.now() + Math.random()
+      }))
+      isReportLoaded.value = true
+    }
+  }
+})
+
+
 // 计算属性
 const canSave = computed(() => {
-  return reportForm.name.trim() && reportModules.value.length > 0 && 
-         reportModules.value.every(module => module.type)
+  return reportForm.name.trim() && reportModules.value.length > 0
 })
 
 const canPreview = computed(() => {
@@ -503,29 +657,10 @@ const canPreview = computed(() => {
 })
 
 // 方法
-const addNewModule = () => {
-  const newModule = {
-    id: `module_${Date.now()}`,
-    name: `模块${reportModules.value.length + 1}`,
-    type: '',
-    description: '',
-    summary: '', // 添加总结说明字段
-    chartType: 'bar', // 默认柱状图
-    colorScheme: '经典蓝',
-    showLegend: true,
-    showLabels: true
-  }
-  
-  reportModules.value.push(newModule)
-  editingModuleIndex.value = reportModules.value.length - 1
-}
-
 const editModule = (index) => {
   if (editingModuleIndex.value === index) {
-    // 完成编辑
     editingModuleIndex.value = -1
   } else {
-    // 开始编辑
     editingModuleIndex.value = index
   }
 }
@@ -539,15 +674,8 @@ const removeModule = (index) => {
   }
 }
 
-const onModuleTypeChange = (module) => {
-  // 当模块类型改变时，可以设置默认的图表类型
-  if (module.type && !module.chartType) {
-    module.chartType = 'bar'
-  }
-}
-
 const getModuleTypeName = (typeId) => {
-  const moduleType = availableModuleTypes.find(type => type.id === typeId)
+  const moduleType = allModuleTypes.find(type => type.id === typeId)
   return moduleType ? moduleType.name : '未选择'
 }
 
@@ -562,6 +690,33 @@ const getChartTypeName = (chartType) => {
   return chartTypes[chartType] || chartType
 }
 
+// 当档案类型改变时
+const onReportTypeChange = () => {
+  selectedReportIndex.value = ''
+  isReportLoaded.value = false
+  
+  // 根据选择的档案类型，自动初始化标准模块
+  if (selectedReportType.value && archiveModuleMap[selectedReportType.value]) {
+    reportModules.value = archiveModuleMap[selectedReportType.value].map(m => ({
+      id: `module_${m.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      name: m.name,
+      type: m.id,
+      description: '',
+      summary: '', // 切换类型时保持空白
+      chartType: 'none',
+      colorScheme: '经典蓝',
+      showLegend: true,
+      showLabels: true,
+      trainingHours: 0,
+      trainingResult: '',
+      trainingReport: '',
+      isCustom: false
+    }))
+  } else {
+    reportModules.value = []
+  }
+}
+
 // 当报告被选择时
 const onReportSelected = () => {
   if (selectedReportIndex.value === '') {
@@ -569,7 +724,7 @@ const onReportSelected = () => {
   }
 }
 
-// 加载报告内容并转换为模块
+// 加载报告内容并转换为模块 (现在改为辅助填充机制)
 const loadReportContent = () => {
   if (selectedReportIndex.value === '') return
   
@@ -583,92 +738,75 @@ const loadReportContent = () => {
   if (!reportForm.name.trim()) {
     reportForm.name = reportInfo.title
   }
-  
-  // 将报告内容转换为模块
-  const newModules = []
-  
-  // 1. 综合评价模块
+
+  // 先为所有模块填充专业的 Mock 模板作为基础
+  reportModules.value.forEach(module => {
+    if (mockContentMap[module.type]) {
+      module.summary = mockContentMap[module.type]
+      
+      // 针对培训模块填充默认 Mock 数据
+      if (module.type.startsWith('training-')) {
+        module.trainingHours = 40
+        module.trainingResult = '优秀'
+        module.trainingReport = 'http://example.com/certified_report'
+      }
+    }
+  })
+
+  // 辅助填充逻辑：尝试将报告内容填充到已有的对应模块中
   if (reportContent.evaluation) {
-    newModules.push({
-      id: `module_evaluation_${Date.now()}`,
-      name: '综合评价',
-      type: 'teaching-experience', // 默认类型
-      description: '来自AI分析报告的综合评价',
-      summary: reportContent.evaluation,
-      chartType: 'none',
-      colorScheme: '经典蓝',
-      showLegend: true,
-      showLabels: true,
-      source: 'report',
-      sourceType: 'evaluation'
-    })
+    // 找到合适的模块填充评价（跳过“个人基本资料”模块）
+    const targetFillIndex = reportModules.value[0]?.type === 'personal-info' ? 1 : 0
+    if (reportModules.value.length > targetFillIndex) {
+      reportModules.value[targetFillIndex].summary = reportContent.evaluation
+    }
   }
-  
-  // 2. 详细分析模块（每个分析项一个模块）
+
+  // 如果有详细分析，尝试匹配标题填充
   if (reportContent.analysis && Array.isArray(reportContent.analysis)) {
-    reportContent.analysis.forEach((analysisItem, index) => {
-      newModules.push({
-        id: `module_analysis_${Date.now()}_${index}`,
-        name: analysisItem.title || `分析项${index + 1}`,
-        type: 'workload-stats', // 默认类型
-        description: `来自AI分析报告的${analysisItem.title}`,
-        summary: analysisItem.content,
-        chartType: 'bar',
-        colorScheme: colorSchemes[index % colorSchemes.length].name,
-        showLegend: true,
-        showLabels: true,
-        source: 'report',
-        sourceType: 'analysis',
-        originalTitle: analysisItem.title
-      })
+    reportContent.analysis.forEach((analysisItem) => {
+      const targetModule = reportModules.value.find(m => 
+        analysisItem.title.includes(m.name) || m.name.includes(analysisItem.title)
+      )
+      if (targetModule) {
+        targetModule.summary = analysisItem.content
+      }
     })
   }
-  
-  // 3. 总结模块
-  if (reportContent.summary) {
-    newModules.push({
-      id: `module_summary_${Date.now()}`,
-      name: '总结',
-      type: 'teaching-experience',
-      description: '来自AI分析报告的总结',
-      summary: reportContent.summary,
-      chartType: 'none',
-      colorScheme: '经典蓝',
-      showLegend: true,
-      showLabels: true,
-      source: 'report',
-      sourceType: 'summary'
-    })
-  }
-  
-  // 4. 建议模块
-  if (reportContent.suggestions) {
-    newModules.push({
-      id: `module_suggestions_${Date.now()}`,
-      name: '发展建议',
-      type: 'teaching-experience',
-      description: '来自AI分析报告的发展建议',
-      summary: reportContent.suggestions,
-      chartType: 'none',
-      colorScheme: '优雅紫',
-      showLegend: true,
-      showLabels: true,
-      source: 'report',
-      sourceType: 'suggestions'
-    })
-  }
-  
-  // 将新模块添加到现有模块列表中（不覆盖已有模块）
-  reportModules.value.push(...newModules)
   
   // 标记报告已加载
   isReportLoaded.value = true
-  
-  // 自动展开第一个新添加的模块进行编辑
-  if (newModules.length > 0) {
-    const firstNewModuleIndex = reportModules.value.length - newModules.length
-    editingModuleIndex.value = firstNewModuleIndex
+}
+
+const addNewModule = () => {
+  const newModule = {
+    id: `module_custom_${Date.now()}`,
+    name: '新自定义模块',
+    type: 'custom',
+    description: '',
+    summary: '',
+    chartType: 'none',
+    colorScheme: '经典蓝',
+    showLegend: true,
+    showLabels: true,
+    isCustom: true // 标记为自定义，允许编辑名称
   }
+  
+  reportModules.value.push(newModule)
+  editingModuleIndex.value = reportModules.value.length - 1
+}
+
+const handlePrint = () => {
+  alert('正在准备档案打印预览...')
+  window.print()
+}
+
+const handleDownload = () => {
+  alert('正在生成 PDF/Word 文档并准备下载...')
+}
+
+const handleApply = () => {
+  alert('档案申报系统已对接，正在提交申报材料...')
 }
 
 const previewReport = () => {
@@ -676,6 +814,7 @@ const previewReport = () => {
   
   const reportData = {
     name: reportForm.name,
+    type: selectedReportType.value,
     modules: reportModules.value,
     createdAt: new Date().toISOString()
   }
@@ -683,9 +822,9 @@ const previewReport = () => {
   // 将报告数据存储到 localStorage 供预览页面使用
   localStorage.setItem('previewReportData', JSON.stringify(reportData))
   
-  // 在新标签页打开预览页面
-  const previewUrl = '/report-preview'
-  window.open(previewUrl, '_blank')
+  // 在新标签页打开预览页面（适配 Hash 模式）
+  const routeData = router.resolve({ name: 'ReportPreview' })
+  window.open(routeData.href, '_blank')
 }
 
 const saveReport = () => {
@@ -707,6 +846,7 @@ const closeModal = () => {
   reportForm.name = ''
   reportModules.value = []
   editingModuleIndex.value = -1
+  selectedReportType.value = ''
   selectedReportIndex.value = ''
   isReportLoaded.value = false
   // 触发关闭事件
@@ -866,18 +1006,19 @@ const emit = defineEmits(['close'])
 .modules-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 40px;
 }
 
 .module-item {
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  overflow: hidden;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 30px;
+  overflow: visible;
   transition: all 0.2s;
 }
 
-.module-item:hover {
-  border-color: #d1d5db;
+.module-item:last-child {
+  border-bottom: none;
 }
 
 /* 更新模块头部样式 */
@@ -885,9 +1026,9 @@ const emit = defineEmits(['close'])
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 0;
+  background: transparent;
+  border-bottom: none;
 }
 
 .module-type-selector {
@@ -1035,9 +1176,76 @@ const emit = defineEmits(['close'])
   height: 16px;
 }
 
-.summary-textarea {
-  height: 200px;
-  resize: vertical;
+.document-editor-container {
+  display: flex;
+  flex-direction: column;
+  background: #fdfdfd;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #eef1f6;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.mock-editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tool {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.tool:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.tool-divider {
+  width: 1px;
+  height: 16px;
+  background: #cbd5e1;
+}
+
+.tool-info {
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.document-style-textarea {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0 0 6px 6px !important;
+  background: #fff;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 16px;
+  line-height: 1.8;
+  padding: 30px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  color: #2c3e50;
+  resize: none;
+}
+
+.document-style-textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
 }
 
 .module-preview {
@@ -1082,25 +1290,22 @@ const emit = defineEmits(['close'])
 }
 
 .preview-summary {
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .summary-preview {
   margin: 0;
-  font-size: 13px;
-  color: #6b7280;
-  line-height: 1.6;
-  font-style: italic;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 15px;
+  color: #334155;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  text-align: left;
 }
 
 .preview-content {
-  color: #6b7280;
-  line-height: 1.6;
-}
-
-.preview-description {
-  margin: 0 0 12px 0;
-  font-style: italic;
+  color: #334155;
+  line-height: 1.8;
 }
 
 .preview-chart {
@@ -1167,12 +1372,25 @@ const emit = defineEmits(['close'])
 
 .report-selector {
   display: flex;
-  gap: 12px;
-  align-items: center;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.selector-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.selector-field label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
 }
 
 .report-selector .form-select {
-  flex: 1;
+  width: 100%;
 }
 
 .load-report-btn {
@@ -1275,6 +1493,52 @@ const emit = defineEmits(['close'])
   cursor: not-allowed;
 }
 
+
+/* 培训特有字段样式 */
+.training-fields {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed #eee;
+}
+
+.special-field label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.special-field .form-input {
+  background: #f8faff;
+  border-color: #e1e8f5;
+}
+
+.preview-special-info {
+  margin: 12px 0;
+  padding: 10px;
+  background: #f0f7ff;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.preview-special-info .info-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.preview-special-info .info-tag {
+  color: #1890ff;
+  font-weight: 500;
+}
+
+.preview-special-info .report-link {
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .modal-content {
@@ -1314,5 +1578,62 @@ const emit = defineEmits(['close'])
     grid-template-columns: 1fr;
     gap: 16px;
   }
+}
+
+/* 档案模块新样式 */
+.module-name-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.module-name-display h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.name-edit-input {
+  border: 1px solid #dcdfe6;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1890ff;
+  background: #f0f7ff;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.name-edit-input:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+.module-item-footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.remove-btn-minimal {
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  padding: 4px 0;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.remove-btn-minimal:hover {
+  color: #f5222d;
+}
+
+.btn-icon {
+  font-size: 14px;
 }
 </style>

@@ -137,8 +137,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import ReportCreationModal from "./report-components/ReportCreationModal.vue"
 import ArchiveDetailPreview from "./ArchiveDetailPreview.vue"
+
+const router = useRouter()
 
 // 筛选条件
 const timeFilter = ref('all')
@@ -189,15 +192,26 @@ const reports = [
     size: 4096000,
     createTime: '2024-02-20'
   },
+
   {
-    name: '2024-2025教学工作计划',
-    format: 'ppt',
-    formatText: 'PPT',
-    description: '软件工程课程的完整PPT课件，包含软件生命周期、需求分析、系统设计等核心内容。',
+    name: '2024学生人工智能作品集',
+    format: 'pdf',
+    formatText: 'PDF',
+    description: '学生优秀作品集，展示了学生在课程学习中的创新思维和实践能力。',
     thumbnail: getRandomImage(),
-    size: 15360000,
-    createTime: '2024-03-10'
+    size: 6144000,
+    createTime: '2024-06-15'
   },
+  {
+    name: '2024-2025教学工作总结',
+    format: 'word',
+    formatText: 'Word',
+    description: '教学过程中的反思笔记，记录了教学方法的改进、学生反馈的总结和教学效果的评估。',
+    thumbnail: null,
+    size: 1024000,
+    createTime: '2024-07-01'
+  },
+
   {
     name: '2024学生人工智能作品集',
     format: 'pdf',
@@ -283,7 +297,7 @@ const getFormatIcon = (format) => {
   const icons = {
     word: '📄',
     pdf: '📕',
-    ppt: '📊',
+
     image: '🖼️',
     video: '🎥',
     webpage: '🌐'
@@ -291,92 +305,67 @@ const getFormatIcon = (format) => {
   return icons[format] || '📁'
 }
 
-// 预览报告 - 生成完整的报告数据
+// 预览报告 - 生成并跳转到长文档预览页面
 const previewReport = (report) => {
-  // 根据截图中的模块类型生成三个模块
+  // 构建图文并茂的模块数据
   const moduleTypes = [
     {
+      id: `m1_${Date.now()}`,
       name: '成果奖励',
-      icon: '🏆',
-      chartTitle: '成果奖励统计',
-      chartType: '柱状图',
-      chartData: [
-        { label: '论文', value: 85 },
-        { label: '专利', value: 65 },
-        { label: '证书', value: 90 },
-        { label: '项目', value: 75 }
-      ],
-      summary: '本学期在成果奖励方面表现突出，共获得各类奖项12项，其中国家级奖项2项，省级奖项5项，市级奖项5项。发表学术论文8篇，其中核心期刊论文3篇。申请专利3项，已授权2项。这些成果充分体现了教学与科研工作的高质量发展。',
-      metrics: [
-        { label: '总计奖项', value: '12项' },
-        { label: '核心论文', value: '3篇' },
-        { label: '授权专利', value: '2项' },
-        { label: '完成度', value: '85%' }
-      ]
+      type: 'growth-competition',
+      summary: '本年度在成果奖励方面取得了突破性进展。共获得各类荣誉12项，其中包括“国家级教学成果二等奖”1项，省级“优秀指导教师”3项。\n\n关键成就：\n• 核心论文：在《电化教育研究》发表高水平论文2篇。\n• 指导竞赛：指导学生获得蓝桥杯全国一等奖，实现该赛道零位突破。\n• 专利授权：获实用新型专利授权2项，软件著作权1项。',
+      chartType: 'bar',
+      colorScheme: '经典蓝',
+      showLegend: true,
+      showLabels: true,
+      trainingHours: 0,
+      trainingResult: '',
+      trainingReport: ''
     },
     {
-      name: '工作量统计',
-      icon: '📊',
-      chartTitle: '工作量分布',
-      chartType: '柱状图',
-      chartData: [
-        { label: '教学', value: 78 },
-        { label: '科研', value: 82 },
-        { label: '管理', value: 68 },
-        { label: '服务', value: 72 }
-      ],
-      summary: '本学期工作量饱满，教学工作时长累计368学时，超额完成教学任务20%。科研工作投入时间占比28%，主持科研项目2项，参与项目3项。承担班主任工作和教研室管理工作，服务学生和教师群体。整体工作量分布合理，各项工作均衡发展。',
-      metrics: [
-        { label: '教学学时', value: '368时' },
-        { label: '科研项目', value: '5项' },
-        { label: '管理工作', value: '2项' },
-        { label: '超额完成', value: '20%' }
-      ]
+      id: `m2_${Date.now()}`,
+      name: '工作量与实效',
+      type: 'teaching-implementation',
+      summary: '本年度教学工作饱和度高，教学实效显著提升。累计承担专业核心课程3门，总课时达360学时，平均学生满意度评分4.85/5.0。\n\n执行详情：\n• 教学大纲：100%按计划执行，并根据行业标准动态更新了20%的教学案例。\n• 教学模式：全面推行“岗课赛证”融通模式，学生考证通过率提升至92%。\n• 数字化资源：独立开发教学微视频45个，在线访问量超3000次。',
+      chartType: 'line',
+      colorScheme: '自然绿',
+      showLegend: true,
+      showLabels: true,
+      trainingHours: 0,
+      trainingResult: '',
+      trainingReport: ''
     },
     {
-      name: '数字素养',
-      icon: '💻',
-      chartTitle: '数字素养能力',
-      chartType: '柱状图',
-      chartData: [
-        { label: '信息技术', value: 88 },
-        { label: '数据分析', value: 92 },
-        { label: '工具应用', value: 85 },
-        { label: '创新能力', value: 80 }
-      ],
-      summary: '在数字化教学方面表现优秀，熟练运用各类教学软件和在线教学平台，积极探索智慧课堂建设。完成教育技术能力培训并获得高级证书，在数据分析和可视化方面具有较强能力。开发教学辅助工具3个，提升了教学效率和学生学习体验。',
-      metrics: [
-        { label: '掌握工具', value: '15种' },
-        { label: '开发应用', value: '3个' },
-        { label: '培训证书', value: '高级' },
-        { label: '综合评分', value: '88分' }
-      ]
+      id: `m3_${Date.now()}`,
+      name: '数字素养提升',
+      type: 'training-online',
+      summary: '积极响应教育数字化转型号召，系统化提升个人数字素养。完成了为期3个月的“人工智能+教育”专题进修，并获得高级研修证书。\n\n素养产出：\n• 智能工具应用：熟练掌握15种以上生成式AI备课工具，备课效率提升约50%。\n• 资源数字化：建成校级精品在线课程1门，参建省级资源库项目1项。\n• 技术分享：在全校范围内开展数字化教学经验分享讲座3场，覆盖教师80人次。',
+      chartType: 'pie',
+      colorScheme: '温暖橙',
+      showLegend: true,
+      showLabels: true,
+      trainingHours: 48,
+      trainingResult: '优秀',
+      trainingReport: 'http://example.com/digital-competence-cert'
     }
   ]
 
-  // 构建完整的预览数据
-  previewReportData.value = {
+  // 构建完整的预览数据结构
+  const reportData = {
     name: report.name,
-    createTime: report.createTime,
+    type: '综合教师档案',
     modules: moduleTypes,
-    overallSummary: {
-      overview: `${report.name}全面展示了教师在本学期的工作成果和专业发展情况。通过对成果奖励、工作量统计和数字素养三个核心维度的系统分析，可以看出教师在教学、科研和专业能力提升方面均取得了显著成绩。各项指标数据真实反映了教师的工作投入和成长轨迹，为后续的职业发展规划提供了重要参考依据。`,
-      highlights: [
-        '成果奖励丰硕，获得国家级、省级、市级奖项共12项，体现了较高的专业水平',
-        '工作量饱满且分布合理，教学学时超额完成20%，科研项目推进顺利',
-        '数字素养能力突出，掌握现代教育技术工具，积极推动智慧教学创新',
-        '论文发表质量高，核心期刊论文3篇，学术影响力持续提升',
-        '专利申请与授权进展良好，科研成果转化能力强'
-      ],
-      recommendations: [
-        '继续保持科研工作的高投入，力争在核心期刊发表更多高质量论文',
-        '加强跨学科交流与合作，拓展研究视野和研究领域',
-        '进一步提升数字化教学创新能力，开发更多教学辅助工具',
-        '注重工作与生活平衡，合理分配时间和精力，保持可持续发展',
-        '积极参与学术会议和专业培训，及时了解学科前沿动态'
-      ]
-    }
+    createdAt: report.createTime || new Date().toISOString()
   }
+
+  // 存储数据并跳转（新开页）
+  localStorage.setItem('previewReportData', JSON.stringify(reportData))
+  
+  // 适配 Hash 路由跳转
+  const routeData = router.resolve({
+    name: 'ReportPreview'
+  })
+  window.open(routeData.href, '_blank')
 }
 
 // 关闭报告预览
@@ -614,6 +603,7 @@ onMounted(() => {
   font-size: 16px;
   line-height: 1.4;
   flex: 1;
+  text-align: left;
 }
 
 /* 类型标签 */
@@ -634,9 +624,7 @@ onMounted(() => {
   background-color: #dc2626;
 }
 
-.type-ppt {
-  background-color: #ea580c;
-}
+
 
 .type-image {
   background-color: #059669;
@@ -774,8 +762,8 @@ onMounted(() => {
 }
 
 .preview-btn {
-  background: #8b5cf6;
-  color: white;
+  background: #c9b7f2;
+  color: #7c3aed;
 }
 
 .preview-btn:hover {
@@ -783,8 +771,8 @@ onMounted(() => {
 }
 
 .download-btn {
-  background: #059669;
-  color: white;
+  background: #bcedde;
+  color: #01875b;
 }
 
 .download-btn:hover {

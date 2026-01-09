@@ -1,104 +1,211 @@
 <template>
   <div class="todo-list-component">
-    <!-- 当前目标模块 -->
-    <div class="current-target-section">
-      <div class="target-header">
-        <h3 class="target-section-title">进行中的目标</h3>
-        <button class="set-target-btn" @click="openTargetSetting">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-            <line x1="12" y1="8" x2="12" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <!-- 成长曲线区域 -->
+    <div class="growth-curve-section">
+      <!-- 顶部三栏信息 -->
+      <div class="curve-top-row">
+        <!-- 左侧：成长称号卡片 -->
+        <div class="title-card">
+          <div class="title-card-header">
+            <div class="title-info">
+              <h4 class="title-name">双师型教师</h4>
+              <p class="title-desc">即将达成成长目标！</p>
+            </div>
+            <div class="title-icon">🏆</div>
+          </div>
+          <div class="title-progress">
+            <div class="title-progress-bar">
+              <div class="title-progress-fill" style="width: 71%"></div>
+            </div>
+            <span class="title-progress-label">成长进度 71%</span>
+          </div>
+        </div>
+
+        <!-- 中间：本周活动 -->
+        <div class="activity-card">
+          <div class="activity-header">
+            <span class="activity-label">本周活动</span>
+            <span class="activity-trend up">↑ +12%</span>
+          </div>
+          <div class="activity-count">
+            <span class="count-num">6</span>
+            <span class="count-unit">项活动</span>
+          </div>
+          <div class="activity-dots">
+            <span class="dot active"></span>
+            <span class="dot active"></span>
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <div class="activity-completion">完成度 60%</div>
+        </div>
+
+        <!-- 右侧：智能回顾 -->
+        <div class="ai-review-card">
+          <div class="ai-review-header">
+            <span class="ai-icon">🤖</span>
+            <span class="ai-title">智能回顾</span>
+          </div>
+          <p class="ai-content">
+            基于你最近一周的表现，AI为你生成了如下建议：
+            <span class="highlight">📊 本周表现分析：</span>
+            <span class="suggestion">❶ 开始一个微型项目来巩固知识</span>
+            <span class="suggestion">❷ 尝试学习新的技术栈</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- 成长轨迹曲线 -->
+      <div class="curve-chart-area">
+        <h4 class="curve-chart-title">成长轨迹</h4>
+        <div class="curve-chart-wrapper">
+          <!-- SVG 曲线 -->
+          <svg class="curve-svg" viewBox="0 0 1000 220" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="curveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#8b5cf6"/>
+                <stop offset="40%" style="stop-color:#3b82f6"/>
+                <stop offset="100%" style="stop-color:#22c55e"/>
+              </linearGradient>
+            </defs>
+            <path 
+              d="M 30 180 Q 100 175 180 160 T 350 140 T 500 115 T 650 85 T 800 55 T 970 30" 
+              fill="none" 
+              stroke="url(#curveGradient)" 
+              stroke-width="6"
+              stroke-linecap="round"
+            />
           </svg>
-          设置目标
+
+          <!-- 成长节点标记 -->
+          <div class="milestone-nodes">
+            <!-- 节点1：学习起步 -->
+            <div class="milestone-node" style="left: 10%; top: 63%;">
+              <div class="node-circle purple">01</div>
+              <div class="node-label above">
+                <span class="node-title">学习起步</span>
+                <span class="node-desc">课程学习，建立知识体系</span>
+              </div>
+            </div>
+
+            <!-- 节点2：技能提升 -->
+            <div class="milestone-node" style="left: 28%; top: 64%;">
+              <div class="node-circle blue">02</div>
+              <div class="node-label below">
+                <span class="node-title">技能提升</span>
+                <span class="node-desc">掌握核心技能，开始实践应用</span>
+              </div>
+            </div>
+
+            <!-- 节点3：项目实践 -->
+            <div class="milestone-node" style="left: 44%; top: 46%;">
+              <div class="node-circle blue">03</div>
+              <div class="node-label above">
+                <span class="node-title">项目实践</span>
+                <span class="node-desc">参与实际项目，积累经验</span>
+              </div>
+            </div>
+
+            <!-- 节点4：能力突破 -->
+            <div class="milestone-node" style="left: 60%; top: 42%;">
+              <div class="node-circle teal">04</div>
+              <div class="node-label below">
+                <span class="node-title">能力突破</span>
+                <span class="node-desc">突破瓶颈，实现能力跃升</span>
+              </div>
+            </div>
+
+            <!-- 节点5：专业发展 -->
+            <div class="milestone-node" style="left: 72%; top: 22%;">
+              <div class="node-circle teal">05</div>
+              <div class="node-label above">
+                <span class="node-title">专业发展</span>
+                <span class="node-desc">建立专业优势，成为领域专家</span>
+              </div>
+            </div>
+
+            <!-- 节点6：成就达成 -->
+            <div class="milestone-node" style="left: 89%; top: 9%;">
+              <div class="node-circle green">06</div>
+              <div class="node-label above">
+                <span class="node-title">成就达成</span>
+                <span class="node-desc">实现个人目标，获得认可</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 城市剪影背景 -->
+          <div class="city-silhouette"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 纵向排列的目标列表 -->
+    <div class="vertical-targets-container">
+      <div class="section-header">
+        <h3 class="section-title">成长目标</h3>
+        <button class="add-goal-btn" @click="openTargetSetting">
+          <span class="plus-icon">+</span> 设置新目标
         </button>
       </div>
-      
-      <div class="target-list">
-        <div 
-          v-for="target in targets" 
-          :key="target.id"
-          class="target-item"
-          :class="{ active: currentTargetId === target.id }"
-          @click="switchTarget(target.id)"
-        >
-          <div class="target-info">
-            <div class="target-name">{{ target.name }}</div>
-            <div class="target-meta">
-              <span v-if="target.type" class="target-type">{{ getTargetTypeLabel(target.type) }}</span>
-              <span class="target-date">
-                {{ target.deadline ? formatDate(target.deadline) : (target.startDate ? `${formatDate(target.startDate)} - ${formatDate(target.endDate)}` : '') }}
-              </span>
+
+      <div 
+        v-for="target in targets" 
+        :key="target.id"
+        class="target-milestone-card"
+      >
+        <!-- 目标信息头部 -->
+        <div class="card-header-v">
+          <div class="header-main">
+            <div class="target-badge" :class="'badge-' + target.priority">
+              {{ getTargetTypeLabel(target.type || 'other') }}
             </div>
+            <h4 class="target-title-v">{{ target.name }}</h4>
+            <div class="target-period">{{ formatDate(target.startDate) }} - {{ formatDate(target.endDate) }}</div>
           </div>
-          <div class="target-actions">
-            <button 
-              class="edit-target-btn" 
-              @click.stop="editTarget(target)"
-              title="编辑目标"
-            >
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <div class="target-indicator">
-              <div class="indicator-circle" :class="{ active: currentTargetId === target.id }"></div>
-            </div>
+          <div class="header-actions">
+            <button class="edit-btn-v" @click="editTarget(target)">编辑</button>
           </div>
         </div>
-        
-        <!-- 空状态 -->
-        <div v-if="targets.length === 0" class="empty-target">
-          <p class="empty-text">暂无目标，点击右上角"设置目标"开始规划</p>
-        </div>
-      </div>
-    </div>
 
-    <div class="todo-header">
-      <div class="progress-summary">
-        <span class="progress-text">已完成 {{ completedCount }}/{{ totalCount }} 项任务</span>
-        <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: progressPercentage + '%' }"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="todo-container">
-      <div v-if="tasks.length === 0" class="empty-tasks">
-        <p class="empty-tasks-text">该目标暂无任务，请先添加任务</p>
-      </div>
-      <div v-else class="task-chain">
-        <div 
-          v-for="(task, index) in tasks" 
-          :key="task.id"
-          class="task-item"
-          :class="{ 'last-task': index === tasks.length - 1 }"
-        >
-          
-          <!-- 任务节点 -->
-          <div class="task-node">
-            <div class="node-circle" :class="{ completed: task.completed }">
-              <span v-if="task.completed" class="checkmark">✓</span>
-            </div>
-            <div class="node-label">{{ task.title }}</div>
+        <!-- 进度条展示 -->
+        <div class="progress-section-v">
+          <div class="progress-meta">
+            <span class="percent-text">{{ calculateProgress(target) }}%</span>
+            <span class="count-text">已完成 {{ calculateCompleted(target) }}/{{ calculateTotal(target) }} 项任务</span>
           </div>
+          <div class="progress-track-v">
+            <div class="progress-thumb-v" :style="{ width: calculateProgress(target) + '%' }"></div>
+          </div>
+        </div>
 
-          <!-- 子任务列表 -->
-          <div class="subtasks-container">
-            <div 
-              v-for="subtask in task.subtasks" 
-              :key="subtask.id"
-              class="subtask-item"
-            >
-              <div class="subtask-circle" :class="{ completed: subtask.completed }">
-                <span v-if="subtask.completed" class="checkmark">✓</span>
+        <!-- 当前目标的任务链路 -->
+        <div class="task-chain-v">
+          <div 
+            v-for="(task, index) in target.tasks" 
+            :key="task.id"
+            class="chain-item"
+          >
+            <!-- 任务节点 -->
+            <div class="chain-node">
+              <div class="node-bullet" :class="{ done: task.completed }">
+                <span v-if="task.completed">✓</span>
               </div>
-              <div class="subtask-content">
-                <span class="subtask-title">{{ subtask.title }}</span>
-                <span class="subtask-status" :class="{ completed: subtask.completed }">
-                  {{ subtask.completed ? '已完成' : '进行中' }}
-                </span>
+              <div class="node-content">
+                <div class="node-title">{{ task.title }}</div>
+                <!-- 子任务水平流 -->
+                <div class="subtask-flow">
+                  <div 
+                    v-for="sub in task.subtasks" 
+                    :key="sub.id" 
+                    class="sub-pill"
+                    :class="{ done: sub.completed }"
+                  >
+                    {{ sub.title }}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -381,531 +488,642 @@ const tasks = computed(() => {
   return currentTarget.value.tasks || []
 })
 
-// 计算完成进度
-const completedCount = computed(() => {
-  return tasks.value.reduce((count, task) => {
-    return count + task.subtasks.filter(subtask => subtask.completed).length
+// 计算完成进度辅助函数
+const calculateCompleted = (target) => {
+  if (!target.tasks) return 0
+  return target.tasks.reduce((count, task) => {
+    return count + (task.subtasks ? task.subtasks.filter(sub => sub.completed).length : 0)
   }, 0)
-})
+}
 
-const totalCount = computed(() => {
-  return tasks.value.reduce((count, task) => {
-    return count + task.subtasks.length
+const calculateTotal = (target) => {
+  if (!target.tasks) return 0
+  return target.tasks.reduce((count, task) => {
+    return count + (task.subtasks ? task.subtasks.length : 0)
   }, 0)
-})
+}
 
-const progressPercentage = computed(() => {
-  return totalCount.value > 0 ? Math.round((completedCount.value / totalCount.value) * 100) : 0
-})
+const calculateProgress = (target) => {
+  const total = calculateTotal(target)
+  return total > 0 ? Math.round((calculateCompleted(target) / total) * 100) : 0
+}
 </script>
 
 <style scoped>
+
+
 .todo-list-component {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 32px;
+  box-shadow: none;
+  border: none;
+}
+
+.vertical-targets-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.add-goal-btn {
+  background: linear-gradient(135deg, #26b2fd, #6f74fb);
+  border: 1px solid #e2e8f0;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.add-goal-btn:hover {
+  background: #f8faff;
+  border-color: #6366f1;
+}
+
+/* 目标里程碑卡片 */
+.target-milestone-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  transition: transform 0.3s;
+}
+
+.card-header-v {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.header-main {
+  display: flex;
+  flex-direction:  row;
+  gap: 12px;
+  text-align: left;
+  align-items: baseline;
+}
+
+.target-badge {
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-high { background: #fee2e2; color: #ef4444; }
+.badge-medium { background: #fef3c7; color: #f59e0b; }
+.badge-low { background: #dcfce7; color: #22c55e; }
+
+.target-title-v {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.target-period {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.edit-btn-v {
+  font-size: 13px;
+  color: #94a3b8;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.edit-btn-v:hover { 
+  color: #6366f1;
+  background: #f0f4ff;
+}
+
+/* 进度条样式 */
+.progress-section-v {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.percent-text {
+  font-size: 24px;
+  font-weight: 800;
+  color: #6366f1;
+}
+
+.count-text {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.progress-track-v {
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-thumb-v {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  border-radius: 5px;
+  transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 垂直任务链 */
+.task-chain-v {
+  position: relative;
+  padding-left: 20px;
+}
+
+.chain-item {
+  position: relative;
+  margin-bottom: 32px;
+}
+
+.chain-item:last-child {
+  margin-bottom: 0;
+}
+
+.chain-node {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.node-bullet {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  color: white;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-left: 8px;
+  transition: all 0.3s;
+}
+
+.node-bullet.done {
+  background: #6366f1;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.node-content {
+  flex: 1;
+  text-align: left;
+}
+
+.node-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.subtask-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sub-pill {
+  padding: 5px 14px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #64748b;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sub-pill:hover {
+  transform: translateY(-1px);
+  border-color: #cbd5e1;
+}
+
+.sub-pill.done {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .target-milestone-card {
+    padding: 16px;
+  }
+  .task-chain-v::before {
+    left: 23px;
+  }
+  .node-bullet {
+    margin-left: 0;
+  }
+  .curve-top-row {
+    flex-direction: column;
+  }
+  .title-card, .activity-card, .ai-review-card {
+    flex: none;
+    width: 100%;
+  }
+}
+
+/* ========== 成长曲线区域样式 ========== */
+.growth-curve-section {
   background: white;
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(139, 92, 246, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
 }
 
-.todo-header {
+.curve-top-row {
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 16px 43px;
+  gap: 20px;
+  margin-bottom: 18px;
 }
 
-/* 当前目标模块 */
-.current-target-section {
-  background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
-  border-radius: 16px;
-  padding: 20px 24px;
-  margin-bottom: 24px;
-  border: 1px solid rgba(139, 92, 246, 0.1);
+/* 左侧称号卡片 */
+.title-card {
+  flex: 0 0 260px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f8f9ff 100%);
+  border-radius: 12px;
+  padding: 20px;
 }
 
-.target-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.target-section-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
-}
-
-.set-target-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #26b2fd, #6f74fb);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.set-target-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-}
-
-.set-target-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
-.target-list {
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-}
-
-.target-item {
+.title-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 16px;
-  background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  margin-bottom: 57px;
 }
 
-.target-item:hover {
-  border-color: #8b5cf6;
-  background: #f9fafb;
-  transform: translateX(4px);
-}
-
-.target-item.active {
-  border-color: #6f74fb;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(59, 130, 246, 0.05));
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
-}
-
-.target-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.target-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1f2937;
+.title-info {
   text-align: left;
 }
 
-.target-meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.title-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3b82f6;
+  margin: 0 0 4px 0;
+}
+
+.title-desc {
   font-size: 12px;
-}
-
-.target-type {
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: 500;
-  font-size: 11px;
-  background: rgba(139, 92, 246, 0.1);
-  color: #8b5cf6;
-}
-
-.target-date {
-  color: #6b7280;
-}
-
-.target-priority {
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: 500;
-  font-size: 11px;
-}
-
-.priority-high {
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
-}
-
-.priority-medium {
-  background: rgba(245, 158, 11, 0.1);
-  color: #d97706;
-}
-
-.priority-low {
-  background: rgba(59, 130, 246, 0.1);
-  color: #2563eb;
-}
-
-.target-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.edit-target-btn {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(139, 92, 246, 0.1);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: #8b5cf6;
-  flex-shrink: 0;
-}
-
-.edit-target-btn:hover {
-  background: rgba(139, 92, 246, 0.2);
-  transform: scale(1.1);
-}
-
-.edit-target-btn svg {
-  width: 14px;
-  height: 14px;
-}
-
-.target-indicator {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.indicator-circle {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #e5e7eb;
-  transition: all 0.3s ease;
-}
-
-.indicator-circle.active {
-  background: #8b5cf6;
-  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
-}
-
-.empty-target {
-  padding: 24px;
-  text-align: center;
-}
-
-.empty-text {
-  color: #9ca3af;
-  font-size: 14px;
+  color: #3b82f6;
   margin: 0;
 }
 
-.todo-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
+.title-icon {
+  font-size: 32px;
 }
 
-.progress-summary {
+.title-progress {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.progress-text {
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.progress-bar {
-  width: 80vh;
+.title-progress-bar {
   height: 8px;
-  background: #f3f4f6;
+  background: #cdd7f6;
   border-radius: 4px;
   overflow: hidden;
 }
 
-.progress-fill {
+.title-progress-fill {
   height: 100%;
-  background: linear-gradient(135deg, #26b2fd, #6f74fb);
+  background: linear-gradient(90deg, #3b82f6, #72a4f4);
   border-radius: 4px;
-  transition: width 0.3s ease;
 }
 
-.todo-container {
-  overflow-x: auto;
-  padding-bottom: 16px;
+.title-progress-label {
+  font-size: 12px;
+  color: #3b82f6;
+  font-weight: 600;
 }
 
-.empty-tasks {
-  padding: 60px 20px;
-  text-align: center;
+/* 中间活动卡片 */
+.activity-card {
+  flex: 0 0 330px;
+  background: #f8f9ff;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
 }
 
-.empty-tasks-text {
-  color: #9ca3af;
-  font-size: 16px;
-  margin: 0;
-}
-
-.task-chain {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 15px;
-  width: 100%;
-  padding: 20px 20px;
-}
-
-.task-item {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  width: 100%;
-  gap: 24px;
-}
-
-.task-item.last-task {
-  padding-bottom: 0;
-}
-
-.task-line {
-  position: absolute;
-  top: 100%;
-  left: 47px;
-  width: 2px;
-  height: 40px;
-  background: linear-gradient(180deg, #8b5cf6, #e5e7eb);
-  z-index: 1;
-}
-
-.task-node {
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  flex-shrink: 0;
-  z-index: 2;
-  position: relative;
-  gap: 12px;
-}
-
-.node-circle {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 2px solid #e5e7eb;
-  background: white;
+.activity-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
-  transition: all 0.3s ease;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 12px;
 }
 
-.node-circle.completed {
-  background: linear-gradient(135deg, #26b2fd, #6f74fb);
-  border-color: linear-gradient(135deg, #26b2fd, #6f74fb);
-}
-
-.checkmark {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.node-label {
+.activity-icon {
   font-size: 16px;
-  font-weight: 500;
-  color: #666;
-  text-align: center;
-  line-height: 1.4;
 }
 
-.subtasks-container {
+.activity-label {
+  font-size: 14px;
+  color: #3b82f6;
+  font-weight: 700;
+}
+
+.activity-trend {
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.activity-trend.up {
+  background: #e3e9f6;
+  color: #3b82f6;
+}
+
+.activity-count {
   display: flex;
-  flex-direction: row;
-  gap: 12px;
-  flex: 1;
-  min-width: 0;
-  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 18px;
 }
 
-.subtask-item {
+.count-num {
+  font-size: 32px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.count-unit {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.activity-dots {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px 16px;
-  background: #f9fafb;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-  min-width: fit-content;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
-.subtask-item:hover {
-  background: #f3f4f6;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.subtask-circle {
-  width: 24px;
-  height: 24px;
+.dot {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  border: 2px solid #d1d5db;
-  background: white;
+  background: #e2e8f0;
+}
+
+.dot.active {
+  background: #3b82f6;
+}
+
+.activity-completion {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* 右侧AI回顾卡片 */
+.ai-review-card {
+  flex: 1;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f8f9ff 100%);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.ai-review-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ai-icon {
+  font-size: 18px;
+}
+
+.ai-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+.ai-content {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #1e40af;
+  margin: 0;
+  text-align: left;
+}
+
+.ai-content .highlight {
+  display: block;
+  font-weight: 600;
+  color: #1d4ed8;
+  margin: 8px 0 4px 0;
+}
+
+.ai-content .suggestion {
+  display: block;
+  padding-left: 8px;
+  color: #3b82f6;
+}
+
+/* 成长轨迹区域 */
+.curve-chart-area {
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.curve-chart-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+  text-align: left  ;
+}
+
+.curve-chart-wrapper {
+  position: relative;
+  height: 180px;
+}
+
+.curve-svg {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.city-silhouette {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: 
+    linear-gradient(180deg, transparent 0%, rgba(148, 163, 184, 0.1) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 120'%3E%3Cpath d='M0 120 L0 80 L30 80 L30 60 L50 60 L50 80 L80 80 L80 40 L100 40 L100 80 L130 80 L130 50 L160 50 L160 80 L200 80 L200 30 L230 30 L230 80 L260 80 L260 60 L290 60 L290 80 L320 80 L320 45 L350 45 L350 80 L380 80 L380 55 L410 55 L410 80 L440 80 L440 35 L470 35 L470 80 L500 80 L500 50 L530 50 L530 80 L560 80 L560 40 L590 40 L590 80 L620 80 L620 55 L650 55 L650 80 L680 80 L680 45 L710 45 L710 80 L740 80 L740 60 L770 60 L770 80 L800 80 L800 120 Z' fill='%2394a3b8' opacity='0.15'/%3E%3C/svg%3E") no-repeat bottom center;
+  background-size: cover;
+  z-index: 1;
+}
+
+/* 里程碑节点样式 */
+.milestone-nodes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+}
+
+.milestone-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+}
+
+.node-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 700;
   color: white;
-  flex-shrink: 0;
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 3px solid white;
+  z-index: 2;
 }
 
-.subtask-circle.completed {
-  background: linear-gradient(135deg, #26b2fd, #6f74fb);
-  border-color: linear-gradient(135deg, #26b2fd, #6f74fb);
+.node-circle.purple {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
 }
 
-.subtask-content {
+.node-circle.blue {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.node-circle.teal {
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+}
+
+.node-circle.green {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.node-label {
+  position: absolute;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  flex: 1;
+  align-items: flex-start;
+  background: #fefefe82;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #667eea7a;
+  white-space: nowrap;
+  z-index: 1;
 }
 
-.subtask-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-  line-height: 1.4;
+.node-label.below {
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-.subtask-status {
-  font-size: 12px;
-  color: #9ca3af;
-  font-weight: 500;
-  text-align: right;
+.node-label.above {
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-.subtask-status.completed {
-  color: #10b981;
-  text-align: right;
+.node-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 2px;
 }
 
-/* 响应式设计 */
-@media (max-width: 1200px) {
-  .task-chain {
-    gap: 30px;
-  }
-  
-  .task-item {
-    min-width: 180px;
-  }
+.node-desc {
+  font-size: 11px;
+  color: #64748b;
 }
 
-@media (max-width: 768px) {
-  .target-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
+/* 调整曲线容器高度以容纳标签 */
+.curve-chart-wrapper {
+  position: relative;
+  height: 280px;
+}
 
-  .set-target-btn {
-    width: 100%;
-    justify-content: center;
-  }
+.curve-svg {
+  width: 100%;
+  height: 220px;
+  position: absolute;
+  top: 30px;
+  left: 0;
+  z-index: 2;
+}
 
-  .target-item {
-    padding: 12px;
+/* 响应式：小屏隐藏描述 */
+@media (max-width: 1024px) {
+  .node-desc {
+    display: none;
   }
-
-  .target-name {
-    font-size: 14px;
-  }
-
-  .todo-header {
-    flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
-  }
-  
-  .progress-summary {
-    width: 100%;
-    justify-content: space-between;
-  }
-  
-  .progress-bar {
-    width: 150px;
-  }
-  
-  .task-chain {
-    gap: 20px;
-  }
-  
-  .task-item {
-    min-width: 160px;
-  }
-  
   .node-label {
-    font-size: 14px;
+    padding: 6px 10px;
   }
-  
-  .subtask-item {
-    padding: 10px 12px;
-  }
-  
-  .subtask-title {
-    font-size: 13px;
-  }
-}
-
-@media (max-width: 480px) {
-  .todo-list-component {
-    padding: 16px;
-  }
-  
-  .task-chain {
-    gap: 16px;
-  }
-  
-  .task-item {
-    min-width: 140px;
-  }
-  
-  .node-circle {
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
-  }
-  
-  .checkmark {
-    font-size: 16px;
-  }
-  
-  .node-label {
-    font-size: 13px;
+  .curve-chart-wrapper {
+    height: 240px;
   }
 }
 </style>
+

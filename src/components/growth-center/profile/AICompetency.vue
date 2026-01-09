@@ -331,7 +331,7 @@ onBeforeUnmount(() => {
 }
 
 .chart-card h3 {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   color: #333;
   margin: 0 0 20px 0;

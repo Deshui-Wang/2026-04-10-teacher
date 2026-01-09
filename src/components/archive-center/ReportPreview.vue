@@ -1,498 +1,434 @@
+import ReportModulePreview from './report-components/ReportModulePreview.vue'
+
+// 报告数据
+const reportData = ref({
+  name: '',
+  type: '',
+  modules: [],
+  createdAt: ''
+})
+
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+}
+
+const getChartIcon = (chartType) => {
+  const icons = {
+    'bar': '📊',
+    'line': '📈',
+    'pie': '🥧',
+    'doughnut': '🍩',
+    'radar': '🕸️'
+  }
+  return icons[chartType] || '📊'
+}
+
+const handlePrint = () => {
+  window.print()
+}
+
+const handleApply = () => {
+  alert('已提交一键申报！')
+}
+
+const handleDownload = () => {
+  alert('正在准备下载 PDF 文档...')
+}
+
 <template>
-  <div class="report-preview">
-    <!-- 报告头部 -->
-    <div class="report-header">
-      <div class="header-content">
-        <h1 class="report-title">{{ reportData.name }}</h1>
-        <div class="report-meta">
-          <span class="created-date">创建时间：{{ formatDate(reportData.createdAt) }}</span>
-          <span class="module-count">共 {{ reportData.modules.length }} 个模块</span>
+  <div class="archive-long-document">
+    <!-- 辅助条：非打印时可见 -->
+    <div class="no-print action-bar">
+      <div class="container">
+        <span class="doc-status">档案预览模式</span>
+        <div class="btns">
+          <button class="btn secondary" @click="handlePrint">🖨️ 打印档案</button>
+          <button class="btn secondary" @click="handleDownload">📥 下载档案</button>
+          <button class="btn primary" @click="handleApply">🚀 一键申报</button>
         </div>
-      </div>
-      <div class="header-actions">
-        <button class="print-btn" @click="printReport">打印报告</button>
-        <button class="close-btn" @click="closePreview">关闭</button>
       </div>
     </div>
 
-    <!-- 报告内容 -->
-    <div class="report-content">
-      <div v-for="(module, index) in reportData.modules" :key="module.id" class="module-section">
-        <div class="module-header">
-          <div class="module-title">
-            <span class="module-icon">{{ module.icon || '📄' }}</span>
-            <h2>{{ module.name }}</h2>
-            <span class="module-type">{{ getModuleTypeName(module.type) }}</span>
-          </div>
+    <div class="document-paper">
+      <!-- 封面/标题 -->
+      <header class="doc-header">
+        <h1 class="doc-title">{{ reportData.name || '个人档案' }}</h1>
+        <div class="doc-meta">
+          <p>档案类型：{{ reportData.type || '未指定' }}</p>
+          <p>生成日期：{{ formatDate(reportData.createdAt) }}</p>
         </div>
+        <hr class="header-line" />
+      </header>
 
-        <div class="module-body">
-          <!-- 模块描述 -->
-          <div v-if="module.description" class="module-description">
-            <p>{{ module.description }}</p>
+      <!-- 目录 -->
+      <nav class="doc-toc">
+        <h3>目录</h3>
+        <ul>
+          <li v-for="(module, index) in reportData.modules" :key="'toc-'+index">
+            <span class="toc-index">{{ index + 1 }}</span>
+            <span class="toc-name">{{ module.name }}</span>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- 文章正文 -->
+      <main class="doc-body">
+        <section v-for="(module, index) in reportData.modules" :key="module.id" class="module-block">
+          <h2 class="module-title-doc">
+            <span class="index-num">{{ index + 1 }}</span>
+            {{ module.name }}
+          </h2>
+          
+          <!-- 详细文字描述 -->
+          <div class="module-summary-doc">
+            <p v-for="(para, pIdx) in (module.summary || '').split('\n')" :key="pIdx" v-show="para.trim()">
+              {{ para }}
+            </p>
           </div>
 
-          <!-- 模块内容 -->
-          <div v-if="module.content" class="module-content">
-            <div v-if="module.contentFormat === 'markdown'" v-html="renderMarkdown(module.content)"></div>
-            <div v-else-if="module.contentFormat === 'html'" v-html="module.content"></div>
-            <div v-else class="plain-text">{{ module.content }}</div>
-          </div>
-
-          <!-- 图表区域 -->
-          <div v-if="module.chartType && module.chartType !== 'none'" class="module-chart">
-            <div class="chart-container">
-              <div class="chart-placeholder">
-                <div class="chart-icon">{{ getChartIcon(module.chartType) }}</div>
-                <div class="chart-info">
-                  <h4>{{ getChartTypeName(module.chartType) }}</h4>
-                  <p>配色方案：{{ module.colorScheme }}</p>
-                  <div class="chart-options">
-                    <span v-if="module.showLegend">显示图例</span>
-                    <span v-if="module.showLabels">显示标签</span>
-                  </div>
-                </div>
-              </div>
+          <!-- 培训特有信息 -->
+          <div v-if="module.type && module.type.startsWith('training-')" class="training-info-doc">
+            <div class="info-grid">
+              <div class="info-item"><strong>培训学时：</strong>{{ module.trainingHours }}</div>
+              <div class="info-item"><strong>考核结果：</strong>{{ module.trainingResult }}</div>
+              <div v-if="module.trainingReport" class="info-item full"><strong>证明材料：</strong>{{ module.trainingReport }}</div>
             </div>
           </div>
 
-          <!-- 空状态 -->
-          <div v-if="!module.content && (!module.chartType || module.chartType === 'none')" class="empty-module">
-            <div class="empty-icon">📝</div>
-            <p>该模块暂无内容</p>
+          <!-- 图表展示 -->
+          <div v-if="module.chartType && module.chartType !== 'none'" class="chart-box-doc">
+            <div class="chart-container-doc">
+               <ReportModulePreview
+                  :module-type="module.type"
+                  :chart-type="module.chartType"
+                  :color-scheme="module.colorScheme"
+                  :show-legend="module.showLegend"
+                  :show-labels="module.showLabels"
+                />
+            </div>
+            <p class="chart-caption">图表 {{ index + 1 }}-1: {{ module.name }}数据分析图</p>
           </div>
-        </div>
-      </div>
-    </div>
+          
+          <div class="page-break-hint"></div>
+        </section>
+      </main>
 
-    <!-- 报告尾部 -->
-    <div class="report-footer">
-      <div class="footer-content">
-        <p>报告生成时间：{{ formatDate(new Date().toISOString()) }}</p>
-        <p>AI教师档案管理系统</p>
-      </div>
+      <!-- 页脚 -->
+      <footer class="doc-footer">
+        <div class="footer-line"></div>
+        <div class="footer-content">
+          <p>© AI 教师档案智能化评估系统</p>
+          <p>诚正 · 敏行 · 立德 · 树人</p>
+        </div>
+      </footer>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import ReportModulePreview from './report-components/ReportModulePreview.vue'
 
-// 报告数据
 const reportData = ref({
   name: '',
+  type: '',
   modules: [],
   createdAt: ''
 })
 
-// 模块类型映射
-const moduleTypes = {
-  'assets': '资产',
-  'achievements': '成果奖励',
-  'digital-literacy': '数字素养',
-  'workload-stats': '工作量统计',
-  'ethics': '师德师风',
-  'student-data': '学生数据',
-  'courseware-research': '课件教案研发数据',
-  'teaching-experience': '教学经验数据'
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
 }
 
-// 图表类型映射
-const chartTypes = {
-  'bar': '柱状图',
-  'line': '折线图',
-  'pie': '饼图',
-  'doughnut': '环形图',
-  'radar': '雷达图'
-}
-
-// 图表图标映射
-const chartIcons = {
-  'bar': '📊',
-  'line': '📈',
-  'pie': '🥧',
-  'doughnut': '🍩',
-  'radar': '🕸️'
-}
-
-// 方法
-const loadReportData = () => {
+onMounted(() => {
   const data = localStorage.getItem('previewReportData')
   if (data) {
     try {
       reportData.value = JSON.parse(data)
-    } catch (error) {
-      console.error('解析报告数据失败:', error)
-      reportData.value = {
-        name: '报告预览',
-        modules: [],
-        createdAt: new Date().toISOString()
-      }
-    }
-  } else {
-    // 如果没有数据，显示示例
-    reportData.value = {
-      name: '示例报告',
-      modules: [
-        {
-          id: 'example1',
-          name: '示例模块',
-          type: 'workload-stats',
-          icon: '📊',
-          description: '这是一个示例模块',
-          content: '这里显示模块的详细内容...',
-          contentFormat: 'plain',
-          chartType: 'bar',
-          colorScheme: '经典蓝',
-          showLegend: true,
-          showLabels: true
-        }
-      ],
-      createdAt: new Date().toISOString()
+    } catch (e) {
+      console.error('Failed to load archive data', e)
     }
   }
-}
+})
 
-const getModuleTypeName = (typeId) => {
-  return moduleTypes[typeId] || '未知类型'
-}
-
-const getChartTypeName = (chartType) => {
-  return chartTypes[chartType] || chartType
-}
-
-const getChartIcon = (chartType) => {
-  return chartIcons[chartType] || '📊'
-}
-
-const formatDate = (dateString) => {
-  const date = new Date(dateString)
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
-
-const renderMarkdown = (text) => {
-  // 简单的 Markdown 渲染
-  return text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/`(.*?)`/g, '<code>$1</code>')
-    .replace(/\n/g, '<br>')
-}
-
-const printReport = () => {
+const handlePrint = () => {
   window.print()
 }
 
-const closePreview = () => {
-  window.close()
+const handleApply = () => {
+  alert('已完成对接，档案正在提交至省教育厅申报系统...')
 }
-
-// 组件挂载时加载数据
-onMounted(() => {
-  loadReportData()
-})
 </script>
 
 <style scoped>
-.report-preview {
+.archive-long-document {
+  background: #f0f2f5;
   min-height: 100vh;
-  background: #f8fafc;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding-bottom: 50px;
 }
 
-.report-header {
-  background: white;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 24px 32px;
+.action-bar {
+  background: #fff;
+  border-bottom: 1px solid #dcdfe6;
+  padding: 12px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.action-bar .container {
+  max-width: 800px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.header-content {
-  flex: 1;
-}
-
-.report-title {
-  margin: 0 0 8px 0;
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a202c;
-}
-
-.report-meta {
-  display: flex;
-  gap: 24px;
-  color: #64748b;
+.doc-status {
   font-size: 14px;
+  color: #909399;
 }
 
-.header-actions {
+.btns {
   display: flex;
   gap: 12px;
 }
 
-.print-btn, .close-btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
+.btn {
+  padding: 8px 20px;
+  border-radius: 4px;
   font-size: 14px;
-  font-weight: 500;
   cursor: pointer;
+  border: none;
   transition: all 0.2s;
 }
 
-.print-btn {
-  background: #3b82f6;
-  color: white;
+.btn.primary {
+  background: #409eff;
+  color: #fff;
 }
 
-.print-btn:hover {
-  background: #2563eb;
+.btn.secondary {
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  color: #606266;
 }
 
-.close-btn {
-  background: #f1f5f9;
-  color: #475569;
+.btn:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
 }
 
-.close-btn:hover {
-  background: #e2e8f0;
-}
-
-.report-content {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 32px;
-}
-
-.module-section {
-  background: white;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.module-header {
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 20px 24px;
-}
-
-.module-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.module-icon {
-  font-size: 24px;
-}
-
-.module-title h2 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
+.document-paper {
+  background: #fff;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 40px auto;
+  padding: 30mm 25mm;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
   color: #1a202c;
+  line-height: 1.8;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "SimSun", serif;
+  position: relative;
+  transition: transform 0.3s ease;
+  animation: paper-fade-in 0.8s ease-out;
 }
 
-.module-type {
-  padding: 4px 8px;
-  background: #e2e8f0;
-  color: #64748b;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
+@keyframes paper-fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.module-body {
-  padding: 24px;
-}
-
-.module-description {
-  margin-bottom: 20px;
-  padding: 16px;
-  background: #f1f5f9;
-  border-radius: 8px;
-  border-left: 4px solid #3b82f6;
-}
-
-.module-description p {
-  margin: 0;
-  color: #475569;
-  font-style: italic;
-}
-
-.module-content {
-  margin-bottom: 20px;
-  line-height: 1.7;
-  color: #374151;
-}
-
-.module-content :deep(strong) {
-  font-weight: 600;
-  color: #1a202c;
-}
-
-.module-content :deep(em) {
-  font-style: italic;
-}
-
-.module-content :deep(code) {
-  background: #f1f5f9;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 13px;
-  color: #e11d48;
-}
-
-.module-chart {
-  margin-top: 20px;
-}
-
-.chart-container {
-  border: 2px dashed #cbd5e1;
-  border-radius: 8px;
-  padding: 32px;
+.doc-header {
   text-align: center;
-  background: #f8fafc;
+  margin-bottom: 60px;
+  position: relative;
 }
 
-.chart-placeholder {
+.doc-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 16px;
+  letter-spacing: 4px;
+}
+
+.doc-meta {
+  color: #718096;
+  font-size: 15px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.chart-icon {
-  font-size: 48px;
-  opacity: 0.6;
-}
-
-.chart-info h4 {
-  margin: 0 0 8px 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #374151;
-}
-
-.chart-info p {
-  margin: 0 0 8px 0;
-  color: #64748b;
-  font-size: 14px;
-}
-
-.chart-options {
-  display: flex;
-  gap: 16px;
   justify-content: center;
+  gap: 24px;
 }
 
-.chart-options span {
-  padding: 4px 8px;
-  background: #e2e8f0;
-  color: #64748b;
-  border-radius: 4px;
-  font-size: 12px;
+.header-line {
+  border: none;
+  border-top: 3px double #2d3748;
+  margin-top: 24px;
+  width: 100%;
 }
 
-.empty-module {
-  text-align: center;
+.doc-toc {
+  margin-bottom: 80px;
   padding: 40px;
-  color: #94a3b8;
+  background: #fcfcfc;
+  border: 1px dashed #e2e8f0;
 }
 
-.empty-icon {
-  font-size: 32px;
+.doc-toc h3 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 30px;
+  color: #2d3748;
+  letter-spacing: 10px;
+}
+
+.doc-toc ul {
+  list-style: none;
+  padding: 0;
+}
+
+.doc-toc li {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 12px;
+  color: #4a5568;
+}
+
+.toc-index {
+  font-weight: 600;
+  margin-right: 12px;
+  min-width: 24px;
+}
+
+.toc-name {
+  flex: 1;
+  border-bottom: 1px dotted #cbd5e1;
+  margin-right: 8px;
+}
+
+.doc-body {
+  margin-bottom: 80px;
+}
+
+.module-block {
+  margin-bottom: 60px;
+  page-break-inside: avoid;
+}
+
+.module-title-doc {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1a202c;
+  padding-bottom: 8px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  border-left: 5px solid #2d3748;
+  padding-left: 15px;
+}
+
+.index-num {
+  font-size: 18px;
+  color: #718096;
+  margin-right: 10px;
+  font-family: inherit;
+}
+
+.module-summary-doc {
+  font-size: 17px;
+  color: #2d3748;
+  text-align: justify;
+  line-height: 2;
+}
+
+.module-summary-doc p {
+  text-indent: 2em;
   margin-bottom: 12px;
 }
 
-.empty-module p {
-  margin: 0;
-  font-size: 14px;
+.training-info-doc {
+  margin: 30px 0;
+  padding: 24px;
+  background: #f8fafc;
+  border-left: 4px solid #3b82f6;
+  font-size: 15px;
 }
 
-.report-footer {
-  background: #f8fafc;
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.info-item strong {
+  color: #475569;
+  margin-right: 8px;
+}
+
+.info-item.full {
+  grid-column: span 2;
   border-top: 1px solid #e2e8f0;
-  padding: 24px 32px;
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.chart-box-doc {
+  margin: 40px 0;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+}
+
+.chart-container-doc {
+  height: 400px;
+  margin-bottom: 16px;
+}
+
+.chart-caption {
+  font-size: 14px;
+  color: #94a3b8;
+  font-style: italic;
   text-align: center;
 }
 
+.doc-footer {
+  margin-top: 120px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.footer-line {
+  border-top: 1px solid #e2e8f0;
+  margin-bottom: 16px;
+}
+
 .footer-content {
-  max-width: 1000px;
-  margin: 0 auto;
-  color: #64748b;
-  font-size: 14px;
+  font-size: 13px;
+  letter-spacing: 1px;
 }
 
-.footer-content p {
-  margin: 4px 0;
-}
-
-/* 打印样式 */
 @media print {
-  .report-preview {
-    background: white;
+  .no-print {
+    display: none !important;
   }
-  
-  .report-header {
+  .archive-long-document {
+    background: #fff;
+    padding: 0;
+  }
+  .document-paper {
     box-shadow: none;
-    border-bottom: 2px solid #000;
-  }
-  
-  .header-actions {
-    display: none;
-  }
-  
-  .module-section {
-    box-shadow: none;
-    border: 1px solid #e2e8f0;
-    page-break-inside: avoid;
-  }
-  
-  .report-footer {
-    border-top: 2px solid #000;
-  }
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .report-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-  
-  .header-actions {
+    margin: 0;
     width: 100%;
-    justify-content: flex-end;
-  }
-  
-  .report-content {
-    padding: 16px;
-  }
-  
-  .module-body {
-    padding: 16px;
-  }
-  
-  .chart-placeholder {
-    gap: 12px;
-  }
-  
-  .chart-icon {
-    font-size: 32px;
+    padding: 20mm;
+    transform: none !important;
+    animation: none !important;
   }
 }
 </style>

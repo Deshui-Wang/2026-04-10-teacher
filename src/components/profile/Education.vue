@@ -246,8 +246,8 @@ const handleAddEducation = (educationData) => {
 
 .timeline-axis {
   position: absolute;
-  left: 20px;
-  top: 0;
+  left: 8px;
+  top: 20px;
   bottom: 0;
   width: 2px;
   background: linear-gradient(180deg, #8b5cf6 0%, #6366f1 100%);

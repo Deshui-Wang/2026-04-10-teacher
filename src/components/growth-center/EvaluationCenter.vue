@@ -26,7 +26,7 @@
             <img src="/pic/jineng.svg" alt="统计图标" />
           </div>
           <div class="stat-content">
-            <div class="stat-title">画像报告</div>
+            <div class="stat-title">智能报告</div>
             <div class="stat-subtitle">AI智能生成的个人数据报告了解自己的数据细节</div>
           </div>
         </div>
@@ -39,8 +39,21 @@
             <img src="/pic/new.svg" alt="统计图标" />
           </div>
           <div class="stat-content">
-            <div class="stat-title">目标达成</div>
+            <div class="stat-title">成长路径</div>
             <div class="stat-subtitle">量身定制的AI智能成长链路让您的成长可视化</div>
+          </div>
+        </div>
+        <div 
+          class="stat-item" 
+          :class="{ active: activeTab === 'learning' }"
+          @click="switchTab('learning')"
+        >
+          <div class="stat-icon">
+            <img src="/pic/24gl.svg" alt="统计图标" />
+          </div>
+          <div class="stat-content">
+            <div class="stat-title">学习中心</div>
+            <div class="stat-subtitle">汇聚海量专业学习资源，助力教学科研全方位提升</div>
           </div>
         </div>
       </div>
@@ -58,8 +71,13 @@
         <Report />
       </div>
       
-      <!-- 成长决策内容 -->
+      <!-- 发展路径内容 -->
       <div v-if="activeTab === 'decision'" class="tab-content">
+        <TodoList />
+      </div>
+
+      <!-- 学习中心内容 -->
+      <div v-if="activeTab === 'learning'" class="tab-content">
         <Resource />
       </div>
     </div>
@@ -71,6 +89,7 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import Profile from './profile/Profile.vue'
 import Report from './report/Report.vue'
 import Resource from './decision/Resource.vue'
+import TodoList from './decision/TodoList.vue'
 
 // 当前激活的标签页
 const activeTab = ref('profile')

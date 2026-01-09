@@ -3,7 +3,6 @@
     <!-- 导航栏 -->
     <div class="profile-navigation">
       <div class="nav-items">
-        <div class="nav-item" @click="scrollToSection('basic-info')">基本信息画像</div>
         <div class="nav-item" @click="scrollToSection('ai-competency')">AI智能胜任力</div>
         <div class="nav-item" @click="scrollToSection('teaching-ability')">教学能力</div>
         <div class="nav-item" @click="scrollToSection('service-capability')">社会服务能力</div>

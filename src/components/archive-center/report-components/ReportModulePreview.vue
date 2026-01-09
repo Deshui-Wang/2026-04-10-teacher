@@ -124,6 +124,125 @@ const moduleDataGenerators = {
       { name: '教学反思', value: 4.0, color: '#ff9500' },
       { name: '实践应用', value: 3.8, color: '#5856d6' }
     ]
+  }),
+  // 新增档案模块类型映射
+  'personal-info': () => ({
+    title: '综合能力画像',
+    data: [
+      { name: '教学能力', value: 95 },
+      { name: '科研产出', value: 88 },
+      { name: '行业实践', value: 82 },
+      { name: '学生管理', value: 90 },
+      { name: '数智素养', value: 94 }
+    ]
+  }),
+  'teaching-basic': () => ({
+    title: '资质能力',
+    data: [
+      { name: '核心课程', value: 85 },
+      { name: '教学时数', value: 92 },
+      { name: '证书数量', value: 78 },
+      { name: '考核评定', value: 95 }
+    ]
+  }),
+  'teaching-implementation': () => ({
+    title: '教学实施',
+    data: [
+      { name: '计划执行', value: 100 },
+      { name: '方法革新', value: 85 },
+      { name: '课堂活跃', value: 78 },
+      { name: '评分优良', value: 92 }
+    ]
+  }),
+  'teaching-reform': () => ({
+    title: '教改成果',
+    data: [
+      { name: '课题主持', value: 65 },
+      { name: '论文发表', value: 88 },
+      { name: '评价改革', value: 75 },
+      { name: '数字化转', value: 90 }
+    ]
+  }),
+  'teaching-practice': () => ({
+    title: '实践教学',
+    data: [
+      { name: '实训指导', value: 95 },
+      { name: '基地建设', value: 70 },
+      { name: '企业满意', value: 88 },
+      { name: '就业相关', value: 82 }
+    ]
+  }),
+  'student-development': () => ({
+    title: '学生发展',
+    data: [
+      { name: '及格率', value: 100 },
+      { name: '优秀率', value: 35 },
+      { name: '竞赛获奖', value: 78 },
+      { name: '就业率', value: 96 }
+    ]
+  }),
+  'growth-practice': () => ({
+    title: '企业实践',
+    data: [
+      { name: '实践时长', value: 80 },
+      { name: '技术收获', value: 92 },
+      { name: '案例转化', value: 75 },
+      { name: '反馈评价', value: 88 }
+    ]
+  }),
+  'growth-competition': () => ({
+    title: '竞赛奖励',
+    data: [
+      { name: '国家级', value: 20 },
+      { name: '省级奖', value: 45 },
+      { name: '市级奖', value: 35 },
+      { name: '校级奖', value: 60 }
+    ]
+  }),
+  'growth-guidance': () => ({
+    title: '指导学生',
+    data: [
+      { name: '社团指导', value: 85 },
+      { name: '竞赛战绩', value: 92 },
+      { name: '梯队建设', value: 78 },
+      { name: '学生满意', value: 95 }
+    ]
+  }),
+  'growth-research': () => ({
+    title: '教科研成果',
+    data: [
+      { name: '纵向课题', value: 70 },
+      { name: '核心期刊', value: 65 },
+      { name: '专利获批', value: 80 },
+      { name: '软著登记', value: 92 }
+    ]
+  }),
+  'training-online': () => ({
+    title: '线上培训',
+    data: [
+      { name: '资源设计', value: 88 },
+      { name: '教学评估', value: 75 },
+      { name: 'AI备课', value: 92 },
+      { name: '测试成绩', value: 98 }
+    ]
+  }),
+  'training-offline': () => ({
+    title: '线下研修',
+    data: [
+      { name: '现场交流', value: 95 },
+      { name: '方案路演', value: 82 },
+      { name: '实地考察', value: 90 },
+      { name: '结业评分', value: 96 }
+    ]
+  }),
+  'custom': () => ({
+    title: '自定义数据',
+    data: [
+      { name: '指标 A', value: 65 },
+      { name: '指标 B', value: 78 },
+      { name: '指标 C', value: 92 },
+      { name: '指标 D', value: 85 }
+    ]
   })
 }
 
@@ -131,8 +250,9 @@ const hasChart = ref(false)
 
 // 生成图表配置
 const generateChartOption = () => {
-  const moduleData = moduleDataGenerators[props.moduleType]?.()
-  if (!moduleData) return null
+  // 获取数据：如果类型不存在，则显示自定义兜底数据，确保演示效果
+  const generator = moduleDataGenerators[props.moduleType] || moduleDataGenerators['custom']
+  const moduleData = generator()
 
   const colors = colorSchemes[props.colorScheme] || colorSchemes['经典蓝']
   const data = moduleData.data
