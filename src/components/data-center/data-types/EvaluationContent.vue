@@ -37,7 +37,10 @@
       <SelfAssessment v-if="activeSubTab === 'self-assessment'" />
       
       <!-- 数字素养页面 -->
-      <DigitalLiteracy v-if="activeSubTab === 'digital-literacy'" />
+      <DigitalLiteracy 
+        v-if="activeSubTab === 'digital-literacy'" 
+        @open-ai="payload => $emit('open-ai', payload)"
+      />
       
       <!-- 学生评教页面 -->
       <StudentEvaluation v-if="activeSubTab === 'student'" />
@@ -61,7 +64,7 @@ defineProps({
   }
 })
 
-defineEmits(['sub-tab-change'])
+defineEmits(['sub-tab-change', 'open-ai'])
 </script>
 
 <style scoped>

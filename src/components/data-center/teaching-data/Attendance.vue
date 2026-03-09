@@ -1,8 +1,17 @@
 <template>
   <div class="attendance-page">
-    <!-- 筛选区域 -->
+    <!-- 顶部状态栏及筛选区域 -->
     <div class="filter-section">
-      <div class="filter-row">
+      <!-- 左侧统计数值 -->
+      <div class="stats-overview">
+        <div class="stat-item">
+          <span class="stat-label">出勤率：</span>
+          <span class="stat-value">{{ Math.round(avgAttendanceRate) || 0 }}%</span>
+        </div>
+      </div>
+
+      <!-- 右侧筛选选项 -->
+      <div class="filter-controls">
         <div class="filter-group">
           <label>课程：</label>
           <el-select 
@@ -42,23 +51,6 @@
           />
         </div>
         
-        <div class="filter-group">
-          <label>时间：</label>
-          <el-date-picker
-            v-model="filters.dateRange"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-            @change="handleFilterChange"
-            class="date-picker"
-          />
-        </div>
-        
-        <div class="filter-group">
-        </div>
       </div>
     </div>
 
@@ -151,8 +143,7 @@ import { ref, onMounted, computed } from 'vue'
 const filters = ref({
   course: '',
   class: '',
-  studentName: '',
-  dateRange: null
+  studentName: ''
 })
 
 const currentPage = ref(1)
@@ -249,16 +240,20 @@ const filteredAttendance = computed(() => {
     )
   }
 
-  // 按时间范围筛选
-  if (filters.value.dateRange && filters.value.dateRange.length === 2) {
-    const [startDate, endDate] = filters.value.dateRange
-    result = result.filter(item => {
-      const itemDate = new Date(item.date)
-      return itemDate >= new Date(startDate) && itemDate <= new Date(endDate)
-    })
-  }
-
   return result
+})
+
+// 计算页面的整体统计数值
+const avgAttendanceRate = computed(() => {
+  const list = filteredAttendance.value
+  if (list.length === 0) return 0
+  
+  let totalRate = 0
+  list.forEach(item => {
+    totalRate += item.attendanceRate || 0
+  })
+  
+  return totalRate / list.length
 })
 
 // 分页后的数据
@@ -326,18 +321,52 @@ onMounted(() => {
 }
 
 .filter-section {
+  margin-bottom: 24px;
+  padding: 20px 24px;
   background: white;
-  padding: 20px;
   border-radius: 8px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.filter-row {
+/* 统计数据区域 */
+.stats-overview {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 16px;
+  color: #1677ff;
+  font-weight: 600;
+}
+
+.filter-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
   align-items: center;
+  gap: 16px;
 }
 
 .filter-group {
@@ -354,9 +383,8 @@ onMounted(() => {
 
 .course-select,
 .class-select,
-.student-input,
-.date-picker {
-  width: 180px;
+.student-input {
+  width: 140px;
 }
 
 .export-btn {
@@ -399,21 +427,25 @@ onMounted(() => {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .filter-row {
+  .filter-section {
     flex-direction: column;
     align-items: stretch;
   }
   
+  .filter-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
   .filter-group {
     width: 100%;
-    justify-content: space-between;
+    margin-bottom: 12px;
   }
   
   .course-select,
   .class-select,
-  .student-input,
-  .date-picker {
-    width: 200px;
+  .student-input {
+    width: 100%;
   }
 }
 </style>

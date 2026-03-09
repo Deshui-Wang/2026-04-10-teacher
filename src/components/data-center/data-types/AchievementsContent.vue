@@ -36,6 +36,13 @@
       >
         教学成果
       </div>
+      <div 
+        class="tab-item" 
+        :class="{ active: activeSubTab === 'enterprise-cooperation' }"
+        @click="$emit('sub-tab-change', 'enterprise-cooperation')"
+      >
+        企业合作成果
+      </div>
     </div>
     
     <!-- 内容展示区域 -->
@@ -45,54 +52,73 @@
         <!-- 统一的筛选区域 -->
         <div class="filter-section">
           <div class="filter-row">
-            <div class="filter-tabs">
-              <label 
-                class="filter-tab" 
-                :class="{ active: researchFilter === 'papers' }"
+            <div class="stats-overview">
+              <div 
+                class="stat-item clickable-tab" 
+                :class="{ 'tab-active': researchFilter === 'papers' }"
+                @click="researchFilter = 'papers'"
               >
-                <input 
-                  type="radio" 
-                  name="research-filter" 
-                  value="papers" 
-                  v-model="researchFilter"
-                  class="filter-checkbox"
-                >
-                <span class="filter-label">论文</span>
-              </label>
-              <label 
-                class="filter-tab" 
-                :class="{ active: researchFilter === 'patents' }"
+                <span class="stat-label">论文总数：</span>
+                <span class="stat-value">{{ papersCount }}</span>
+              </div>
+              <div 
+                class="stat-item clickable-tab" 
+                :class="{ 'tab-active': researchFilter === 'patents' }"
+                @click="researchFilter = 'patents'"
               >
-                <input 
-                  type="radio" 
-                  name="research-filter" 
-                  value="patents" 
-                  v-model="researchFilter"
-                  class="filter-checkbox"
-                >
-                <span class="filter-label">专利</span>
-              </label>
+                <span class="stat-label">专利总数：</span>
+                <span class="stat-value">{{ patentsCount }}</span>
+              </div>
             </div>
             
             <div class="search-box">
               <input 
                 type="text" 
                 v-model="searchKeyword" 
-                :placeholder="researchFilter === 'papers' ? '搜索论文名称、作者或关键词...' : '搜索专利名称、专利号或申请人...'"
+                :placeholder="researchFilter === 'papers' ? '搜索论文名称、作者...' : '搜索专利名称、申请人...'"
                 class="search-input"
               >
               <i class="search-icon">🔍</i>
+            </div>
+            
+            <div class="view-toggle">
+              <el-button-group>
+                <el-button 
+                  :type="viewMode === 'list' ? 'primary' : ''" 
+                  @click="viewMode = 'list'"
+                  size="small"
+                >
+                  列表
+                </el-button>
+                <el-button 
+                  :type="viewMode === 'card' ? 'primary' : ''" 
+                  @click="viewMode = 'card'"
+                  size="small"
+                >
+                  卡片
+                </el-button>
+              </el-button-group>
             </div>
           </div>
         </div>
 
 
         <!-- 根据筛选显示对应内容，并传递搜索关键词 -->
-        <div v-if="researchFilter === 'papers'" class="embedded-component">
-          <Papers :search-keyword="searchKeyword" />
+        <div v-show="researchFilter === 'papers'" class="embedded-component">
+          <Papers 
+            :search-keyword="searchKeyword" 
+            :view-mode="viewMode" 
+            @update:count="val => papersCount = val"
+            @open-ai="payload => $emit('open-ai', payload)"
+          />
         </div>
-        <div v-if="researchFilter === 'patents'" class="embedded-component">
-          <Patents :search-keyword="searchKeyword" />
+        <div v-show="researchFilter === 'patents'" class="embedded-component">
+          <Patents 
+            :search-keyword="searchKeyword" 
+            :view-mode="viewMode" 
+            @update:count="val => patentsCount = val"
+            @open-ai="payload => $emit('open-ai', payload)"
+          />
         </div>
       </div>
       
@@ -107,6 +133,9 @@
       
       <!-- 成果数据-教学成果页面 -->
       <TeachingAchievements v-if="activeSubTab === 'teaching-achievements'" />
+      
+      <!-- 成果数据-企业合作成果页面 -->
+      <EnterpriseCooperation v-if="activeSubTab === 'enterprise-cooperation'" />
     </div>
   </div>
 </template>
@@ -119,6 +148,7 @@ import AbilityCertifications from '@/components/data-center/achievements/Ability
 import InternationalAbility from '@/components/data-center/achievements/InternationalAbility.vue'
 import TeachingAchievements from '@/components/data-center/achievements/TeachingAchievements.vue'
 import Patents from '@/components/data-center/achievements/Patents.vue'
+import EnterpriseCooperation from '@/components/data-center/achievements/EnterpriseCooperation.vue'
 
 const props = defineProps({
   activeSubTab: {
@@ -127,18 +157,25 @@ const props = defineProps({
   }
 })
 
-defineEmits(['sub-tab-change'])
+const emit = defineEmits(['sub-tab-change', 'open-ai'])
+
+// 新增用于接收子组件传递的数量属性
+const papersCount = ref(0)
+const patentsCount = ref(0)
 
 // 科研成果筛选状态
 const researchFilter = ref('papers')
 // 搜索关键词
 const searchKeyword = ref('')
+// 视图模式
+const viewMode = ref('list')
 
 // 监听 activeSubTab 变化，当切换到科研成果时重置筛选状态
 watch(() => props.activeSubTab, (newTab) => {
   if (newTab === 'papers') {
     researchFilter.value = 'papers'
     searchKeyword.value = ''
+    viewMode.value = 'list'
   }
 }, { immediate: true })
 
@@ -251,46 +288,54 @@ watch(researchFilter, (newFilter) => {
   gap: 20px;
 }
 
-.filter-tabs {
+.stats-overview {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   flex: 1;
-  flex-wrap: wrap;
 }
 
-.filter-tab {
+.stat-item.clickable-tab {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 10px 20px;
+  background: #f8fafc;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
+  border: 1px solid #e2e8f0;
   user-select: none;
-  padding: 4px 0;
 }
 
-.filter-tab:hover {
-  color: #3b82f6;
+.stat-item.clickable-tab:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
 }
 
-.filter-tab.active {
-  color: #3b82f6;
+.stat-item.clickable-tab.tab-active {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
 }
 
-.filter-checkbox {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  cursor: pointer;
-  accent-color: #3b82f6;
-}
-
-.filter-label {
+.stat-label {
   font-size: 14px;
   font-weight: 500;
-  cursor: pointer;
+  color: #64748b;
+}
+
+.stat-item.clickable-tab.tab-active .stat-label {
+  color: #3b82f6;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.stat-item.clickable-tab.tab-active .stat-value {
+  color: #1d4ed8;
 }
 
 .search-box {
@@ -339,9 +384,14 @@ watch(researchFilter, (newFilter) => {
     align-items: stretch;
   }
   
-  .filter-tabs {
+  .stats-overview {
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 12px;
+  }
+  
+  .stat-item.clickable-tab {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .search-box {

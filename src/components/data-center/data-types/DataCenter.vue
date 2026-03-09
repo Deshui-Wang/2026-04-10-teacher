@@ -50,6 +50,7 @@
         v-if="activeTab === 'achievements'"
         :active-sub-tab="activeSubTab"
         @sub-tab-change="setActiveSubTab"
+        @open-ai="payload => $emit('open-ai', payload)"
       />
       
       <!-- 评价数据 - 恢复使用EvaluationContent组件 -->
@@ -57,6 +58,7 @@
         v-if="activeTab === 'evaluation'"
         :active-sub-tab="activeSubTab"
         @sub-tab-change="setActiveSubTab"
+        @open-ai="payload => $emit('open-ai', payload)"
       />
       
       <!-- 报告数据 -->
@@ -108,6 +110,8 @@ const setActiveTab = (tab) => {
 const setActiveSubTab = (subTab) => {
   activeSubTab.value = subTab
 }
+
+defineEmits(['open-ai'])
 </script>
 
 <style scoped>

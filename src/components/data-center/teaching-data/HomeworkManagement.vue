@@ -1,11 +1,28 @@
 <template>
   <div class="homework-management">
-    <!-- 筛选区域 -->
+    <!-- 顶部状态栏及筛选区域 -->
     <div class="filter-section">
+      <!-- 左侧统计数值 -->
+      <div class="stats-overview">
+        <div class="stat-item">
+          <span class="stat-label">作业总数：</span>
+          <span class="stat-value">{{ filteredHomeworkList.length }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">完成率：</span>
+          <span class="stat-value">{{ summaryStats.avgCompletion }}%</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">正确率：</span>
+          <span class="stat-value">{{ summaryStats.avgAccuracy }}%</span>
+        </div>
+      </div>
+
+      <!-- 右侧筛选选项 -->
       <div class="filter-controls">
         <div class="filter-item">
-          <label>班级筛选：</label>
-          <el-select v-model="selectedClass" placeholder="请选择班级" clearable @change="handleFilterChange">
+          <label>班级：</label>
+          <el-select v-model="selectedClass" placeholder="请选择班级" clearable @change="handleFilterChange" style="width: 160px">
             <el-option label="全部班级" value="" />
             <el-option 
               v-for="classItem in classOptions" 
@@ -16,8 +33,8 @@
           </el-select>
         </div>
         <div class="filter-item">
-          <label>课程筛选：</label>
-          <el-select v-model="selectedCourse" placeholder="请选择课程" clearable @change="handleFilterChange">
+          <label>课程：</label>
+          <el-select v-model="selectedCourse" placeholder="请选择课程" clearable @change="handleFilterChange" style="width: 160px">
             <el-option label="全部课程" value="" />
             <el-option 
               v-for="course in courseOptions" 
@@ -28,7 +45,7 @@
           </el-select>
         </div>
         <div class="filter-item">
-          <el-button type="primary" @click="resetFilters">重置筛选</el-button>
+          <el-button type="primary" plain @click="resetFilters">重置</el-button>
         </div>
       </div>
     </div>
@@ -36,7 +53,7 @@
     <!-- 数据列表 -->
     <div class="table-section">
       <el-table 
-        :data="filteredHomeworkList" 
+        :data="paginatedHomeworkList" 
         stripe 
         style="width: 100%"
         :loading="loading"
@@ -384,10 +401,35 @@ const filteredHomeworkList = computed(() => {
     filtered = filtered.filter(item => item.courseCode === selectedCourse.value)
   }
 
-  // 更新总数
+  return filtered
+})
+
+// 计算页面的整体统计数值
+const summaryStats = computed(() => {
+  const list = filteredHomeworkList.value
+  if (list.length === 0) return { avgCompletion: 0, avgAccuracy: 0 }
+  
+  let totalCompletion = 0
+  let totalAccuracy = 0
+  
+  list.forEach(item => {
+    totalCompletion += item.completionRate || 0
+    totalAccuracy += item.accuracyRate || 0
+  })
+  
+  return {
+    avgCompletion: Math.round(totalCompletion / list.length),
+    avgAccuracy: Math.round(totalAccuracy / list.length)
+  }
+})
+
+// 应用分页后的数据
+const paginatedHomeworkList = computed(() => {
+  const filtered = filteredHomeworkList.value
+  // 更新总数给翻页器
   totalCount.value = filtered.length
 
-  // 分页处理
+  // 分页切断
   const start = (currentPage.value - 1) * pageSize.value
   const end = start + pageSize.value
   return filtered.slice(start, end)
@@ -645,17 +687,51 @@ onMounted(() => {
 }
 
 .filter-section {
-  margin-bottom: 20px;
-  padding: 20px;
+  margin-bottom: 24px;
+  padding: 20px 24px;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* 统计数据区域 */
+.stats-overview {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 16px;
+  color: #1677ff;
+  font-weight: 600;
 }
 
 .filter-controls {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
@@ -690,6 +766,11 @@ onMounted(() => {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
   .filter-controls {
     flex-direction: column;
     align-items: flex-start;
@@ -697,7 +778,7 @@ onMounted(() => {
   
   .filter-item {
     width: 100%;
-    justify-content: space-between;
+    justify-content: flex-start;
   }
   
   .homework-management {
@@ -844,11 +925,10 @@ onMounted(() => {
 .stat-label {
   font-size: 14px;
   opacity: 0.9;
-  margin-bottom: 8px;
 }
 
 .stat-value {
-  font-size: 28px;
+  font-size: 16px;
   font-weight: bold;
 }
 

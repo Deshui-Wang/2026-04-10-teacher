@@ -1,42 +1,42 @@
 <template>
   <div class="courseware-page">
-    <!-- 筛选条件区域 -->
-    <div class="filter-section">
-      <div class="filter-row">
-        
-        <div class="filter-group">
-          <el-input 
-            v-model="filters.keyword" 
-            placeholder="搜索课件名称" 
-            clearable
-            @input="handleFilterChange"
-            class="search-input"
-          />
-        </div>
-      </div>
-    </div>
-
     <!-- 课件教案列表 -->
     <div class="content-section">
       <div class="section-header">
-        <h2>课件总数：6</h2>
-        <div class="view-toggle">
-          <el-button-group>
-            <el-button 
-              :type="viewMode === 'grid' ? 'primary' : ''" 
-              @click="viewMode = 'grid'"
-              size="small"
-            >
-              网格视图
-            </el-button>
-            <el-button 
-              :type="viewMode === 'list' ? 'primary' : ''" 
-              @click="viewMode = 'list'"
-              size="small"
-            >
-              列表视图
-            </el-button>
-          </el-button-group>
+        <div class="stats-overview">
+          <div class="stat-item">
+            <span class="stat-label">课件总数：</span>
+            <span class="stat-value">{{ filteredData.length }}</span>
+          </div>
+        </div>
+        
+        <div class="header-controls">
+          <el-input 
+            v-model="filters.keyword" 
+            placeholder="搜索课件名称..." 
+            clearable
+            :prefix-icon="'Search'"
+            @input="handleFilterChange"
+            class="header-search-input"
+          />
+          <div class="view-toggle">
+            <el-button-group>
+              <el-button 
+                :type="viewMode === 'grid' ? 'primary' : ''" 
+                @click="viewMode = 'grid'"
+                size="small"
+              >
+                网格
+              </el-button>
+              <el-button 
+                :type="viewMode === 'list' ? 'primary' : ''" 
+                @click="viewMode = 'list'"
+                size="small"
+              >
+                列表
+              </el-button>
+            </el-button-group>
+          </div>
         </div>
       </div>
 
@@ -60,11 +60,19 @@
           <div class="card-content">
             <h3 class="item-title">{{ item.name }}</h3>
             <p class="item-description">{{ item.description }}</p>
-            
-            <div class="course-info">
-              <div class="course-item">
-                <span class="course-label">使用课程</span>
-                <span class="course-name">{{ item.courseName }}</span>
+
+            <div class="courseware-stats">
+              <div class="stat-cell full-width">
+                <el-icon><User /></el-icon>
+                <span>{{ item.targetAudience }}</span>
+              </div>
+              <div class="stat-cell">
+                <el-icon><Timer /></el-icon>
+                <span>{{ item.readTime }} 小时阅读</span>
+              </div>
+              <div class="stat-cell">
+                <el-icon><DataLine /></el-icon>
+                <span>{{ item.usageCount }} 次使用</span>
               </div>
             </div>
           </div>
@@ -89,7 +97,6 @@
           <div class="header-cell">名称</div>
           <div class="header-cell">课件说明</div>
           <div class="header-cell">类型</div>
-          <div class="header-cell">使用课程</div>
           <div class="header-cell">操作</div>
         </div>
         
@@ -112,7 +119,6 @@
               {{ item.type === 'courseware' ? '课件' : '教案' }}
             </span>
           </div>
-          <div class="item-cell">{{ item.courseName }}</div>
           <div class="item-cell">
             <div class="action-buttons">
               <el-button type="primary" size="small" @click="viewItem(item)">
@@ -255,6 +261,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { User, Timer, DataLine } from '@element-plus/icons-vue'
 
 // 响应式数据
 const viewMode = ref('grid')
@@ -290,6 +297,8 @@ const coursewareData = ref([
     courseName: '数据结构与算法',
     classCount: 3,
     studentCount: 156,
+    readTime: 125,
+    usageCount: 846,
     createTime: '2025-01-15',
     updateTime: '2025-01-20'
   },
@@ -306,6 +315,8 @@ const coursewareData = ref([
     courseName: '软件工程导论',
     classCount: 2,
     studentCount: 98,
+    readTime: 86,
+    usageCount: 523,
     createTime: '2025-01-10',
     updateTime: '2025-01-18'
   },
@@ -322,6 +333,8 @@ const coursewareData = ref([
     courseName: '机器学习基础',
     classCount: 2,
     studentCount: 84,
+    readTime: 310,
+    usageCount: 1102,
     createTime: '2024-09-01',
     updateTime: '2024-12-15'
   },
@@ -338,6 +351,8 @@ const coursewareData = ref([
     courseName: '数据库系统原理',
     classCount: 4,
     studentCount: 192,
+    readTime: 142,
+    usageCount: 955,
     createTime: '2024-08-20',
     updateTime: '2024-11-30'
   },
@@ -354,6 +369,8 @@ const coursewareData = ref([
     courseName: 'Web开发技术',
     classCount: 3,
     studentCount: 135,
+    readTime: 215,
+    usageCount: 1420,
     createTime: '2024-02-01',
     updateTime: '2024-05-20'
   },
@@ -370,6 +387,8 @@ const coursewareData = ref([
     courseName: '操作系统原理',
     classCount: 2,
     studentCount: 96,
+    readTime: 188,
+    usageCount: 890,
     createTime: '2024-01-15',
     updateTime: '2024-06-10'
   }
@@ -1189,22 +1208,60 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e0e6f1;
-  background: #f8f9ff;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  background: white;
+  border-radius: 8px 8px 0 0;
 }
 
-.section-header h2 {
-  margin: 0;
-  font-size: 20px;
+/* 统计数据区域 (同教学数据样式) */
+.stats-overview {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 16px;
+  color: #1677ff;
   font-weight: 600;
-  color: #333;
 }
 
-/* 网格视图样式 */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-search-input {
+  width: 240px;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+/* 网格视图样式 - 固定3列 */
 .courseware-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   padding: 24px;
 }
@@ -1316,7 +1373,7 @@ onMounted(() => {
 
 .stat-item {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 4px;
 }
 
@@ -1328,7 +1385,7 @@ onMounted(() => {
 
 .stat-value {
   font-size: 14px;
-  color: #333;
+  color: #1677ff;
   font-weight: 600;
 }
 
@@ -1399,7 +1456,7 @@ onMounted(() => {
 
 .list-header {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr 1.5fr 1fr;
+  grid-template-columns: 3fr 4fr 1fr 1fr;
   gap: 16px;
   padding: 16px 24px;
   background: #f8f9ff;
@@ -1411,7 +1468,7 @@ onMounted(() => {
 
 .list-item {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr 1.5fr 1fr;
+  grid-template-columns: 3fr 4fr 1fr 1fr;
   gap: 16px;
   padding: 16px 24px;
   border-bottom: 1px solid #f0f0f0;
@@ -1609,6 +1666,36 @@ onMounted(() => {
   font-size: 12px;
   color: #666;
   font-weight: 500;
+}
+
+.courseware-stats {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed #e5e7eb;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.stat-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4b5563;
+  font-size: 13px;
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #f1f5f9;
+}
+
+.stat-cell.full-width {
+  grid-column: span 2;
+}
+
+.stat-cell .el-icon {
+  color: #1677ff;
+  font-size: 16px;
 }
 
 .info-value {

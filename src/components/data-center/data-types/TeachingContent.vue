@@ -57,6 +57,13 @@
       >
         教学履历
       </div>
+      <div 
+        class="tab-item" 
+        :class="{ active: activeSubTab === 'aidata' }"
+        @click="$emit('sub-tab-change', 'aidata')"
+      >
+        AI数据分析
+      </div>
     </div>
     
     <!-- 内容展示区域 -->
@@ -91,6 +98,9 @@
       
       <!-- 教学数据-教学履历页面 -->
       <TeachingResume v-if="activeSubTab === 'resume'" />
+      
+      <!-- 教学数据-AI数据分析 -->
+      <AIDataAnalysis v-if="activeSubTab === 'aidata'" />
     </div>
   </div>
 </template>
@@ -104,6 +114,7 @@ import GradeManagement from '@/components/data-center/teaching-data/GradeManagem
 import Attendance from '@/components/data-center/teaching-data/Attendance.vue'
 import ClassroomInteraction from '@/components/data-center/teaching-data/ClassroomInteraction.vue'
 import TeachingResume from '@/components/data-center/teaching-data/TeachingResume.vue'
+import AIDataAnalysis from '@/components/data-center/teaching-data/AIDataAnalysis.vue'
 
 defineProps({
   activeSubTab: {

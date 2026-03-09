@@ -2,20 +2,35 @@
   <div class="class-management">
     <!-- 切换按钮和列表 -->
     <div class="courses-section">
-      <!-- 切换按钮 -->
-      <div class="toggle-buttons">
-        <button 
-          :class="['toggle-btn', { 'active': viewMode === 'course' }]"
-          @click="switchView('course')"
-        >
-          按课程
-        </button>
-        <button 
-          :class="['toggle-btn', { 'active': viewMode === 'class' }]"
-          @click="switchView('class')"
-        >
-          按班级
-        </button>
+      <!-- 头部状态栏：包含总数和切换按钮 -->
+      <div class="table-toolbar">
+        <!-- 左侧总数统计 -->
+        <div class="total-stats">
+          <div class="stat-item">
+            <span class="stat-label">班级总数：</span>
+            <span class="stat-value">{{ classesList.length }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">课程总数：</span>
+            <span class="stat-value">{{ coursesList.length }}</span>
+          </div>
+        </div>
+        
+        <!-- 切换按钮 -->
+        <div class="toggle-buttons">
+          <button 
+            :class="['toggle-btn', { 'active': viewMode === 'course' }]"
+            @click="switchView('course')"
+          >
+            按课程
+          </button>
+          <button 
+            :class="['toggle-btn', { 'active': viewMode === 'class' }]"
+            @click="switchView('class')"
+          >
+            按班级
+          </button>
+        </div>
       </div>
 
       <!-- 课程视图 - 按课程分组，每个课程下的班级单独显示 -->
@@ -522,14 +537,48 @@ const handleMouseUp = () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 切换按钮样式 */
-.toggle-buttons {
+/* 头部状态栏 (包含总数和切换按钮) */
+.table-toolbar {
   display: flex;
-  flex-direction: row-reverse;
-  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
   padding-bottom: 16px;
   border-bottom: 1px solid #f0f0f0;
+}
+
+/* 左侧总数统计 */
+.total-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f8f9fa;
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 16px;
+  color: #1677ff;
+  font-weight: 600;
+}
+
+/* 切换按钮样式 */
+.toggle-buttons {
+  display: flex;
+  gap: 12px;
 }
 
 .toggle-btn {

@@ -1,96 +1,71 @@
 <template>
   <div class="international-ability-container">
-    <!-- 筛选区域 -->
-    <div class="filter-section">
-      <div class="filter-row">
-        <div class="filter-tabs">
-          <label 
-            class="filter-tab" 
-            :class="{ active: selectedFilter === 'all' }"
+    <div class="content-section">
+      <!-- 统一在一行的筛选头部 -->
+      <div class="section-header">
+        <div class="stats-overview">
+          <div 
+            class="stat-item clickable-tab" 
+            :class="{ 'tab-active': selectedFilter === 'all' }"
+            @click="selectedFilter = 'all'"
           >
-            <input 
-              type="radio" 
-              name="filter" 
-              value="all" 
-              v-model="selectedFilter"
-              class="filter-checkbox"
-            >
-            <span class="filter-label">全部</span>
-          </label>
-          <label 
-            class="filter-tab" 
-            :class="{ active: selectedFilter === 'cooperation' }"
+            <span class="stat-label">全部：</span>
+            <span class="stat-value">{{ getAllCount() }}</span>
+          </div>
+          <div 
+            class="stat-item clickable-tab" 
+            :class="{ 'tab-active': selectedFilter === 'cooperation' }"
+            @click="selectedFilter = 'cooperation'"
           >
-            <input 
-              type="radio" 
-              name="filter" 
-              value="cooperation" 
-              v-model="selectedFilter"
-              class="filter-checkbox"
-            >
-            <span class="filter-label">合作办学</span>
-          </label>
-          <label 
-            class="filter-tab" 
-            :class="{ active: selectedFilter === 'conference' }"
+            <span class="stat-label">合作办学：</span>
+            <span class="stat-value">{{ getCountByType('cooperation') }}</span>
+          </div>
+          <div 
+            class="stat-item clickable-tab" 
+            :class="{ 'tab-active': selectedFilter === 'conference' }"
+            @click="selectedFilter = 'conference'"
           >
-            <input 
-              type="radio" 
-              name="filter" 
-              value="conference" 
-              v-model="selectedFilter"
-              class="filter-checkbox"
-            >
-            <span class="filter-label">国际会议</span>
-          </label>
-          <label 
-            class="filter-tab" 
-            :class="{ active: selectedFilter === 'exchange' }"
+            <span class="stat-label">国际会议：</span>
+            <span class="stat-value">{{ getCountByType('conference') }}</span>
+          </div>
+          <div 
+            class="stat-item clickable-tab" 
+            :class="{ 'tab-active': selectedFilter === 'exchange' }"
+            @click="selectedFilter = 'exchange'"
           >
-            <input 
-              type="radio" 
-              name="filter" 
-              value="exchange" 
-              v-model="selectedFilter"
-              class="filter-checkbox"
-            >
-            <span class="filter-label">访学交流</span>
-          </label>
+            <span class="stat-label">访学交流：</span>
+            <span class="stat-value">{{ getCountByType('exchange') }}</span>
+          </div>
         </div>
         
-        <div class="search-box">
-          <input 
-            type="text" 
-            v-model="searchKeyword" 
-            placeholder="搜索能力名称或编号..."
-            class="search-input"
-          >
-          <i class="search-icon">🔍</i>
-        </div>
-      </div>
-    </div>
-
-    <!-- 内容区域 -->
-    <div class="content-section">
-      <div class="section-header">
-        <h2>国际能力：{{ filteredAbilities.length }}</h2>
-        <div class="view-toggle">
-          <el-button-group>
-            <el-button 
-              :type="viewMode === 'list' ? 'primary' : ''" 
-              @click="viewMode = 'list'"
-              size="small"
+        <div class="header-controls">
+          <div class="search-box">
+            <input 
+              type="text" 
+              v-model="searchKeyword" 
+              placeholder="搜索能力名称或编号..."
+              class="search-input"
             >
-              列表视图
-            </el-button>
-            <el-button 
-              :type="viewMode === 'card' ? 'primary' : ''" 
-              @click="viewMode = 'card'"
-              size="small"
-            >
-              卡片视图
-            </el-button>
-          </el-button-group>
+            <i class="search-icon">🔍</i>
+          </div>
+          <div class="view-toggle">
+            <el-button-group>
+              <el-button 
+                :type="viewMode === 'list' ? 'primary' : ''" 
+                @click="viewMode = 'list'"
+                size="small"
+              >
+                列表
+              </el-button>
+              <el-button 
+                :type="viewMode === 'card' ? 'primary' : ''" 
+                @click="viewMode = 'card'"
+                size="small"
+              >
+                卡片
+              </el-button>
+            </el-button-group>
+          </div>
         </div>
       </div>
 
@@ -367,6 +342,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
+const getCountByType = (type) => {
+  return abilities.value.filter(ability => ability.type === type).length
+}
+
+const getAllCount = () => {
+  return abilities.value.length
+}
+
 // 响应式数据
 const selectedFilter = ref('all')
 const searchKeyword = ref('')
@@ -572,62 +555,60 @@ onMounted(() => {
   min-height: 100vh;
 }
 
-/* 筛选区域 */
-.filter-section {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.filter-row {
+.stats-overview {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-}
-
-.filter-tabs {
-  display: flex;
-  gap: 20px;
+  gap: 16px;
   flex: 1;
-  flex-wrap: wrap;
 }
 
-.filter-tab {
+.stat-item.clickable-tab {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 8px 16px;
+  background: #f8fafc;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
+  border: 1px solid #e2e8f0;
   user-select: none;
-  padding: 4px 0;
 }
 
-.filter-tab:hover {
-  color: #3b82f6;
+.stat-item.clickable-tab:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
 }
 
-.filter-tab.active {
-  color: #3b82f6;
+.stat-item.clickable-tab.tab-active {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
 }
 
-.filter-checkbox {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  cursor: pointer;
-  accent-color: #3b82f6;
-}
-
-.filter-label {
+.stat-label {
   font-size: 14px;
   font-weight: 500;
-  cursor: pointer;
+  color: #64748b;
+}
+
+.stat-item.clickable-tab.tab-active .stat-label {
+  color: #3b82f6;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.stat-item.clickable-tab.tab-active .stat-value {
+  color: #1d4ed8;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .search-box {
@@ -672,15 +653,8 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  border-bottom: 1px solid #e0e6f1;
-  background: #f8f9ff;
-}
-
-.section-header h2 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
+  border-bottom: 1px solid #e2e8f0;
+  background: white;
 }
 
 .view-toggle {

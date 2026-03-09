@@ -2,18 +2,20 @@
   <div class="teaching-resume-page">
     <!-- 筛选区域 -->
     <div class="filter-section">
-      <div class="filter-row">
-        <div class="stats-group">
-          <div class="stat-item">
-            <span class="stat-value">9年</span>
-            <span class="stat-label">累计任教</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">7门课</span>
-            <span class="stat-label">累计任教</span>
-          </div>
+      <!-- 左侧统计数值 -->
+      <div class="stats-overview">
+        <div class="stat-item">
+          <span class="stat-label">累计任教：</span>
+          <span class="stat-value">9年</span>
         </div>
-        
+        <div class="stat-item">
+          <span class="stat-label">累计任教：</span>
+          <span class="stat-value">7门课</span>
+        </div>
+      </div>
+      
+      <!-- 右侧筛选选项 -->
+      <div class="filter-controls">
         <div class="filter-group">
           <label>时间：</label>
           <el-select 
@@ -538,43 +540,52 @@ onMounted(() => {
 
 /* 筛选区域样式 */
 .filter-section {
+  margin-bottom: 24px;
+  padding: 20px 24px;
   background: white;
-  padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.filter-row {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  align-items: center;
   flex-wrap: wrap;
+  gap: 16px;
 }
 
-.stats-group {
+/* 统计数据区域 */
+.stats-overview {
   display: flex;
-  gap: 40px;
-  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
 }
 
 .stat-item {
   display: flex;
-  flex-direction: row-reverse;
   align-items: center;
-  gap: 4px;
-}
-
-.stat-value {
-  font-size: 18px;
-  font-weight: bold;
-  color: #1e40af;
+  gap: 6px;
+  background: #f8f9fa;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
 }
 
 .stat-label {
   font-size: 14px;
-  color: #6b7280;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 16px;
+  color: #1677ff;
+  font-weight: 600;
+}
+
+.filter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
 }
 
 .filter-group {

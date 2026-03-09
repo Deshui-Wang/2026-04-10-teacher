@@ -1,8 +1,11 @@
 <template>
   <div class="workload-quantification">
-    <!-- 标题和上传按钮行 -->
+    <!-- 标题和按钮行 -->
     <div class="title-section">
       <h3 class="module-title">本周平均工作量：8.9小时/周（ 💛 工作量偏大，注意休息）</h3>
+      <el-button type="primary" plain class="calendar-btn" @click="openDrawerCalendar">
+        <el-icon><Calendar /></el-icon> 日历
+      </el-button>
     </div>
     
     <!-- 第一部分：日历和当日课程 -->
@@ -176,13 +179,79 @@
         </div>
       </div>
     </div>
+
+    <!-- 完整日历侧滑抽屉 -->
+    <el-drawer
+      v-model="showFullDrawer"
+      title="月度工作日历"
+      size="1200px"
+      class="full-calendar-drawer"
+    >
+      <div class="drawer-content">
+        <div class="calendar-wrapper">
+          <el-calendar v-model="drawerCalendarDate">
+            <template #date-cell="{ data }">
+              <div class="calendar-cell" @click="handleDateSelect(data.day)">
+                <div class="cell-date" :class="{ 'is-selected-day': data.day === selectedDrawerDate }">
+                  {{ data.day.split('-')[2] }}
+                </div>
+                <div class="cell-events" v-if="getMonthlyEvents(data.day).length > 0">
+                  <div 
+                    v-for="(event, index) in getMonthlyEvents(data.day).slice(0, 3)" 
+                    :key="index"
+                    class="event-item"
+                    :class="event.type"
+                    :title="event.title"
+                  >
+                    {{ event.title }}
+                  </div>
+                  <div v-if="getMonthlyEvents(data.day).length > 3" class="event-more">
+                    +{{ getMonthlyEvents(data.day).length - 3 }} 更多
+                  </div>
+                </div>
+              </div>
+            </template>
+          </el-calendar>
+        </div>
+        
+        <!-- 选中日期的详情页 -->
+        <div class="selected-date-details" v-if="selectedDrawerDate">
+          <div class="details-header">
+            <h4>{{ formatDrawerDateHeader(selectedDrawerDate) }} 工作安排</h4>
+            <span class="event-count-badge" v-if="selectedDrawerEvents.length > 0">
+              共 {{ selectedDrawerEvents.length }} 项安排
+            </span>
+          </div>
+          
+          <div class="details-list" v-if="selectedDrawerEvents.length > 0">
+            <div 
+              v-for="(event, index) in selectedDrawerEvents" 
+              :key="index"
+              class="detail-item"
+              :class="event.type"
+            >
+              <div class="detail-icon">
+                <div class="icon-dot"></div>
+              </div>
+              <div class="detail-content">
+                <div class="detail-title">{{ event.title }}</div>
+                <div class="detail-type-tag">{{ getEventTypeLabel(event.type) }}</div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="no-events-detail">
+            暂无工作安排，注意休息哦 💛
+          </div>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
 import * as echarts from 'echarts'
-import { ArrowLeft, ArrowRight, Upload } from '@element-plus/icons-vue'
+import { ArrowLeft, ArrowRight, Upload, Calendar } from '@element-plus/icons-vue'
 
 // Local date helpers to avoid UTC shift when using ISO strings
 const formatDate = (date) => {
@@ -368,6 +437,111 @@ const generateCoursesForDate = (dateStr) => {
   
   return courses.sort((a, b) => a.period - b.period)
 }
+
+// 侧滑日历相关数据与方法
+const showFullDrawer = ref(false)
+const drawerCalendarDate = ref(new Date())
+const selectedDrawerDate = ref('')
+
+const openDrawerCalendar = () => {
+  const today = new Date()
+  showFullDrawer.value = true
+  drawerCalendarDate.value = new Date(today)
+  selectedDrawerDate.value = formatDate(today)
+}
+
+// 讲座、会议、培训数据模板
+const otherEvents = [
+  { type: 'lecture', title: '学术讲座' },
+  { type: 'meeting', title: '教研室常规会议' },
+  { type: 'training', title: '新教师技能培训' },
+  { type: 'lecture', title: '特邀专家报告' },
+  { type: 'meeting', title: '学院教职工大会' },
+  { type: 'training', title: '教学管理系统培训' },
+  { type: 'meeting', title: '学生工作总结会' }
+]
+
+const eventCache = new Map() // 用于缓存每月生成的事件
+
+const getMonthlyEvents = (dateStr) => {
+  if (eventCache.has(dateStr)) {
+    return eventCache.get(dateStr)
+  }
+  const [year, month, day] = dateStr.split('-').map(Number)
+  const date = new Date(year, month - 1, day)
+  const dayOfWeek = date.getDay()
+  
+  const events = []
+  
+  // 参考原来的上课数据
+  const courses = generateCoursesForDate(dateStr)
+  courses.forEach(c => {
+    // 课程加上时间
+    const title = `${c.timeSlot.split('-')[0]} ${c.name}`
+    events.push({ type: 'course', title: title })
+  })
+  
+  // 随机添加一些其他事件 (讲座会议)
+  const seed = date.getTime()
+  const random = (seedValue) => {
+    const x = Math.sin(seedValue) * 10000
+    return x - Math.floor(x)
+  }
+  
+  // 每天约30%的概率有其他事件
+  if (random(seed + 1000) > 0.7) {
+    const eventIndex = Math.floor(random(seed + 2000) * otherEvents.length)
+    events.push(otherEvents[eventIndex])
+    
+    // 极小概率有两个附加事件
+    if (random(seed + 2500) > 0.8) {
+      const eventIndex2 = Math.floor(random(seed + 2600) * otherEvents.length)
+      events.push(otherEvents[eventIndex2])
+    }
+  }
+  
+  // 周末可能少一点工作，加点特殊培训
+  if ((dayOfWeek === 0 || dayOfWeek === 6) && random(seed + 3000) > 0.85) {
+    events.push({ type: 'training', title: '周末进阶师资培训' })
+  }
+  
+  eventCache.set(dateStr, events)
+  return events
+}
+
+// 点击抽屉日历格子
+const handleDateSelect = (dateStr) => {
+  selectedDrawerDate.value = dateStr
+}
+
+// 获取选中日期的事件
+const selectedDrawerEvents = computed(() => {
+  if (!selectedDrawerDate.value) return []
+  return getMonthlyEvents(selectedDrawerDate.value)
+})
+
+// 格式化抽屉详情日期标题
+const formatDrawerDateHeader = (dateStr) => {
+  if (!dateStr) return ''
+  const [y, m, d] = dateStr.split('-')
+  return `${y}年${Number(m)}月${Number(d)}日`
+}
+
+const getEventTypeLabel = (type) => {
+  switch (type) {
+    case 'course': return '上课'
+    case 'lecture': return '讲座'
+    case 'meeting': return '会议'
+    case 'training': return '培训'
+    default: return '工作'
+  }
+}
+
+// 监听日历改变（如翻月），如果有需要可以把选中日期设为该月1号或者保持为空
+watch(drawerCalendarDate, (newVal) => {
+  // 当日历翻页时，可以保持原有的选择，如果觉得不合理可以清除：
+  // selectedDrawerDate.value = ''
+})
 
 // 计算当前年份
 const currentYear = computed(() => currentDate.value.getFullYear())
@@ -1398,5 +1572,244 @@ watch([selectedCourse, selectedType, selectedSemester], () => {
   .chart-content {
     height: 300px;
   }
+}
+
+/* 完整日历侧滑抽屉样式 */
+:deep(.full-calendar-drawer .el-drawer__header) {
+  margin-bottom: 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+}
+:deep(.full-calendar-drawer .el-drawer__body) {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f5f7fa;
+}
+
+.drawer-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.calendar-wrapper {
+  background: white;
+  padding: 12px 20px;
+}
+
+/* 修改原来的日历高宽以适合侧滑 */
+:deep(.full-calendar-drawer .el-calendar__body) {
+  padding: 12px 0 0 0;
+}
+:deep(.el-calendar-table thead th) {
+  padding: 10px 0;
+  font-size: 16px;
+}
+:deep(.el-calendar-day) {
+  height: 110px !important;
+  min-height: 110px;
+  padding: 6px;
+}
+
+.calendar-cell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+.calendar-cell:hover {
+  background: rgba(22, 119, 255, 0.04);
+}
+
+.cell-date {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  text-align: left;
+  padding-left: 6px;
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  border-radius: 50%;
+}
+.cell-date.is-selected-day {
+  background: #1677ff;
+  color: white;
+}
+
+.cell-events {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+/* 隐藏滚动条 */
+.cell-events::-webkit-scrollbar {
+  display: none;
+}
+.event-item {
+  font-size: 14px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+  font-weight: 500;
+}
+.event-item.course {
+  background: #e6f7ff;
+  color: #1677ff;
+  border-left: 4px solid #1677ff;
+}
+.event-item.lecture {
+  background: #fff0f6;
+  color: #eb2f96;
+  border-left: 4px solid #eb2f96;
+}
+.event-item.meeting {
+  background: #f6ffed;
+  color: #52c41a;
+  border-left: 4px solid #52c41a;
+}
+.event-item.training {
+  background: #fff7e6;
+  color: #fa8c16;
+  border-left: 4px solid #fa8c16;
+}
+.event-more {
+  font-size: 13px;
+  color: #999;
+  text-align: center;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+/* 选中日期详情区域 */
+.selected-date-details {
+  margin: 16px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+}
+.details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.details-header h4 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+.event-count-badge {
+  background: #e6f7ff;
+  color: #1677ff;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #f0f0f0;
+  transition: all 0.2s;
+}
+.detail-item:hover {
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.detail-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.icon-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+/* detail 列表不同颜色的徽标标记 */
+.detail-item.course .detail-icon { background: #e6f7ff; }
+.detail-item.course .icon-dot { background: #1677ff; }
+.detail-item.course:hover { border-color: #91caff; }
+
+.detail-item.lecture .detail-icon { background: #fff0f6; }
+.detail-item.lecture .icon-dot { background: #eb2f96; }
+.detail-item.lecture:hover { border-color: #ffadd2; }
+
+.detail-item.meeting .detail-icon { background: #f6ffed; }
+.detail-item.meeting .icon-dot { background: #52c41a; }
+.detail-item.meeting:hover { border-color: #b7eb8f; }
+
+.detail-item.training .detail-icon { background: #fff7e6; }
+.detail-item.training .icon-dot { background: #fa8c16; }
+.detail-item.training:hover { border-color: #ffd591; }
+
+.detail-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.detail-title {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+.detail-type-tag {
+  font-size: 14px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: #f0f0f0;
+  color: #666;
+}
+
+.no-events-detail {
+  padding: 40px;
+  text-align: center;
+  color: #999;
+  font-size: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.calendar-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 </style>

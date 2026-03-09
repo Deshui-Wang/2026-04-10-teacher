@@ -94,6 +94,12 @@ export default {
       checkAuth()
     })
 
+    // 处理来自子页面的 AI 触发请求
+    const handleOpenAIRequest = (payload) => {
+      // 这里的 payload 包含 prompt, type, referenceData
+      eventBus.emit('triggerAIAction', payload)
+    }
+
     return {
       showAvatarSelector,
       avatarSelectorData,
@@ -102,7 +108,8 @@ export default {
       confirmAvatarSelection,
       closeAvatarSelector,
       aiPanelOpen,
-      handleAIPanelStateChange
+      handleAIPanelStateChange,
+      handleOpenAIRequest
     }
   },
   computed: {
@@ -129,7 +136,7 @@ export default {
     'is-login-page': $route.path === '/login'
   }">
     <MainNavbar v-if="shouldShowNavbar" />
-    <router-view />
+    <router-view @open-ai="handleOpenAIRequest" />
     <Footer v-if="!$route.meta.hideFooter" />
     <!-- 小智人AI智能悬浮球 - 只在登录后显示 -->
     <AIAssistant v-if="shouldShowAIAssistant" @panel-state-change="handleAIPanelStateChange" />

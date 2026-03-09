@@ -1,8 +1,29 @@
 <template>
   <div class="grade-management">
-    <!-- 筛选区域 -->
+    <!-- 顶部状态栏及筛选区域 -->
     <div class="filter-section">
-      <div class="filter-row">
+      <!-- 左侧统计数值 -->
+      <div class="stats-overview">
+        <div class="stat-item">
+          <span class="stat-label">考试人次：</span>
+          <span class="stat-value">{{ filteredGrades.length }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">平均成绩：</span>
+          <span class="stat-value">{{ Math.round(averageScore) || 0 }}分</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">及格率：</span>
+          <span class="stat-value">{{ Math.round(passRate) || 0 }}%</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">挂科率：</span>
+          <span class="stat-value">{{ Math.round(failRate) || 0 }}%</span>
+        </div>
+      </div>
+
+      <!-- 右侧筛选选项 -->
+      <div class="filter-controls">
         <div class="filter-group">
           <label>课程：</label>
           <el-select 
@@ -387,6 +408,12 @@ const passRate = computed(() => {
   if (filteredGrades.value.length === 0) return 0
   const passCount = filteredGrades.value.filter(grade => grade.score >= 60).length
   return (passCount / filteredGrades.value.length) * 100
+})
+
+const failRate = computed(() => {
+  if (filteredGrades.value.length === 0) return 0
+  const failCount = filteredGrades.value.filter(grade => grade.score < 60).length
+  return (failCount / filteredGrades.value.length) * 100
 })
 
 const anomalyStudents = computed(() => {
@@ -847,25 +874,56 @@ watch(() => filteredGrades.value, () => {
 <style scoped>
 .grade-management {
   padding: 20px;
-  background: #f8f9fa;
-  min-height: 100vh;
-  width: 100%;
+  background: #f5f7fa;
+  min-height: calc(100vh - 60px);
 }
 
-/* 筛选区域 */
 .filter-section {
+  margin-bottom: 24px;
+  padding: 20px 24px;
   background: white;
-  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.filter-row {
+/* 统计数据区域 */
+.stats-overview {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 6px;
+  background: #f8f9fa;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 16px;
+  color: #1677ff;
+  font-weight: 600;
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
@@ -951,16 +1009,15 @@ watch(() => filteredGrades.value, () => {
 }
 
 .stat-value {
-  font-size: 28px;
+  font-size: 16px;
   font-weight: bold;
-  color: #fff;
+  color: #1677ff;
   line-height: 1;
 }
 
 .stat-label {
   font-size: 14px;
-  color: #fff;
-  margin-top: 4px;
+  color: #666;
 }
 
 /* 图表区域 */
@@ -1420,27 +1477,31 @@ watch(() => filteredGrades.value, () => {
 }
 
 @media (max-width: 768px) {
-  .grade-management {
-    padding: 10px;
-  }
-  
-  .filter-row {
+  .filter-section {
     flex-direction: column;
     align-items: stretch;
   }
   
-  .stats-cards {
-    grid-template-columns: 1fr;
-  }
-  
-  .anomaly-item {
+  .filter-controls {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
   }
   
-  .score-change {
-    align-self: flex-end;
+  .filter-group {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+  
+  .course-select,
+  .class-select,
+  .student-input {
+    flex: 1;
+    width: auto;
+  }
+  
+  .export-btn {
+    width: 100%;
   }
 }
 </style>
+```

@@ -1,7 +1,28 @@
 <template>
   <div class="student-management">
-    <!-- 筛选区域 -->
+    <!-- 筛选/统计区域 -->
     <div class="filter-section">
+      <!-- 左侧统计数值 -->
+      <div class="stats-overview">
+        <div class="stat-item">
+          <span class="stat-label">学生总数：</span>
+          <span class="stat-value">{{ summaryStats.totalStudents }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">平均出勤率：</span>
+          <span class="stat-value">{{ summaryStats.avgAttendance }}%</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">平均互动：</span>
+          <span class="stat-value">{{ summaryStats.avgInteraction }}分</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">平均作业完成：</span>
+          <span class="stat-value">{{ summaryStats.avgHomework }}%</span>
+        </div>
+      </div>
+
+      <!-- 右侧搜索框 -->
       <div class="search-box">
         <el-input
           v-model="searchQuery"
@@ -20,7 +41,7 @@
     <!-- 数据列表 -->
     <div class="data-section">
       <el-table
-        :data="filteredStudents"
+        :data="paginatedStudents"
         stripe
         border
         style="width: 100%"
@@ -163,7 +184,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 
 // 响应式数据
@@ -305,23 +326,121 @@ const students = ref([
   }
 ])
 
-// 筛选后的学生数据
-const filteredStudents = computed(() => {
+// 生成更多 Mock 数据达到 258 人
+const generateMockStudents = () => {
+  const currentCount = students.value.length
+  const targetCount = 258
+  const baseClasses = ['计算机科学1班', '计算机科学2班', '软件工程1班', '软件工程2班', '网络工程1班']
+  const mbtiTypes = ['INTJ', 'INTP', 'ENTJ', 'ENTP', 'INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'ISTP', 'ISFP', 'ESTP', 'ESFP']
+  const interestsPool = ['编程', '算法', '设计', '游戏', '系统架构', '云原生', '数据分析', '安全', '产品', '项目管理', '测试', '前端']
+  const advicePool = [
+    '建议加强算法基础，适合从事后端开发',
+    '具备优秀的逻辑维能力，建议深入研究架构设计',
+    '对用户体验敏感，可考虑向全栈或前端方向发展',
+    '具有团队协作天赋，适合往技术管理岗位侧重',
+    '建议多参与开源项目以提升工程实践经验',
+    '理论知识扎实，可继续深造攻读硕士学位',
+    '实践动手能力强，有适合企业开发岗位的潜力'
+  ]
+  const lastNames = ['赵', '钱', '孙', '李', '周', '吴', '郑', '王', '冯', '陈', '褚', '卫', '蒋', '沈', '韩', '杨', '朱', '秦', '尤', '许', '何', '吕', '施', '张']
+  const firstNames = ['伟', '芳', '娜', '敏', '静', '秀英', '丽', '强', '磊', '洋', '艳', '杰', '娟', '涛', '明', '超', '秀兰', '霞', '平', '刚']
+
+  for (let i = currentCount; i < targetCount; i++) {
+    const studentId = `2021${String(i + 1).padStart(3, '0')}`
+    const name = lastNames[Math.floor(Math.random() * lastNames.length)] + firstNames[Math.floor(Math.random() * firstNames.length)]
+    const randomClass = baseClasses[Math.floor(Math.random() * baseClasses.length)]
+    
+    // 随机生成合理的成绩和交互数据
+    const baseRate = 70 + Math.random() * 30 // 70-100
+    const attendanceRate = Math.min(100, Math.round(baseRate + (Math.random() * 10 - 5)))
+    const homeworkCompletionRate = Math.min(100, Math.round(baseRate + (Math.random() * 10 - 5)))
+    const homeworkAccuracyRate = Math.min(100, Math.round(baseRate - Math.random() * 15))
+    const averageScore = Number((baseRate * 0.9 + Math.random() * 10).toFixed(1))
+    
+    const classInteraction = Number((3 + Math.random() * 2).toFixed(1))
+    const gpa = Number((2.0 + (averageScore - 60) * 0.05).toFixed(1))
+    const majorMatch = Math.min(100, Math.round(60 + Math.random() * 40))
+    
+    // 随机选择2-4个兴趣
+    const shuffledInterests = [...interestsPool].sort(() => 0.5 - Math.random())
+    const selectedInterests = shuffledInterests.slice(0, Math.floor(Math.random() * 3) + 2)
+    
+    students.value.push({
+      studentId,
+      name,
+      class: randomClass,
+      attendanceRate,
+      classInteraction: Math.min(5, classInteraction),
+      homeworkCompletionRate,
+      homeworkAccuracyRate,
+      averageScore,
+      gpa: Math.min(4.0, gpa),
+      mbti: mbtiTypes[Math.floor(Math.random() * mbtiTypes.length)],
+      interests: selectedInterests,
+      researchProject: Math.random() > 0.7 ? '参与本科生科研训练计划' : '',
+      majorMatch,
+      careerAdvice: advicePool[Math.floor(Math.random() * advicePool.length)]
+    })
+  }
+}
+
+// 基于搜索结果应用分页
+const paginatedStudents = computed(() => {
   if (!searchQuery.value.trim()) {
-    return students.value
+    const start = (currentPage.value - 1) * pageSize.value
+    const end = start + pageSize.value
+    return students.value.slice(start, end)
   }
   
+  const query = searchQuery.value.trim().toLowerCase()
+  const filtered = students.value.filter(student => 
+    student.studentId.toLowerCase().includes(query) ||
+    student.name.toLowerCase().includes(query)
+  )
+  
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  return filtered.slice(start, end)
+})
+
+// 根据搜索结果计算真实总数
+const filteredTotal = computed(() => {
+  if (!searchQuery.value.trim()) {
+    return students.value.length
+  }
   const query = searchQuery.value.trim().toLowerCase()
   return students.value.filter(student => 
     student.studentId.toLowerCase().includes(query) ||
     student.name.toLowerCase().includes(query)
-  )
+  ).length
+})
+
+// 计算统计数值
+const summaryStats = computed(() => {
+  const list = students.value
+  if (list.length === 0) return { totalStudents: 0, avgAttendance: 0, avgInteraction: 0, avgHomework: 0 }
+  
+  let totalAttendance = 0
+  let totalInteraction = 0
+  let totalHomework = 0
+  
+  list.forEach(item => {
+    totalAttendance += item.attendanceRate || 0
+    totalInteraction += item.classInteraction || 0
+    totalHomework += item.homeworkCompletionRate || 0
+  })
+  
+  return {
+    totalStudents: list.length,
+    avgAttendance: Math.round(totalAttendance / list.length),
+    avgInteraction: (totalInteraction / list.length).toFixed(1),
+    avgHomework: Math.round(totalHomework / list.length)
+  }
 })
 
 // 搜索处理
 const handleSearch = () => {
   currentPage.value = 1
-  total.value = filteredStudents.value.length
 }
 
 // 分页处理
@@ -333,6 +452,16 @@ const handleSizeChange = (val) => {
 const handleCurrentChange = (val) => {
   currentPage.value = val
 }
+
+// 监听搜索词并更新分页总数如果必要（el-pagination 自带了总数响应只要绑定对了）
+watch(filteredTotal, (newTotal) => {
+  total.value = newTotal
+  // 确保在删减搜索词导致总页数变少时，不会停留在超出上限的页数里
+  const maxPage = Math.ceil(newTotal / pageSize.value) || 1
+  if (currentPage.value > maxPage) {
+    currentPage.value = maxPage
+  }
+})
 
 // 出勤率标签类型
 const getAttendanceTagType = (rate) => {
@@ -374,6 +503,7 @@ const getMatchColor = (match) => {
 
 // 初始化
 onMounted(() => {
+  generateMockStudents()
   total.value = students.value.length
 })
 </script>
@@ -386,12 +516,47 @@ onMounted(() => {
 
 .filter-section {
   padding: 24px;
-  background: #f8fafc;
+  background: white;
   border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* 统计数据区域 */
+.stats-overview {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 16px;
+  color: #1677ff;
+  font-weight: 600;
 }
 
 .search-box {
-  max-width: 400px;
+  width: 280px;
+  flex-shrink: 0;
 }
 
 .data-section {
@@ -459,14 +624,20 @@ onMounted(() => {
 @media (max-width: 768px) {
   .filter-section {
     padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
   }
   
-  .data-section {
-    padding: 16px;
+  .stats-overview {
+    gap: 12px;
   }
   
   .search-box {
-    max-width: 100%;
+    width: 100%;
+  }
+
+  .data-section {
+    padding: 16px;
   }
 }
 </style>

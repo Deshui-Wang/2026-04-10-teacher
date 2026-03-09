@@ -1,45 +1,46 @@
 <template>
   <div class="courses-page">
-    <!-- 筛选条件区域 -->
-    <div class="filter-section">
-      <div class="filter-row">
-        <div class="filter-group">
+    <!-- 课程列表 -->
+    <div class="content-section">
+      <div class="section-header">
+        <div class="stats-overview">
+          <div class="stat-item">
+            <span class="stat-label">课程总数：</span>
+            <span class="stat-value">{{ filteredData.length }}</span>
+          </div>
+        </div>
+        
+        <div class="header-controls">
           <el-input 
             v-model="filters.courseName" 
             placeholder="搜索课程名称" 
             clearable
             @input="handleFilterChange"
-            class="search-input"
+            class="header-search-input"
           >
             <template #prefix>
               <el-icon><Search /></el-icon>
             </template>
           </el-input>
-        </div>
-      </div>
-    </div>
-
-    <!-- 课程列表 -->
-    <div class="content-section">
-      <div class="section-header">
-        <h2>课程总数：6</h2>
-        <div class="view-toggle">
-          <el-button-group>
-            <el-button 
-              :type="viewMode === 'grid' ? 'primary' : ''" 
-              @click="viewMode = 'grid'"
-              size="small"
-            >
-              网格视图
-            </el-button>
-            <el-button 
-              :type="viewMode === 'list' ? 'primary' : ''" 
-              @click="viewMode = 'list'"
-              size="small"
-            >
-              列表视图
-            </el-button>
-          </el-button-group>
+          
+          <div class="view-toggle">
+            <el-button-group>
+              <el-button 
+                :type="viewMode === 'grid' ? 'primary' : ''" 
+                @click="viewMode = 'grid'"
+                size="small"
+              >
+                网格
+              </el-button>
+              <el-button 
+                :type="viewMode === 'list' ? 'primary' : ''" 
+                @click="viewMode = 'list'"
+                size="small"
+              >
+                列表
+              </el-button>
+            </el-button-group>
+          </div>
         </div>
       </div>
 
@@ -1342,26 +1343,63 @@ onMounted(() => {
 
 /* 内容区域样式 */
 .content-section {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  background: white;
+  border-radius: 8px;
+  min-height: calc(100vh - 84px);
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e0e6f1;
-  background: #f8f9ff;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  background: white;
+  border-radius: 8px 8px 0 0;
 }
 
-.section-header h2 {
-  margin: 0;
-  font-size: 20px;
+/* 统计数据区域 */
+.stats-overview {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 16px;
+  color: #1677ff;
   font-weight: 600;
-  color: #333;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-search-input {
+  width: 240px;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 8px;
 }
 
 /* 网格视图样式 */

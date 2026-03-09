@@ -1,8 +1,29 @@
 <template>
   <div class="classroom-interaction-page">
-    <!-- 筛选区域 -->
+    <!-- 顶部状态栏及筛选区域 -->
     <div class="filter-section">
-      <div class="filter-row">
+      <!-- 左侧统计数值 -->
+      <div class="stats-overview">
+        <div class="stat-item">
+          <span class="stat-label">响应率：</span>
+          <span class="stat-value">{{ Math.round(avgResponseRate) || 0 }}%</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">热情人次：</span>
+          <span class="stat-value">{{ emotionStats['整体热情'] || 0 }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">沉闷人次：</span>
+          <span class="stat-value">{{ emotionStats['个别沉闷'] || 0 }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">消极人次：</span>
+          <span class="stat-value">{{ emotionStats['个别消极'] || 0 }}</span>
+        </div>
+      </div>
+
+      <!-- 右侧筛选选项 -->
+      <div class="filter-controls">
         <div class="filter-group">
           <label>课程：</label>
           <el-select 
@@ -16,21 +37,6 @@
             <el-option v-for="course in courseList" :key="course" :label="course" :value="course" />
           </el-select>
         </div>
-        
-        <div class="filter-group">
-          <label>班级：</label>
-          <el-select 
-            v-model="filters.class" 
-            placeholder="全部班级" 
-            clearable 
-            @change="handleFilterChange"
-            class="class-select"
-          >
-            <el-option label="全部班级" value="" />
-            <el-option v-for="cls in classList" :key="cls" :label="cls" :value="cls" />
-          </el-select>
-        </div>
-        
         <div class="filter-group">
           <label>学生姓名：</label>
           <el-input 
@@ -41,14 +47,28 @@
             class="student-input"
           />
         </div>
-        
+
         <div class="filter-group">
+          <el-button-group>
+            <el-button 
+              :type="viewMode === 'list' ? 'primary' : 'default'" 
+              @click="viewMode = 'list'"
+            >
+              列表
+            </el-button>
+            <el-button 
+              :type="viewMode === 'chart' ? 'primary' : 'default'" 
+              @click="viewMode = 'chart'"
+            >
+              视图
+            </el-button>
+          </el-button-group>
         </div>
       </div>
     </div>
 
-    <!-- 数据列表 -->
-    <div class="table-section">
+    <!-- 数据列表视图 -->
+    <div class="table-section" v-show="viewMode === 'list'">
       <el-table 
         :data="paginatedInteraction" 
         style="width: 100%"
@@ -124,6 +144,13 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
+      </div>
+    </div>
+
+    <!-- 可视化视图 -->
+    <div class="chart-section" v-show="viewMode === 'chart'">
+      <div class="chart-container">
+        <v-chart class="chart" :option="chartOption" autoresize />
       </div>
     </div>
 
@@ -213,11 +240,35 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { use } from 'echarts/core'
+import { CanvasRenderer } from 'echarts/renderers'
+import { LineChart, BarChart } from 'echarts/charts'
+import {
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent,
+  DataZoomComponent
+} from 'echarts/components'
+import VChart, { THEME_KEY } from 'vue-echarts'
+
+use([
+  CanvasRenderer,
+  LineChart,
+  BarChart,
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent,
+  DataZoomComponent
+])
+
+// 视图模式
+const viewMode = ref('list') // 'list' | 'chart'
 
 // 筛选条件
 const filters = ref({
   course: '',
-  class: '',
   studentName: ''
 })
 
@@ -366,11 +417,6 @@ const filteredInteraction = computed(() => {
     result = result.filter(item => item.course === filters.value.course)
   }
 
-  // 按班级筛选
-  if (filters.value.class) {
-    result = result.filter(item => item.class === filters.value.class)
-  }
-
   // 按学生姓名筛选（在提问和演示中查找）
   if (filters.value.studentName) {
     result = result.filter(item => 
@@ -380,6 +426,119 @@ const filteredInteraction = computed(() => {
   }
 
   return result
+})
+
+// 计算页面的整体统计数值
+const avgResponseRate = computed(() => {
+  const list = filteredInteraction.value
+  if (list.length === 0) return 0
+  
+  let totalRate = 0
+  list.forEach(item => {
+    totalRate += item.questionResponseRate || 0
+  })
+  
+  return totalRate / list.length
+})
+
+const emotionStats = computed(() => {
+  const list = filteredInteraction.value
+  const stats = { '整体热情': 0, '个别沉闷': 0, '个别消极': 0 }
+  list.forEach(item => {
+    if (item.emotionCapture) {
+      stats[item.emotionCapture] = (stats[item.emotionCapture] || 0) + 1
+    }
+  })
+  return stats
+})
+
+// 图表配置选项
+const chartOption = computed(() => {
+  const data = [...filteredInteraction.value].sort((a, b) => new Date(a.time) - new Date(b.time)).slice(-20) // 获取最近20次上课数据
+  
+  const xAxisData = data.map(item => item.time.split(' ')[0] + '\\n' + item.course)
+  const responseRates = data.map(item => item.questionResponseRate)
+  const questionsCount = data.map(item => item.studentQuestions)
+  const presentationsCount = data.map(item => item.studentPresentations)
+
+  return {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'cross' }
+    },
+    legend: {
+      data: ['提问响应率(%)', '学生提问数', '学生演示数'],
+      top: 10
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '10%',
+      containLabel: true
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        start: 0,
+        end: 100
+      },
+      {
+        start: 0,
+        end: 100
+      }
+    ],
+    xAxis: {
+      type: 'category',
+      data: xAxisData,
+      axisLabel: {
+        rotate: 30,
+        fontSize: 10
+      }
+    },
+    yAxis: [
+      {
+        type: 'value',
+        name: '响应率',
+        min: 0,
+        max: 100,
+        axisLabel: {
+          formatter: '{value} %'
+        }
+      },
+      {
+        type: 'value',
+        name: '互动次数',
+        min: 0,
+        splitLine: { show: false }
+      }
+    ],
+    series: [
+      {
+        name: '提问响应率(%)',
+        type: 'line',
+        smooth: true,
+        data: responseRates,
+        itemStyle: { color: '#3b82f6' },
+        lineStyle: { width: 3 }
+      },
+      {
+        name: '学生提问数',
+        type: 'bar',
+        yAxisIndex: 1,
+        data: questionsCount,
+        itemStyle: { color: '#10b981' },
+         barWidth: '20%'
+      },
+      {
+        name: '学生演示数',
+        type: 'bar',
+        yAxisIndex: 1,
+        data: presentationsCount,
+        itemStyle: { color: '#f59e0b' },
+        barWidth: '20%'
+      }
+    ]
+  }
 })
 
 // 分页后的数据
@@ -459,18 +618,52 @@ const getResponseRateClass = (rate) => {
 
 /* 筛选区域样式 */
 .filter-section {
+  margin-bottom: 24px;
+  padding: 20px 24px;
   background: white;
-  padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.filter-row {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
-  gap: 20px;
+  justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* 统计数据区域 */
+.stats-overview {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 16px;
+  color: #1677ff;
+  font-weight: 600;
+}
+
+.filter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
 }
 
 .filter-group {
@@ -486,20 +679,32 @@ const getResponseRateClass = (rate) => {
 }
 
 .course-select,
-.class-select {
-  width: 180px;
-}
-
+.class-select,
 .student-input {
-  width: 200px;
+  width: 140px;
 }
 
-/* 表格区域样式 */
-.table-section {
+/* 表格及图表区域样式 */
+.table-section,
+.chart-section {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+}
+
+.chart-section {
+  padding: 24px;
+}
+
+.chart-container {
+  width: 100%;
+  height: 600px;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
 }
 
 .pagination-section {
@@ -602,19 +807,23 @@ const getResponseRateClass = (rate) => {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .filter-row {
+  .filter-section {
     flex-direction: column;
     align-items: stretch;
   }
   
-  .filter-group {
-    justify-content: space-between;
+  .filter-controls {
+    flex-direction: column;
+    align-items: flex-start;
   }
   
-  .course-select,
-  .class-select,
-  .student-input {
+  .filter-group {
     width: 100%;
+    margin-bottom: 12px;
   }
-}
+  
+    .student-input {
+      width: 100%;
+    }
+  }
 </style>

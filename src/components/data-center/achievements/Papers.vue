@@ -17,28 +17,6 @@
 
     <!-- 内容区域 -->
     <div class="content-section">
-      <div class="section-header">
-        <h2>论文：{{ filteredPapers.length }}</h2>
-        <div class="view-toggle">
-          <el-button-group>
-            <el-button 
-              :type="viewMode === 'list' ? 'primary' : ''" 
-              @click="viewMode = 'list'"
-              size="small"
-            >
-              列表视图
-            </el-button>
-            <el-button 
-              :type="viewMode === 'card' ? 'primary' : ''" 
-              @click="viewMode = 'card'"
-              size="small"
-            >
-              卡片视图
-            </el-button>
-          </el-button-group>
-        </div>
-      </div>
-
       <!-- 数据列表/卡片 -->
       <div class="content-area">
         <!-- 列表视图 -->
@@ -86,6 +64,13 @@
                 </button>
               </div>
               <div class="col-action">
+                <button 
+                  class="action-btn-ai"
+                  @click="triggerAIAssistant(paper)"
+                  title="智能总结"
+                >
+                  <i class="ai-sparkles-icon">✨</i> AI
+                </button>
                 <button 
                   class="view-btn-small" 
                   @click="viewPaper(paper)"
@@ -144,12 +129,21 @@
               >
                 上传资料
               </button>
-              <button 
-                class="view-btn-primary" 
-                @click="viewPaper(paper)"
-              >
-                查看详情
-              </button>
+              <div class="card-actions-right">
+                <button 
+                  class="action-btn-ai" 
+                  @click="triggerAIAssistant(paper)"
+                  title="智能总结"
+                >
+                  <i class="ai-sparkles-icon">✨</i> 智能总结
+                </button>
+                <button 
+                  class="view-btn-primary" 
+                  @click="viewPaper(paper)"
+                >
+                  查看详情
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -347,9 +341,18 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
-// 响应式数据
-const searchKeyword = ref('')
-const viewMode = ref('list')
+const props = defineProps({
+  searchKeyword: {
+    type: String,
+    default: ''
+  },
+  viewMode: {
+    type: String,
+    default: 'list'
+  }
+})
+const emit = defineEmits(['update:count', 'open-ai'])
+
 const showPaperModal = ref(false)
 const showDocumentModal = ref(false)
 const showUploadModal = ref(false)
@@ -497,8 +500,8 @@ const filteredPapers = computed(() => {
   let filtered = papers.value
 
   // 按关键词搜索
-  if (searchKeyword.value) {
-    const keyword = searchKeyword.value.toLowerCase()
+  if (props.searchKeyword) {
+    const keyword = props.searchKeyword.toLowerCase()
     filtered = filtered.filter(paper => 
       paper.title.toLowerCase().includes(keyword) ||
       paper.authors.some(author => author.toLowerCase().includes(keyword)) ||
@@ -510,6 +513,11 @@ const filteredPapers = computed(() => {
 
   return filtered
 })
+
+import { watch } from 'vue'
+watch(() => filteredPapers.value.length, (newVal) => {
+  emit('update:count', newVal)
+}, { immediate: true })
 
 // 方法
 const viewPaper = (paper) => {
@@ -579,6 +587,16 @@ const downloadDocument = (doc) => {
 
 const handleImageError = (event) => {
   event.target.src = '/pic/data.png'
+}
+
+const triggerAIAssistant = (paper) => {
+  // 发送给父组件以触发全局 AI 侧边栏，并携带当前论文信息让其智能总结
+  const aiContextPrompt = `你能帮我总结一下《${paper.title}》这篇关于“${paper.keywords.join('、')}”的论文内容吗？`
+  emit('open-ai', {
+    prompt: aiContextPrompt,
+    type: 'paper_summary',
+    referenceData: paper
+  })
 }
 
 onMounted(() => {
@@ -675,15 +693,20 @@ onMounted(() => {
 
 .table-header {
   display: grid;
-  grid-template-columns: 3fr 2fr 0.8fr 1.8fr 1.2fr 2fr 0.8fr 0.8fr;
+  grid-template-columns: 3fr 2fr 0.8fr 1.8fr 1.2fr 2fr 80px 140px;
   gap: 16px;
-  padding: 16px 24px;
+  padding: 16px 0;
   background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
   font-weight: 600;
   color: #374151;
   font-size: 14px;
   min-width: 1200px;
+  position: relative;
+}
+
+.table-header > div {
+  padding: 0 12px;
 }
 
 .table-body {
@@ -692,17 +715,85 @@ onMounted(() => {
 
 .table-row {
   display: grid;
-  grid-template-columns: 3fr 2fr 0.8fr 1.8fr 1.2fr 2fr 0.8fr 0.8fr;
+  grid-template-columns: 3fr 2fr 0.8fr 1.8fr 1.2fr 2fr 80px 140px;
   gap: 16px;
-  padding: 16px 24px;
+  padding: 16px 0;
   border-bottom: 1px solid #f1f5f9;
   align-items: center;
   transition: background-color 0.2s ease;
   min-width: 1200px;
+  position: relative;
+}
+
+.table-row > div {
+  padding: 0 12px;
 }
 
 .table-row:hover {
   background: #f8fafc;
+}
+
+/* 粘性定位列 - 上传和操作 */
+.table-header .col-upload,
+.table-row .col-upload {
+  position: sticky;
+  right: 140px;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: -16px 0;
+  padding: 16px 0;
+}
+
+.table-header .col-upload {
+  background-color: #f8fafc;
+}
+
+.table-row .col-upload {
+  background-color: white;
+}
+
+.table-row:hover .col-upload {
+  background-color: #f8fafc;
+}
+
+.table-header .col-action,
+.table-row .col-action {
+  position: sticky;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: -16px 0;
+  padding: 16px 0;
+  gap: 8px;
+}
+
+.table-header .col-action {
+  background-color: #f8fafc;
+}
+
+.table-row .col-action {
+  background-color: white;
+}
+
+.table-row:hover .col-action {
+  background-color: #f8fafc;
+}
+
+/* 粘性列左侧阴影效果 */
+.table-header .col-upload::before,
+.table-row .col-upload::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.05));
+  pointer-events: none;
 }
 
 .col-name {
@@ -1411,5 +1502,50 @@ onMounted(() => {
     font-size: 12px;
     padding: 3px 10px;
   }
+}
+
+.card-actions-right {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn-ai {
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  color: #0284c7;
+  border: 1px solid #bae6fd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.action-btn-ai:hover {
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+  color: #0369a1;
+  border-color: #7dd3fc;
+  box-shadow: 0 2px 4px rgba(2, 132, 199, 0.1);
+  transform: translateY(-1px);
+}
+
+.ai-sparkles-icon {
+  font-style: normal;
+  font-size: 12px;
+  animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-2px); }
+  100% { transform: translateY(0px); }
+}
+
+.card-footer .action-btn-ai {
+  padding: 8px 16px;
+  font-size: 14px;
 }
 </style>

@@ -4,6 +4,10 @@
     <div class="filter-section">
       <div class="usage-stats">
         <span class="stats-text">智能工具使用情况：217次/天</span>
+        <button class="ai-comment-btn" @click="triggerAIComment">
+          <i class="ai-sparkles-icon">✨</i>
+          AI智能点评
+        </button>
       </div>
     </div>
 
@@ -62,7 +66,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, defineEmits } from 'vue'
+
+const emit = defineEmits(['open-ai'])
+
+// 触发AI智能点评
+const triggerAIComment = () => {
+  const prompt = `请结合我目前的智能工具使用情况（平均217次/天）以及我在AI智课、AI PPT、知识库等数字作品和成果数据中的表现，给我一个综合的数字智能技能评价。重点分析我的优势、目前的技术栈覆盖程度，以及未来在教育数字化转型中可以进一步提升的方向。`
+  
+  emit('open-ai', {
+    prompt: prompt,
+    type: 'digital-literacy-evaluation'
+  })
+}
 
 // 数字素养数据
 const digitalLiteracyData = ref([
@@ -263,6 +279,39 @@ const digitalLiteracyData = ref([
   font-size: 16px;
   font-weight: 600;
   color: #1f2937;
+}
+
+.ai-comment-btn {
+  margin-left: auto;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.ai-comment-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+  background: linear-gradient(135deg, #4f46e5, #9333ea);
+}
+
+.ai-sparkles-icon {
+  font-style: normal;
+  animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
 /* 数据表格 */
