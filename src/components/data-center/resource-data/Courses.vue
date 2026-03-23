@@ -113,11 +113,11 @@
           </div>
           
           <div class="card-actions">
-            <el-button type="primary" size="small" @click="viewCourse(course)">
-              查看详情
+            <el-button type="warning" :icon="Cpu" size="small" @click="analyzeCourse(course)">
+              AI智能分析
             </el-button>
-            <el-button size="small" @click="editCourse(course)">
-              编辑
+            <el-button type="primary" size="small" @click="viewCourse(course)">
+              详情
             </el-button>
             <el-button size="small" @click="manageCourse(course)">
               管理
@@ -183,11 +183,11 @@
           </div>
           <div class="item-cell">
             <div class="action-buttons">
+              <el-button type="warning" :icon="Cpu" size="small" @click="analyzeCourse(course)">
+                AI分析
+              </el-button>
               <el-button type="primary" size="small" @click="viewCourse(course)">
                 查看
-              </el-button>
-              <el-button size="small" @click="editCourse(course)">
-                编辑
               </el-button>
               <el-button size="small" @click="manageCourse(course)">
                 管理
@@ -581,8 +581,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { Search, View } from '@element-plus/icons-vue'
+import { ref, computed, onMounted, inject } from 'vue'
+import { Search, View, Cpu } from '@element-plus/icons-vue'
+
+// 注入全局事件总线
+const eventBus = inject('eventBus')
 
 // 响应式数据
 const viewMode = ref('grid')
@@ -597,6 +600,23 @@ const studentRatingDialogVisible = ref(false)
 const supervisorRatingDialogVisible = ref(false)
 const courseDetailDialogVisible = ref(false)
 const currentCourse = ref(null)
+
+const analyzeCourse = (course) => {
+  if (eventBus) {
+    eventBus.emit('triggerAIAction', {
+      prompt: `请帮我针对《${course.name}》这门课程进行深度分析。目前课程的总体完成度为${course.completion}%。
+
+统计数据如下：
+- 关联课件数量：${course.coursewareCount}个
+- 学生平均评价：${course.studentRating}分（共${course.studentRatingCount}条评价）
+- 督导专家评价：${course.supervisorRating}分（共${course.supervisorRatingCount}条评价）
+
+课程简介：${course.detail?.description || ''}
+
+请针对以上数据，从教学内容完整性、师生互动质量、教学效果以及改进空间等维度给出专业的分析建议。`
+    })
+  }
+}
 
 // 模拟数据
 const coursesData = ref([
@@ -1569,7 +1589,7 @@ onMounted(() => {
   border-top: 1px solid #e0e6f1;
   display: flex;
   gap: 8px;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 /* 列表视图样式 */

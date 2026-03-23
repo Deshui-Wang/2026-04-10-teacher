@@ -41,24 +41,38 @@ import Attendance from '../components/data-center/teaching-data/Attendance.vue'
 import HomeworkManagement from '../components/data-center/teaching-data/HomeworkManagement.vue'
 
 // 全局状态管理
-const isLoggedIn = ref(false)
-const currentUser = ref(null)
+const isLoggedIn = ref(true)
+const currentUser = ref({
+  username: '张婉婷',
+  id: 1,
+  role: 'teacher'
+})
 
 // 认证检查函数
 const checkAuth = () => {
-  // 检查多种认证状态
-  const token = localStorage.getItem('token')
-  const isLoggedInFlag = localStorage.getItem('isLoggedIn')
+  // 仍然尝试从 localStorage 读取，这样用户之前的设置可能还能生效
   const user = localStorage.getItem('user')
   
-  if (token && isLoggedInFlag === 'true' && user) {
-    isLoggedIn.value = true
-    currentUser.value = JSON.parse(user)
-    console.log('用户已登录:', currentUser.value)
+  // 始终设置为已登录状态
+  isLoggedIn.value = true
+  
+  if (user) {
+    try {
+      currentUser.value = JSON.parse(user)
+    } catch (e) {
+      console.error('解析用户信息失败:', e)
+    }
   } else {
-    isLoggedIn.value = false
-    currentUser.value = null
-    console.log('用户未登录')
+    // 如果没有，设置默认值并存储到 localStorage
+    const defaultUser = {
+      username: '张婉婷',
+      id: 1,
+      role: 'teacher'
+    }
+    currentUser.value = defaultUser
+    localStorage.setItem('user', JSON.stringify(defaultUser))
+    localStorage.setItem('isLoggedIn', 'true')
+    localStorage.setItem('token', 'auto-token-' + Date.now())
   }
 }
 
@@ -252,11 +266,12 @@ router.beforeEach((to, from, next) => {
     currentUser: currentUser.value
   })
   
-  // 如果用户未登录且访问的不是登录页面，重定向到登录页
-  if (!isLoggedIn.value && to.name !== 'Login' && to.name !== 'LoginDemo') {
-    console.log('重定向到登录页')
-    next({ name: 'Login' })
+  // 如果用户试图访问登录页或演示登录页，自动跳转到首页
+  if (to.name === 'Login' || to.name === 'LoginDemo') {
+    console.log('登录页已禁用，跳转到首页')
+    next({ name: 'Home' })
   } else {
+    // 允许直接进入其他页面
     console.log('允许访问页面:', to.name)
     next()
   }

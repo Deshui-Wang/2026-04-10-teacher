@@ -78,11 +78,11 @@
           </div>
           
           <div class="card-actions">
-            <el-button type="primary" size="small" @click="viewItem(item)">
-              查看详情
+            <el-button type="warning" :icon="Cpu" size="small" @click="analyzeItem(item)">
+              AI智能分析
             </el-button>
-            <el-button size="small" @click="editItem(item)">
-              编辑
+            <el-button type="primary" size="small" @click="viewItem(item)">
+              详情
             </el-button>
             <el-button size="small" @click="downloadItem(item)">
               下载
@@ -121,6 +121,9 @@
           </div>
           <div class="item-cell">
             <div class="action-buttons">
+              <el-button type="warning" :icon="Cpu" size="small" @click="analyzeItem(item)">
+                AI分析
+              </el-button>
               <el-button type="primary" size="small" @click="viewItem(item)">
                 查看
               </el-button>
@@ -260,8 +263,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { User, Timer, DataLine } from '@element-plus/icons-vue'
+import { ref, computed, onMounted, inject } from 'vue'
+import { User, Timer, DataLine, Cpu } from '@element-plus/icons-vue'
+
+// 注入全局事件总线
+const eventBus = inject('eventBus')
 
 // 响应式数据
 const viewMode = ref('grid')
@@ -1039,6 +1045,16 @@ const generateCourseContent = (item) => {
       '在线学习资源',
       '实践项目文档'
     ]
+  }
+}
+
+const analyzeItem = (item) => {
+  if (eventBus) {
+    const typeLabel = item.type === 'courseware' ? '课件' : '教案'
+    // 触发 AI 动作
+    eventBus.emit('triggerAIAction', {
+      prompt: `请帮我分析《${item.name}》这个${typeLabel}。所属项目是"${item.courseName}"，主要面向${item.targetAudience}，课件描述为：${item.description}`
+    })
   }
 }
 
