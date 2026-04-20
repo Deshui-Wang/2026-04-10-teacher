@@ -40,7 +40,7 @@
             </div>
           </div>
           <div class="today-course-list-block">
-            <div class="course-count-label">共 {{ dailyCourses.length }} 节课</div>
+
             <div v-if="!dailyCourses.length" class="no-course-note">本日无课程</div>
             <div v-for="c in dailyCourses" :key="c.id" class="today-course-item">
               <span class="tc-time">{{c.timeSlot}}</span>
@@ -66,21 +66,7 @@
             </div>
           </div>
         </div>
-        <!-- 年度办理统计调整至这里 -->
-        <div class="portal-stat-blocks">
-          <div class="stat-block stat-a">
-            <div class="stat-number">127</div>
-            <div class="stat-label">课程总数</div>
-          </div>
-          <div class="stat-block stat-b">
-            <div class="stat-number">71</div>
-            <div class="stat-label">教学成果</div>
-          </div>
-          <div class="stat-block stat-c">
-            <div class="stat-number">89</div>
-            <div class="stat-label">教学评价</div>
-          </div>
-        </div>
+
       </div>
       <!-- 右一：我的应用（九宫格）区块 -->
       <div class="portal-card portal-apps-card">
@@ -95,6 +81,87 @@
         </div>
       </div>
     </div>
+    <!-- 进行中的工作模块（左右分栏版：工作详情 + 项目组动态） -->
+    <div class="portal-card portal-ongoing-work-card">
+      <div class="work-module-split-container">
+        
+        <!-- 左侧：进行中的工作 -->
+        <div class="work-left-section">
+          <div class="portal-card-header">
+            <span>进行中的工作</span>
+          </div>
+          
+          <div class="work-tabs-row">
+            <div 
+              v-for="work in ongoingWorks" 
+              :key="work.id" 
+              class="work-tab-item"
+              :class="{ active: activeWorkId === work.id }"
+              @click="activeWorkId = work.id"
+            >
+              <span class="tab-icon">{{ work.icon }}</span>
+              <span class="tab-label">{{ work.title }}</span>
+            </div>
+          </div>
+
+          <div class="work-content-panel" v-if="activeWork">
+            <div class="work-brief-header">
+              <div class="brief-left">
+                <span class="work-status-pill" :class="activeWork.statusType">{{ activeWork.status }}</span>
+                <span class="work-deadline-info">截止日期：{{ activeWork.deadline }}</span>
+              </div>
+              <div class="brief-right">
+                <span class="progress-percent">总体进度 {{ activeWork.progress }}%</span>
+                <div class="mini-progress-track">
+                  <div class="mini-progress-fill" :style="{ width: activeWork.progress + '%', background: activeWork.color }"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="work-nodes-timeline">
+              <div 
+                v-for="(node, index) in activeWork.nodes" 
+                :key="index" 
+                class="work-node-lane"
+                :class="{ active: node.current, done: node.completed }"
+              >
+                <div class="node-milestone">
+                  <div class="node-dot">
+                    <span v-if="node.completed">✓</span>
+                  </div>
+                  <div v-if="index < activeWork.nodes.length - 1" class="node-connector"></div>
+                </div>
+                <div class="node-info-text">
+                  <div class="node-name">{{ node.title }}</div>
+                  <div class="node-date">{{ node.time }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧：项目组动态 -->
+        <div class="work-right-section">
+          <div class="portal-card-header">
+            <span>项目组动态</span>
+          </div>
+          <div class="team-dynamics-list">
+            <div v-for="log in teamLogs" :key="log.id" class="dynamic-item">
+              <img :src="log.avatar" class="dynamic-avatar" alt="avatar">
+              <div class="dynamic-info">
+                <div class="dynamic-user-row">
+                  <span class="dynamic-name">{{ log.name }}</span>
+                  <span class="dynamic-time">{{ log.time }}</span>
+                </div>
+                <div class="dynamic-content">{{ log.content }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- 人文关怀模块 -->
     <div class="portal-card portal-care-card">
       <div class="portal-card-header">
@@ -236,9 +303,6 @@ const portalApps = [
   { icon: '📋', label: '智能PPT', bg: '#ecf3fd' },
   { icon: '💻', label: '智能建课', bg: '#faecf2' },
   { icon: '📈', label: '智能报表', bg: '#efe5fd' },
-  { icon: '🗂️', label: '资源库', bg: '#e6fcf5' },      // 新增应用1
-  { icon: '🔔', label: '消息中心', bg: '#fef7e0' },    // 新增应用2
-  { icon: '🚀', label: '创新活动', bg: '#eaeaff' },    // 新增应用3
 ];
 const todoTab = ref('all');
 const todosData = {
@@ -345,8 +409,29 @@ const currentDate = ref(getCurrentDate());
 const currentWeekday = ref(getCurrentWeekday());
 const weatherInfo = ref(getWeatherInfo());
 const calendarSelectedDate = ref(new Date().toISOString().split('T')[0]);
-const weekDays = computed(()=>[{day:27,date:'2025-10-27',isToday:false,courseCount:1},{day:28,date:'2025-10-28',isToday:false,courseCount:2},{day:29,date:'2025-10-29',isToday:false,courseCount:2},{day:30,date:'2025-10-30',isToday:true,courseCount:3},{day:31,date:'2025-10-31',isToday:false,courseCount:0},{day:1,date:'2025-11-01',isToday:false,courseCount:1},{day:2,date:'2025-11-02',isToday:false,courseCount:0}]);
-const calendarRange = '2025.10.27 ~ 2025.10.31';
+const weekDays = computed(() => {
+  const now = new Date();
+  let day = now.getDay();
+  if (day === 0) day = 7;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - (day - 1));
+  return Array.from({ length: 7 }).map((_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const isoDate = d.toISOString().split('T')[0];
+    return {
+      day: d.getDate(),
+      date: isoDate,
+      isToday: isoDate === new Date().toISOString().split('T')[0],
+      courseCount: [2, 1, 3, 2, 1, 0, 0][i]
+    };
+  });
+});
+const calendarRange = computed(() => {
+  const start = weekDays.value[0].date.replace(/-/g, '.');
+  const end = weekDays.value[6].date.replace(/-/g, '.');
+  return `${start} ~ ${end}`;
+});
 const selectedDateFormatted = computed(()=>{
   if (!calendarSelectedDate.value) return '';
   const d = calendarSelectedDate.value.split('-');
@@ -433,6 +518,56 @@ const handleEvaluationClick = (item) => {
   console.log('点击评教规则:', item);
   // 这里可以添加跳转逻辑
 };
+
+// 项目组动态数据
+const teamLogs = ref([
+  { id: 1, name: '陈老师', avatar: '/pic/avatar1.jpeg', content: '更新了《人工智能课程》第三章课件', time: '10分钟前' },
+  { id: 2, name: '李明', avatar: '/pic/avatar2.jpeg', content: '提交了省级实验室申报书初稿', time: '1小时前' },
+  { id: 3, name: '张寻', avatar: '/pic/teacher/66.jpg', content: '在“教学研讨”群组发起了一个新话题', time: '3小时前' },
+  { id: 4, name: '王敏', avatar: '/pic/avatar3.png', content: '完成了学生中期评审表的初次汇总', time: '昨天' },
+]);
+
+// 进行中的工作数据（支持节点进度）
+const activeWorkId = ref(1);
+const ongoingWorks = ref([
+  { 
+    id: 1, title: '人工智能课程大纲设计', icon: '📚', progress: 75, status: '进行中', statusType: 'active', color: 'linear-gradient(90deg, #6a11cb 0%, #2575fc 100%)', deadline: '05-15',
+    nodes: [
+      { title: '需求分析', time: '04-01', completed: true },
+      { title: '框架搭建', time: '04-10', completed: true },
+      { title: '章节编写', time: '04-20', completed: false, current: true },
+      { title: '评审发布', time: '05-15', completed: false }
+    ]
+  },
+  { 
+    id: 2, title: '省级重点实验室申报', icon: '🔬', progress: 40, status: '进行中', statusType: 'active', color: 'linear-gradient(90deg, #6a11cb 0%, #2575fc 100%)', deadline: '06-20',
+    nodes: [
+      { title: '组建团队', time: '05-01', completed: true },
+      { title: '材料撰写', time: '05-20', completed: false, current: true },
+      { title: '预审答辩', time: '06-10', completed: false },
+      { title: '正式提交', time: '06-20', completed: false }
+    ]
+  },
+  { 
+    id: 3, title: '青年教师公开课准备', icon: '👩‍🏫', progress: 90, status: '冲刺中', statusType: 'urgent', color: 'linear-gradient(90deg, #f093fb 0%, #f5576c 100%)', deadline: '04-25',
+    nodes: [
+      { title: '选题确认', time: '04-01', completed: true },
+      { title: '教案设计', time: '04-08', completed: true },
+      { title: '试讲调整', time: '04-15', completed: true },
+      { title: '正式授课', time: '04-25', completed: false, current: true }
+    ]
+  },
+  { 
+    id: 4, title: '学生毕业论文中期评审', icon: '📝', progress: 20, status: '已开始', statusType: 'start', color: 'linear-gradient(90deg, #5ee7df 0%, #b490ca 100%)', deadline: '05-10',
+    nodes: [
+      { title: '开题收集', time: '03-20', completed: true },
+      { title: '初步走访', time: '04-10', completed: false, current: true },
+      { title: '中期总结', time: '05-10', completed: false },
+      { title: '答辩安排', time: '06-01', completed: false }
+    ]
+  },
+]);
+const activeWork = computed(() => ongoingWorks.value.find(w => w.id === activeWorkId.value));
 
 // 组件挂载时初始化并设置定时更新
 onMounted(() => {
@@ -639,46 +774,7 @@ onMounted(() => {
   margin-left: 3px;
 }
 
-.portal-stat-blocks {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px 8px;
-  margin-top: 20px;
-}
 
-.stat-block {
-  border-radius: 16px;
-  padding: 19px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.stat-a {
-  background: #fef8f0;
-}
-
-.stat-b {
-  background: #f0f8f4;
-}
-
-.stat-c {
-  background: #f0f6fb;
-}
-
-.stat-number {
-  font-size: 27px;
-  font-weight: 800;
-  color: #364b6d;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #9bacc9;
-}
 
 .portal-profile-col {
   grid-column: 1 / span 1;
@@ -686,6 +782,9 @@ onMounted(() => {
   flex-direction: column;
   gap: 12px;
   align-self: stretch;
+}
+.profile-calendar-card {
+  flex: 1;
 }
 .profile-info-card {
   padding-bottom: 19px;
@@ -762,7 +861,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 5px 9px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   margin-left: 3px;
 }
 
@@ -844,8 +943,18 @@ onMounted(() => {
 }
 
 .today-course-list-block {
-  margin-top: 9px;
-  min-height: 170px; /* 固定最小高度，防跳变 */
+  margin-top: 0px;
+  height: 44px; 
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.today-course-list-block::-webkit-scrollbar {
+  width: 4px;
+}
+.today-course-list-block::-webkit-scrollbar-thumb {
+  background: #dde3ff;
+  border-radius: 10px;
 }
 
 .course-date-title {
@@ -854,15 +963,7 @@ onMounted(() => {
   color: #23305b;
 }
 
-.course-count-label {
-  background: #eef2fa;
-  color: #98b0cb;
-  border-radius: 10px;
-  padding: 2px 10px;
-  font-size: 13px;
-  margin: 7px 0;
-  display: inline-block;
-}
+
 
 .no-course-note {
   background: none;
@@ -1310,5 +1411,166 @@ onMounted(() => {
     max-width: none;
     grid-column: 1/-1;
   }
+}
+
+/* 进行中的工作模块 - 分栏版样式 */
+.portal-ongoing-work-card {
+  margin-top: 4px;
+  padding: 24px 30px !important;
+}
+
+.work-module-split-container {
+  display: grid;
+  grid-template-columns: 1fr 340px; /* 左侧自适应，右侧固定宽度 */
+  gap: 40px;
+}
+
+.work-left-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.work-right-section {
+  border-left: 1px solid #f0f4ff;
+  padding-left: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.work-tabs-row {
+  display: flex;
+  gap: 12px;
+  padding: 2px 0 6px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.work-tabs-row::-webkit-scrollbar { display: none; }
+
+.work-tab-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f4f6fb;
+  padding: 10px 18px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.work-tab-item.active {
+  background: #fff;
+  border-color: #4a90e2;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.12);
+  color: #4a90e2;
+}
+
+.work-content-panel {
+  background: #f8faff;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid #f0f4ff;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.work-brief-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.brief-left { display: flex; align-items: center; gap: 14px; }
+.work-status-pill {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 9px;
+  font-weight: 700;
+}
+.work-status-pill.active { background: #e9f2ff; color: #4381de; }
+.work-status-pill.urgent { background: #fff0f0; color: #f0474c; }
+.work-status-pill.start { background: #f0fdf4; color: #36b047; }
+
+.progress-percent { font-size: 13px; font-weight: 700; color: #2d437a; }
+.mini-progress-track {
+  width: 120px; height: 6px; background: #eef2ff; border-radius: 10px; overflow: hidden;
+}
+.mini-progress-fill { height: 100%; border-radius: 10px; transition: width 0.8s ease; }
+
+.work-nodes-timeline {
+  display: flex;
+  justify-content: space-between;
+}
+.work-node-lane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.node-milestone {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+  z-index: 2;
+}
+.node-dot {
+  width: 28px; height: 28px; background: #fff; border: 2px solid #dde3ff; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 12px; color: #97a3be; font-weight: 700;
+}
+.node-connector {
+  position: absolute; top: 14px; left: 50%; width: 100%; height: 2px; background: #dde3ff; z-index: -1;
+}
+.work-node-lane.done .node-dot { background: #4a90e2; border-color: #4a90e2; color: #fff; }
+.work-node-lane.done .node-connector { background: #4a90e2; }
+.work-node-lane.active .node-dot { border-color: #4a90e2; color: #4a90e2; box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.15); }
+
+.node-name { font-size: 14px; font-weight: 700; color: #2d437a; margin-bottom: 2px; }
+.node-date { font-size: 11px; color: #97a3be; }
+
+/* 项目组动态样式 */
+.team-dynamics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.dynamic-item {
+  display: flex;
+  gap: 12px;
+}
+.dynamic-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.dynamic-info {
+  flex: 1;
+}
+.dynamic-user-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.dynamic-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2d437a;
+}
+.dynamic-time {
+  font-size: 11px;
+  color: #97a3be;
+}
+.dynamic-content {
+  font-size: 13px;
+  color: #5b6b90;
+  line-height: 1.5;
+  text-align: left;
 }
 </style>
