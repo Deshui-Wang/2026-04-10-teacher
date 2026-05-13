@@ -13,12 +13,19 @@
       >
         个人成长档案
       </div>
+      <div 
+        :class="['tab-item', { active: activeSubTab === 'resume' }]"
+        @click="$emit('sub-tab-change', 'resume')"
+      >
+        教学履历
+      </div>
     </div>
     
     <!-- 内容展示区域 -->
     <div class="content-area">
       <ArchiveList v-if="activeSubTab === 'archive'" />
       <PersonalGrowthArchive v-if="activeSubTab === 'growth'" />
+      <TeachingResume v-if="activeSubTab === 'resume'" />
     </div>
   </div>
 </template>
@@ -26,6 +33,7 @@
 <script setup>
 import ArchiveList from '../report-data/ArchiveList.vue'
 import PersonalGrowthArchive from '../report-data/PersonalGrowthArchive.vue'
+import TeachingResume from '../teaching-data/TeachingResume.vue'
 
 defineProps({
   activeSubTab: {

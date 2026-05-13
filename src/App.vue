@@ -1,6 +1,5 @@
 <script>
 import MainNavbar from './components/html-page/MainNavbar.vue'
-import Footer from './components/html-page/Footer.vue'
 import AIAssistant from './components/html-page/AIAssistant.vue'
 import { ref, provide, onMounted, onUnmounted } from 'vue'
 import { isLoggedIn, currentUser, checkAuth } from './router/index.js'
@@ -9,7 +8,6 @@ export default {
   name: 'App',
   components: {
     MainNavbar,
-    Footer,
     AIAssistant
   },
   setup() {
@@ -137,7 +135,6 @@ export default {
   }">
     <MainNavbar v-if="shouldShowNavbar" />
     <router-view @open-ai="handleOpenAIRequest" />
-    <Footer v-if="!$route.meta.hideFooter" />
     <!-- 小智人AI智能悬浮球 - 只在登录后显示 -->
     <AIAssistant v-if="shouldShowAIAssistant" @panel-state-change="handleAIPanelStateChange" />
     

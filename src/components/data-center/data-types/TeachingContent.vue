@@ -6,49 +6,21 @@
         :class="{ active: activeSubTab === 'workload' }"
         @click="$emit('sub-tab-change', 'workload')"
       >
-        工作安排
+        课表
       </div>
       <div 
         class="tab-item" 
-        :class="{ active: activeSubTab === 'classes' }"
-        @click="$emit('sub-tab-change', 'classes')"
+        :class="{ active: activeSubTab === 'teaching-course' }"
+        @click="$emit('sub-tab-change', 'teaching-course')"
       >
-        班课
+        我的授课
       </div>
       <div 
         class="tab-item" 
-        :class="{ active: activeSubTab === 'students' }"
-        @click="$emit('sub-tab-change', 'students')"
+        :class="{ active: activeSubTab === 'teaching-course' }"
+        @click="$emit('sub-tab-change', 'teaching-course')"
       >
-        学生
-      </div>
-      <div 
-        class="tab-item" 
-        :class="{ active: activeSubTab === 'assignments' }"
-        @click="$emit('sub-tab-change', 'assignments')"
-      >
-        作业
-      </div>
-      <div 
-        class="tab-item" 
-        :class="{ active: activeSubTab === 'grades' }"
-        @click="$emit('sub-tab-change', 'grades')"
-      >
-        成绩
-      </div>
-      <div 
-        class="tab-item" 
-        :class="{ active: activeSubTab === 'attendance' }"
-        @click="$emit('sub-tab-change', 'attendance')"
-      >
-        出勤
-      </div>
-      <div 
-        class="tab-item" 
-        :class="{ active: activeSubTab === 'interaction' }"
-        @click="$emit('sub-tab-change', 'interaction')"
-      >
-        课堂互动
+        我的授课
       </div>
       <div 
         class="tab-item" 
@@ -68,36 +40,15 @@
     
     <!-- 内容展示区域 -->
     <div class="content-area">
+      <!-- 教学数据内容区域 -->
+
+      <!-- 教学数据-我的授课看板 -->
+      <CourseDashboard v-if="activeSubTab === 'teaching-course'" />
+
       <!-- 教学数据-工作量页面 -->
       <WorkloadQuantification v-if="activeSubTab === 'workload'" />
       
-      <!-- 教学数据-班级页面 -->
-      <ClassManagement 
-        v-if="activeSubTab === 'classes'" 
-        @navigate-to-student="handleNavigateToStudent"
-        @navigate-to-homework="handleNavigateToHomework"
-        @navigate-to-grade="handleNavigateToGrade"
-        @navigate-to-attendance="handleNavigateToAttendance"
-        @navigate-to-interaction="handleNavigateToInteraction"
-      />
-      
-      <!-- 教学数据-学生页面 -->
-      <StudentManagement v-if="activeSubTab === 'students'" />
-      
-      <!-- 教学数据-作业页面 -->
-      <HomeworkManagement v-if="activeSubTab === 'assignments'" />
-
-      <!-- 教学数据-成绩页面 -->
-      <GradeManagement v-if="activeSubTab === 'grades'" />
-      
-      <!-- 教学数据-出勤页面 -->
-      <Attendance v-if="activeSubTab === 'attendance'" />
-      
-      <!-- 教学数据-课堂互动页面 -->
-      <ClassroomInteraction v-if="activeSubTab === 'interaction'" />
-      
-      <!-- 教学数据-教学履历页面 -->
-      <TeachingResume v-if="activeSubTab === 'resume'" />
+      <!-- 教学数据内容区域 -->
       
       <!-- 教学数据-AI数据分析 -->
       <AIDataAnalysis v-if="activeSubTab === 'aidata'" />
@@ -106,14 +57,8 @@
 </template>
 
 <script setup>
+import CourseDashboard from '@/components/data-center/teaching-data/CourseDashboard.vue'
 import WorkloadQuantification from '@/components/data-center/teaching-data/WorkloadQuantification.vue'
-import ClassManagement from '@/components/data-center/teaching-data/ClassManagement.vue'
-import StudentManagement from '@/components/data-center/teaching-data/StudentManagement.vue'
-import HomeworkManagement from '@/components/data-center/teaching-data/HomeworkManagement.vue'
-import GradeManagement from '@/components/data-center/teaching-data/GradeManagement.vue'
-import Attendance from '@/components/data-center/teaching-data/Attendance.vue'
-import ClassroomInteraction from '@/components/data-center/teaching-data/ClassroomInteraction.vue'
-import TeachingResume from '@/components/data-center/teaching-data/TeachingResume.vue'
 import AIDataAnalysis from '@/components/data-center/teaching-data/AIDataAnalysis.vue'
 
 defineProps({

@@ -1,242 +1,304 @@
 <template>
-  <div class="data-center">
-    <!-- 页面标题 -->
-    <div class="page-header">
-      <h1 class="page-title">教师个人独享·数据管理空间</h1>
-    </div>
+  <div class="data-center-container">
+    <el-container class="main-layout">
+      <!-- 左侧导航栏 -->
+      <el-aside width="260px" class="sidebar-aside">
+        <div class="sidebar-header">
+          <h2 class="sidebar-title">教学中心</h2>
+        </div>
+        <el-menu
+          :default-active="activeSubTab"
+          class="data-menu"
+          @select="handleMenuSelect"
+          unique-opened
+        >
+          <!-- 教学数据组 -->
+          <el-sub-menu index="teaching">
+            <template #title>
+              <i class="el-icon-monitor"></i>
+              <span>教学数据</span>
+            </template>
+            <el-menu-item index="workload">课表</el-menu-item>
+            <el-menu-item index="teaching-course">我的授课</el-menu-item>
+            <el-menu-item index="aidata">AI数据分析</el-menu-item>
+          </el-sub-menu>
 
-    <!-- 数据卡片网格 -->
-    <div class="data-cards-grid">
-      <TeachingDataCard 
-        :active-tab="activeTab"
-        @tab-change="setActiveTab"
-      />
-      <ResourcesDataCard 
-        :active-tab="activeTab"
-        @tab-change="setActiveTab"
-      />
-      <AchievementsDataCard 
-        :active-tab="activeTab"
-        @tab-change="setActiveTab"
-      />
-      <EvaluationDataCard 
-        :active-tab="activeTab"
-        @tab-change="setActiveTab"
-      />
-      <ReportsDataCard 
-        :active-tab="activeTab"
-        @tab-change="setActiveTab"
-      />
-    </div>
+          <!-- 资源数据组 -->
+          <el-sub-menu index="resources">
+            <template #title>
+              <i class="el-icon-folder-opened"></i>
+              <span>资源数据</span>
+            </template>
+            <el-menu-item index="courseware">课件</el-menu-item>
+            <el-menu-item index="courses">课程</el-menu-item>
+            <el-menu-item index="my-assets">我的资产</el-menu-item>
+            <el-menu-item index="workflow">工作流</el-menu-item>
+            <el-menu-item index="knowledge-base">知识库</el-menu-item>
+            <el-menu-item index="video">视频</el-menu-item>
+            <el-menu-item index="voice-over">配音</el-menu-item>
+            <el-menu-item index="knowledge-graph">知识图谱</el-menu-item>
+            <el-menu-item index="ability-graph">能力图谱</el-menu-item>
+            <el-menu-item index="digital-human">数字人</el-menu-item>
+            <el-menu-item index="agent">智能体</el-menu-item>
+          </el-sub-menu>
 
-    <!-- 内容区域 -->
-    <div class="content-section">
-      <!-- 教学数据 -->
-      <TeachingContent 
-        v-if="activeTab === 'teaching'"
-        :active-sub-tab="activeSubTab"
-        @sub-tab-change="setActiveSubTab"
-      />
-      
-      <!-- 资源数据 -->
-      <ResourcesContent 
-        v-if="activeTab === 'resources'"
-        :active-sub-tab="activeSubTab"
-        @sub-tab-change="setActiveSubTab"
-      />
-      
-      <!-- 成果数据 -->
-      <AchievementsContent 
-        v-if="activeTab === 'achievements'"
-        :active-sub-tab="activeSubTab"
-        @sub-tab-change="setActiveSubTab"
-        @open-ai="payload => $emit('open-ai', payload)"
-      />
-      
-      <!-- 评价数据 - 恢复使用EvaluationContent组件 -->
-      <EvaluationContent 
-        v-if="activeTab === 'evaluation'"
-        :active-sub-tab="activeSubTab"
-        @sub-tab-change="setActiveSubTab"
-        @open-ai="payload => $emit('open-ai', payload)"
-      />
-      
-      <!-- 报告数据 -->
-      <ReportsContent 
-        v-if="activeTab === 'reports'"
-        :active-sub-tab="activeSubTab"
-        @sub-tab-change="setActiveSubTab"
-      />
-    </div>
+          <!-- 成果数据组 -->
+          <el-sub-menu index="achievements">
+            <template #title>
+              <i class="el-icon-medal"></i>
+              <span>成果数据</span>
+            </template>
+            <el-menu-item index="papers">科研成果</el-menu-item>
+            <el-menu-item index="certificates">证书</el-menu-item>
+            <el-menu-item index="ability-certification">能力认证</el-menu-item>
+            <el-menu-item index="international-ability">国际能力</el-menu-item>
+            <el-menu-item index="teaching-achievements">教学成果</el-menu-item>
+            <el-menu-item index="enterprise-cooperation">企业合作成果</el-menu-item>
+          </el-sub-menu>
+
+          <!-- 评价数据组 -->
+          <el-sub-menu index="evaluation">
+            <template #title>
+              <i class="el-icon-document-checked"></i>
+              <span>评价数据</span>
+            </template>
+            <el-menu-item index="self-assessment">自我评估</el-menu-item>
+            <el-menu-item index="digital-literacy">数字素养</el-menu-item>
+            <el-menu-item index="student">学生评教</el-menu-item>
+            <el-menu-item index="supervisor">督导评价</el-menu-item>
+          </el-sub-menu>
+
+          <!-- 档案报告组 -->
+          <el-sub-menu index="reports">
+            <template #title>
+              <i class="el-icon-pie-chart"></i>
+              <span>档案报告</span>
+            </template>
+            <el-menu-item index="archive">个人数据报告</el-menu-item>
+            <el-menu-item index="growth">个人成长档案</el-menu-item>
+            <el-menu-item index="resume">教学履历</el-menu-item>
+          </el-sub-menu>
+
+          <!-- 学情分析组 -->
+          <el-sub-menu index="analysis">
+            <template #title>
+              <i class="el-icon-data-analysis"></i>
+              <span>学情分析</span>
+            </template>
+            <el-menu-item index="learning-group">群体画像</el-menu-item>
+            <el-menu-item index="learning-student">学生画像</el-menu-item>
+            <el-menu-item index="learning-report">学情报告</el-menu-item>
+          </el-sub-menu>
+        </el-menu>
+      </el-aside>
+
+      <!-- 右侧内容区 -->
+      <el-main class="content-main">
+        <div class="content-wrapper">
+          <!-- 教学数据 -->
+          <TeachingContent 
+            v-if="activeTab === 'teaching'"
+            :active-sub-tab="activeSubTab"
+            @sub-tab-change="setActiveSubTab"
+          />
+          
+          <!-- 资源数据 -->
+          <ResourcesContent 
+            v-if="activeTab === 'resources'"
+            :active-sub-tab="activeSubTab"
+            @sub-tab-change="setActiveSubTab"
+          />
+          
+          <!-- 成果数据 -->
+          <AchievementsContent 
+            v-if="activeTab === 'achievements'"
+            :active-sub-tab="activeSubTab"
+            @sub-tab-change="setActiveSubTab"
+            @open-ai="payload => $emit('open-ai', payload)"
+          />
+          
+          <!-- 评价数据 -->
+          <EvaluationContent 
+            v-if="activeTab === 'evaluation'"
+            :active-sub-tab="activeSubTab"
+            @sub-tab-change="setActiveSubTab"
+            @open-ai="payload => $emit('open-ai', payload)"
+          />
+          
+          <!-- 报告数据 -->
+          <ReportsContent 
+            v-if="activeTab === 'reports'"
+            :active-sub-tab="activeSubTab"
+            @sub-tab-change="setActiveSubTab"
+          />
+
+          <!-- 学情分析 -->
+          <LearningAnalysisContent
+            v-if="activeTab === 'analysis'"
+            :active-sub-tab="activeSubTab"
+            @sub-tab-change="setActiveSubTab"
+          />
+        </div>
+      </el-main>
+    </el-container>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import TeachingDataCard from '@/components/data-center/data-types/TeachingDataCard.vue'
-import ResourcesDataCard from '@/components/data-center/data-types/ResourcesDataCard.vue'
-import AchievementsDataCard from '@/components/data-center/data-types/AchievementsDataCard.vue'
-import EvaluationDataCard from '@/components/data-center/data-types/EvaluationDataCard.vue'
-import ReportsDataCard from '@/components/data-center/data-types/ReportsDataCard.vue'
+import { ref, onMounted } from 'vue'
 import TeachingContent from '@/components/data-center/data-types/TeachingContent.vue'
 import ResourcesContent from '@/components/data-center/data-types/ResourcesContent.vue'
 import AchievementsContent from '@/components/data-center/data-types/AchievementsContent.vue'
 import EvaluationContent from '@/components/data-center/data-types/EvaluationContent.vue'
 import ReportsContent from '@/components/data-center/data-types/ReportsContent.vue'
+import LearningAnalysisContent from '@/components/data-center/data-types/LearningAnalysisContent.vue'
 
 // 当前激活的主菜单
 const activeTab = ref('teaching')
 // 当前激活的子菜单
 const activeSubTab = ref('workload')
-
-// 设置激活的主菜单
-const setActiveTab = (tab) => {
-  activeTab.value = tab
-  // 根据主菜单设置默认的子菜单
-  if (tab === 'teaching') {
-    activeSubTab.value = 'workload'
-  } else if (tab === 'resources') {
-    activeSubTab.value = 'courseware'
-  } else if (tab === 'achievements') {
-    activeSubTab.value = 'papers'
-  } else if (tab === 'evaluation') {
-    activeSubTab.value = 'self-assessment'  // 评价数据默认显示自我评估
-  } else if (tab === 'reports') {
-    activeSubTab.value = 'growth'
-  }
+const menuGroupMap = {
+  'workload': 'teaching',
+  'teaching-course': 'teaching',
+  'aidata': 'teaching',
+  'courseware': 'resources',
+  'courses': 'resources',
+  'my-assets': 'resources',
+  'workflow': 'resources',
+  'knowledge-base': 'resources',
+  'video': 'resources',
+  'voice-over': 'resources',
+  'knowledge-graph': 'resources',
+  'ability-graph': 'resources',
+  'digital-human': 'resources',
+  'agent': 'resources',
+  'papers': 'achievements',
+  'certificates': 'achievements',
+  'ability-certification': 'achievements',
+  'international-ability': 'achievements',
+  'teaching-achievements': 'achievements',
+  'enterprise-cooperation': 'achievements',
+  'self-assessment': 'evaluation',
+  'digital-literacy': 'evaluation',
+  'student': 'evaluation',
+  'supervisor': 'evaluation',
+  'archive': 'reports',
+  'growth': 'reports',
+  'resume': 'reports',
+  'learning-group': 'analysis',
+  'learning-student': 'analysis',
+  'learning-report': 'analysis'
 }
 
-// 设置激活的子菜单
+// 处理菜单选择
+const handleMenuSelect = (index) => {
+  activeSubTab.value = index
+  activeTab.value = menuGroupMap[index]
+}
+
+// 设置激活的子菜单 (兼容原有子组件内部切换)
 const setActiveSubTab = (subTab) => {
   activeSubTab.value = subTab
+  activeTab.value = menuGroupMap[subTab]
 }
 
 defineEmits(['open-ai'])
 </script>
 
 <style scoped>
-.data-center {
-  min-height: 100vh;
+.data-center-container {
+  height: calc(100vh - 64px); /* 减去顶部导航高度 */
   background: #f8fafc;
-  padding: 20px;
 }
 
-.page-header {
-  text-align: left;
-  margin-bottom: 30px;
-  max-width: 1400px;
-  margin-left: auto;
-  margin-right: auto;
+.main-layout {
+  height: 100%;
 }
 
-.page-title {
-  font-size: 24px;
+.sidebar-aside {
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.02);
+  z-index: 10;
+}
+
+.sidebar-header {
+  padding: 24px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.sidebar-title {
+  font-size: 18px;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
-  background-size: 300% 300%;
+  margin: 0;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradientShift 4s ease-in-out infinite;
-  text-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
-  position: relative;
-  letter-spacing: 1px;
-  display: inline-block;
 }
 
-.page-title::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
-  background-size: 300% 300%;
-  filter: blur(15px);
-  opacity: 0.3;
-  z-index: -1;
-  animation: gradientShift 4s ease-in-out infinite;
+.data-menu {
+  border-right: none;
+  flex: 1;
+  overflow-y: auto;
 }
 
-.page-title::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 120%;
-  height: 120%;
-  background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
-  filter: blur(30px);
-  z-index: -2;
-  animation: pulse 3s ease-in-out infinite;
+:deep(.el-menu) {
+  border-right: none;
 }
 
-@keyframes gradientShift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+:deep(.el-sub-menu__title) {
+  font-weight: 600;
+  color: #1e293b;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 0.3;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: translate(-50%, -50%) scale(1.1);
-  }
+:deep(.el-menu-item) {
+  color: #64748b;
+  height: 44px;
+  line-height: 44px;
+  margin: 4px 12px;
+  border-radius: 8px;
 }
 
-.data-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
-  max-width: 1400px;
-  margin: 0 auto 40px auto;
+:deep(.el-menu-item.is-active) {
+  background: #eff6ff !important;
+  color: #3b82f6 !important;
+  font-weight: 600;
 }
 
-.content-section {
-  max-width: 1400px;
+:deep(.el-menu-item:hover) {
+  background: #f8fafc;
+  color: #3b82f6;
+}
+
+.content-main {
+  padding: 0;
+  background: #f8fafc;
+  overflow-y: auto;
+}
+
+.content-wrapper {
+  max-width: 1600px;
   margin: 0 auto;
+  padding: 24px;
 }
 
-/* 响应式设计 */
-@media (max-width: 1200px) {
-  .data-cards-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  .page-title {
-    font-size: 20px;
-  }
+/* 隐藏原有子组件内的顶部 Tab（因为已经移到了左侧） */
+:deep(.content-tabs) {
+  display: none !important;
 }
 
-@media (max-width: 768px) {
-  .data-center {
-    padding: 10px;
-  }
-  
-  .data-cards-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-    margin-bottom: 30px;
-  }
-  
-  .page-title {
-    font-size: 18px;
-    letter-spacing: 0.5px;
-  }
+/* 覆盖子组件的阴影，让右侧看起来更像一个整体 */
+:deep(.content-section) {
+  box-shadow: none !important;
+  border: 1px solid #e2e8f0;
 }
 
-@media (max-width: 480px) {
-  .page-title {
-    font-size: 16px;
-  }
+:deep(.el-icon) {
+  margin-right: 8px;
+  font-size: 18px;
+  vertical-align: middle;
 }
 </style>

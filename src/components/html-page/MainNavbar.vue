@@ -6,13 +6,12 @@
     </div>
     <ul class="nav-menu">
       <li class="nav-item" :class="{active: currentPath === '/'}" @click="goNav('/')">首页</li>      
-      <li class="nav-item" :class="{active: currentPath.startsWith('/data-center')}" @click="goNav('/data-center')">数据中心</li>
+      <li class="nav-item" :class="{active: currentPath.startsWith('/data-center')}" @click="goNav('/data-center')">教学中心</li>
       <li class="nav-item evaluation-center-item" :class="{active: currentPath.startsWith('/EvaluationCenter')}" @click="goNav('/EvaluationCenter')">
         发展中心
         <div class="notification-dot" v-if="hasNewNotifications"></div>
       </li>
       <li class="nav-item" :class="{active: currentPath.startsWith('/learning-square')}" @click="goNav('/learning-square')">协作空间</li>
-      <li class="nav-item" :class="{active: currentPath.startsWith('/learning-analysis')}" @click="goNav('/learning-analysis')">学情分析</li>
       <li class="nav-item" :class="{active: currentPath.startsWith('/profile')}" @click="goNav('/profile')">个人中心</li>
       <li class="nav-item" @click="goToAdmin">管理后台</li>
     </ul>
@@ -143,7 +142,6 @@ onUnmounted(() => {
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   border-bottom: 1px solid #e5e7eb;
   padding: 0 20px;
-  margin-bottom: 16px;
 }
 
 .nav-left {

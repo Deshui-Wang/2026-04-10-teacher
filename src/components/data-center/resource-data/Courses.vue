@@ -577,12 +577,25 @@
         </div>
       </div>
     </el-dialog>
+
+    <!-- 课程策划方案侧滑页 (法律专享) -->
+    <el-drawer
+      v-model="lawPlanningDialogVisible"
+      title="课程策划方案详情"
+      size="70%"
+      direction="rtl"
+      custom-class="premium-planning-drawer"
+      :destroy-on-close="true"
+    >
+      <LawCoursePlanning />
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, inject } from 'vue'
 import { Search, View, Cpu } from '@element-plus/icons-vue'
+import LawCoursePlanning from './LawCoursePlanning.vue'
 
 // 注入全局事件总线
 const eventBus = inject('eventBus')
@@ -599,7 +612,17 @@ const experienceDialogVisible = ref(false)
 const studentRatingDialogVisible = ref(false)
 const supervisorRatingDialogVisible = ref(false)
 const courseDetailDialogVisible = ref(false)
+const lawPlanningDialogVisible = ref(false)
 const currentCourse = ref(null)
+
+const viewCourse = (course) => {
+  currentCourse.value = course
+  if (course.special === 'law') {
+    lawPlanningDialogVisible.value = true
+  } else {
+    courseDetailDialogVisible.value = true
+  }
+}
 
 const analyzeCourse = (course) => {
   if (eventBus) {
@@ -620,6 +643,22 @@ const analyzeCourse = (course) => {
 
 // 模拟数据
 const coursesData = ref([
+  {
+    id: 100,
+    name: '法律',
+    special: 'law',
+    completion: 0,
+    studentRating: 5.0,
+    supervisorRating: 5.0,
+    coursewareCount: 0,
+    coursewareList: [],
+    experienceList: [],
+    studentRatingCount: 0,
+    supervisorRatingCount: 0,
+    detail: {
+      description: '《法律基础与AI法治实务》课程策划方案，重点关注法律与人工智能的交叉领域。'
+    }
+  },
   {
     id: 1,
     name: '数据结构与算法',
@@ -1233,11 +1272,6 @@ const showStudentRatings = (course) => {
 const showSupervisorRatings = (course) => {
   currentCourse.value = course
   supervisorRatingDialogVisible.value = true
-}
-
-const viewCourse = (course) => {
-  currentCourse.value = course
-  courseDetailDialogVisible.value = true
 }
 
 const editCourse = (course) => {
