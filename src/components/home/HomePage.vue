@@ -162,128 +162,151 @@
       </div>
     </div>
 
-    <!-- 人文关怀模块 -->
-    <div class="portal-card portal-care-card">
-      <div class="portal-card-header">
-        <span>人文关怀</span>
-      </div>
-      <div class="care-content-grid">
-        <!-- 教师生日 -->
-        <div class="care-item-card care-teacher-birthday">
-          <div class="care-item-header">
-            <div class="care-item-icon">🎂</div>
-            <div class="care-item-title">教师生日</div>
-          </div>
-          <div class="care-item-list">
-            <div v-if="teacherBirthdays.length === 0" class="care-empty">本月无教师生日</div>
-            <div v-for="item in teacherBirthdays" :key="item.id" class="care-item-row">
-              <div class="care-avatar-wrapper">
-                <img :src="item.avatar || '/pic/avatar1.jpeg'" class="care-avatar" :alt="item.name">
-              </div>
-              <div class="care-item-info">
-                <div class="care-name">{{ item.name }}</div>
-                <div class="care-date">{{ item.date }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- 学生生日 -->
-        <div class="care-item-card care-student-birthday">
-          <div class="care-item-header">
-            <div class="care-item-icon">🎈</div>
-            <div class="care-item-title">学生生日</div>
-          </div>
-          <div class="care-item-list">
-            <div v-if="studentBirthdays.length === 0" class="care-empty">本周无学生生日</div>
-            <div v-for="item in studentBirthdays" :key="item.id" class="care-item-row">
-              <div class="care-avatar-wrapper">
-                <img :src="item.avatar || '/pic/student01.png'" class="care-avatar" :alt="item.name">
-              </div>
-              <div class="care-item-info">
-                <div class="care-name">{{ item.name }}</div>
-                <div class="care-class">{{ item.className }}</div>
-                <div class="care-date">{{ item.date }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- 学生获奖 -->
-        <div class="care-item-card care-student-award">
-          <div class="care-item-header">
-            <div class="care-item-icon">🏆</div>
-            <div class="care-item-title">学生获奖</div>
-          </div>
-          <div class="care-item-list">
-            <div v-if="studentAwards.length === 0" class="care-empty">暂无获奖信息</div>
-            <div v-for="item in studentAwards" :key="item.id" class="care-award-item">
-              <div class="care-award-name">{{ item.name }}</div>
-              <div class="care-award-title">{{ item.awardTitle }}</div>
-              <div class="care-award-date">{{ item.date }}</div>
-            </div>
-          </div>
-        </div>
-        <!-- 团队获奖 -->
-        <div class="care-item-card care-team-award">
-          <div class="care-item-header">
-            <div class="care-item-icon">🎉</div>
-            <div class="care-item-title">团队获奖</div>
-          </div>
-          <div class="care-item-list">
-            <div v-if="teamAwards.length === 0" class="care-empty">暂无团队获奖</div>
-            <div v-for="item in teamAwards" :key="item.id" class="care-award-item">
-              <div class="care-award-name">{{ item.teamName }}</div>
-              <div class="care-award-title">{{ item.awardTitle }}</div>
-              <div class="care-award-date">{{ item.date }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- 校园新闻、评选章程、评教规则模块 -->
-    <div class="portal-info-grid">
-      <!-- 校园新闻 -->
-      <div class="portal-card portal-news-card">
+    <!-- 底部合并板块：人文关怀轮播卡片 + 校园动态 -->
+    <div class="portal-bottom-combined-row">
+      <!-- 左侧：人文关怀（卡片轮播） -->
+      <div class="portal-card portal-care-carousel-card">
         <div class="portal-card-header">
-          <span>校园新闻</span>
+          <span>人文关怀</span>
         </div>
-        <div class="news-list">
-          <div v-for="item in campusNews" :key="item.id" class="news-item" @click="handleNewsClick(item)">
-            <div class="news-title">{{ item.title }}</div>
-            <div class="news-date">{{ item.date }}</div>
-          </div>
-          <div v-if="campusNews.length === 0" class="news-empty">暂无新闻</div>
+        <div class="care-carousel-wrapper">
+          <el-carousel height="310px" trigger="click" :autoplay="true" :interval="5000" indicator-position="outside">
+            <!-- 教师生日 -->
+            <el-carousel-item>
+              <div class="care-slide-content care-teacher-birthday">
+                <div class="care-item-header">
+                  <div class="care-item-icon">🎂</div>
+                  <div class="care-item-title">教师生日</div>
+                </div>
+                <div class="care-item-list">
+                  <div v-if="teacherBirthdays.length === 0" class="care-empty">本月无教师生日</div>
+                  <div v-for="item in teacherBirthdays" :key="item.id" class="care-item-row">
+                    <div class="care-avatar-wrapper">
+                      <img :src="item.avatar || '/pic/avatar1.jpeg'" class="care-avatar" :alt="item.name">
+                    </div>
+                    <div class="care-item-info">
+                      <div class="care-name">{{ item.name }}</div>
+                      <div class="care-date">{{ item.date }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-carousel-item>
+            
+            <!-- 学生生日 -->
+            <el-carousel-item>
+              <div class="care-slide-content care-student-birthday">
+                <div class="care-item-header">
+                  <div class="care-item-icon">🎈</div>
+                  <div class="care-item-title">学生生日</div>
+                </div>
+                <div class="care-item-list">
+                  <div v-if="studentBirthdays.length === 0" class="care-empty">本周无学生生日</div>
+                  <div v-for="item in studentBirthdays" :key="item.id" class="care-item-row">
+                    <div class="care-avatar-wrapper">
+                      <img :src="item.avatar || '/pic/student01.png'" class="care-avatar" :alt="item.name">
+                    </div>
+                    <div class="care-item-info">
+                      <div class="care-name">{{ item.name }}</div>
+                      <div class="care-class">{{ item.className }}</div>
+                      <div class="care-date">{{ item.date }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-carousel-item>
+            
+            <!-- 学生获奖 -->
+            <el-carousel-item>
+              <div class="care-slide-content care-student-award">
+                <div class="care-item-header">
+                  <div class="care-item-icon">🏆</div>
+                  <div class="care-item-title">学生获奖</div>
+                </div>
+                <div class="care-item-list">
+                  <div v-if="studentAwards.length === 0" class="care-empty">暂无获奖信息</div>
+                  <div v-for="item in studentAwards" :key="item.id" class="care-award-item">
+                    <div class="care-award-name">{{ item.name }}</div>
+                    <div class="care-award-title">{{ item.awardTitle }}</div>
+                    <div class="care-award-date">{{ item.date }}</div>
+                  </div>
+                </div>
+              </div>
+            </el-carousel-item>
+            
+            <!-- 团队获奖 -->
+            <el-carousel-item>
+              <div class="care-slide-content care-team-award">
+                <div class="care-item-header">
+                  <div class="care-item-icon">🎉</div>
+                  <div class="care-item-title">团队获奖</div>
+                </div>
+                <div class="care-item-list">
+                  <div v-if="teamAwards.length === 0" class="care-empty">暂无团队获奖</div>
+                  <div v-for="item in teamAwards" :key="item.id" class="care-award-item">
+                    <div class="care-award-name">{{ item.teamName }}</div>
+                    <div class="care-award-title">{{ item.awardTitle }}</div>
+                    <div class="care-award-date">{{ item.date }}</div>
+                  </div>
+                </div>
+              </div>
+            </el-carousel-item>
+          </el-carousel>
         </div>
       </div>
-      <!-- 评选章程 -->
-      <div class="portal-card portal-rules-card">
-        <div class="portal-card-header">
-          <span>评选章程</span>
+      
+      <!-- 右侧：校园新闻、章程与规则（合并卡片） -->
+      <div class="portal-info-grid">
+        <!-- 校园新闻 -->
+        <div class="portal-card portal-news-card">
+          <div class="portal-card-header">
+            <span>校园新闻</span>
+          </div>
+          <div class="news-list">
+            <div v-for="item in campusNews" :key="item.id" class="article-item" @click="handleNewsClick(item)">
+              <span class="article-title-wrapper">
+                <span class="article-bullet news-bullet">•</span>
+                <span class="article-title">{{ item.title }}</span>
+              </span>
+              <span class="article-date">{{ item.date }}</span>
+            </div>
+            <div v-if="campusNews.length === 0" class="article-empty">暂无新闻</div>
+          </div>
         </div>
-        <div class="rules-list">
-          <div v-for="item in evaluationRules" :key="item.id" class="rules-item" @click="handleRulesClick(item)">
-            <div class="rules-icon">{{ item.icon }}</div>
-            <div class="rules-content">
-              <div class="rules-title">{{ item.title }}</div>
-              <div class="rules-desc">{{ item.description }}</div>
+        <!-- 章程与规则（Tab切换卡片） -->
+        <div class="portal-card portal-rules-card">
+          <div class="portal-card-header combined-rules-header">
+            <span class="header-main-title">章程与规则</span>
+            <div class="rules-tab-buttons">
+              <span class="tab-btn" :class="{ active: currentRulesTab === 'evaluation' }" @click="currentRulesTab = 'evaluation'">评选章程</span>
+              <span class="tab-btn" :class="{ active: currentRulesTab === 'teaching' }" @click="currentRulesTab = 'teaching'">评教规则</span>
             </div>
           </div>
-          <div v-if="evaluationRules.length === 0" class="rules-empty">暂无章程</div>
-        </div>
-      </div>
-      <!-- 评教规则 -->
-      <div class="portal-card portal-evaluation-card">
-        <div class="portal-card-header">
-          <span>评教规则</span>
-        </div>
-        <div class="evaluation-list">
-          <div v-for="item in teachingEvaluationRules" :key="item.id" class="evaluation-item" @click="handleEvaluationClick(item)">
-            <div class="evaluation-badge">{{ item.badge }}</div>
-            <div class="evaluation-content">
-              <div class="evaluation-title">{{ item.title }}</div>
-              <div class="evaluation-date">{{ item.updateDate }}</div>
+          <div class="rules-list-container">
+            <!-- 评选章程 -->
+            <div v-show="currentRulesTab === 'evaluation'" class="rules-list">
+              <div v-for="item in evaluationRules" :key="item.id" class="article-item" @click="handleRulesClick(item)">
+                <span class="article-title-wrapper">
+                  <span class="article-bullet rules-bullet">•</span>
+                  <span class="article-title">{{ item.title }}</span>
+                </span>
+                <span class="article-date">{{ item.date }}</span>
+              </div>
+              <div v-if="evaluationRules.length === 0" class="article-empty">暂无章程</div>
+            </div>
+            
+            <!-- 评教规则 -->
+            <div v-show="currentRulesTab === 'teaching'" class="evaluation-list">
+              <div v-for="item in teachingEvaluationRules" :key="item.id" class="article-item" @click="handleEvaluationClick(item)">
+                <span class="article-title-wrapper">
+                  <span class="article-badge">{{ item.badge }}</span>
+                  <span class="article-title">{{ item.title }}</span>
+                </span>
+                <span class="article-date">{{ item.updateDate }}</span>
+              </div>
+              <div v-if="teachingEvaluationRules.length === 0" class="article-empty">暂无规则</div>
             </div>
           </div>
-          <div v-if="teachingEvaluationRules.length === 0" class="evaluation-empty">暂无规则</div>
         </div>
       </div>
     </div>
@@ -292,6 +315,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+
+// 规章制度 Tab 切换状态 ('evaluation' 评选章程, 'teaching' 评教规则)
+const currentRulesTab = ref('evaluation');
+
 // 原数据和方法
 const portalApps = [
   { icon: '📄', label: '工作任务', bg: '#e9e8fe' },
@@ -488,10 +515,10 @@ const campusNews = ref([
 
 // 评选章程数据
 const evaluationRules = ref([
-  { id: 1, icon: '📋', title: '优秀教师评选章程', description: '详细规定优秀教师的评选标准、流程和奖励办法' },
-  { id: 2, icon: '🏆', title: '教学成果奖评选办法', description: '明确教学成果奖的申报条件和评审程序' },
-  { id: 3, icon: '⭐', title: '年度考核评定规则', description: '规定教师年度考核的各项指标和评定标准' },
-  { id: 4, icon: '🏆', title: '教学成果奖评选办法', description: '明确教学成果奖的申报条件和评审程序' },
+  { id: 1, icon: '📋', title: '优秀教师评选章程', description: '详细规定优秀教师的评选标准、流程和奖励办法', date: '2025-10-28' },
+  { id: 2, icon: '🏆', title: '教学成果奖评选办法', description: '明确教学成果奖的申报条件和评审程序', date: '2025-10-22' },
+  { id: 3, icon: '⭐', title: '年度考核评定规则', description: '规定教师年度考核的各项指标和评定标准', date: '2025-10-15' },
+  { id: 4, icon: '🏆', title: '教学成果奖评选办法', description: '明确教学成果奖的申报条件和评审程序', date: '2025-10-10' },
 ]);
 
 // 评教规则数据
@@ -1011,30 +1038,63 @@ onMounted(() => {
 }
 
 /* 人文关怀模块样式 */
-.portal-care-card {
-  margin-top: 0;
-}
-
-.care-content-grid {
+.portal-bottom-combined-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  padding-top: 8px;
+  grid-template-columns: 1.15fr 2.85fr;
+  gap: 14px;
+  align-items: stretch;
+  margin-top: 4px;
 }
 
-.care-item-card {
-  background: #f8f9fc;
-  border-radius: 16px;
-  padding: 20px 18px;
+.portal-care-carousel-card {
+  height: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  transition: all 0.2s;
 }
 
-.care-item-card:hover {
-  background: #f0f3f8;
-  box-shadow: 0 2px 12px rgba(70, 108, 240, 0.08);
+.care-carousel-wrapper {
+  flex: 1;
+  min-height: 0;
+}
+
+.care-slide-content {
+  background: linear-gradient(145deg, #ffffff 0%, #fbfcfe 100%);
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: calc(100% - 6px);
+  box-sizing: border-box;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.care-slide-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0) 50%);
+  transform: translateX(-100%);
+  transition: none;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.care-slide-content:hover {
+  background: linear-gradient(145deg, #f5f8ff 0%, #fbfcfe 100%);
+  box-shadow: 0 4px 18px rgba(70, 108, 240, 0.12);
+  transform: translateY(-2px);
+}
+
+.care-slide-content:hover::after {
+  transform: translateX(100%);
+  transition: transform 0.6s ease-in-out;
 }
 
 .care-teacher-birthday {
@@ -1057,15 +1117,15 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .care-item-icon {
-  font-size: 24px;
+  font-size: 22px;
 }
 
 .care-item-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   color: #263661;
 }
@@ -1073,9 +1133,19 @@ onMounted(() => {
 .care-item-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-height: 280px;
+  gap: 8px;
+  max-height: 220px;
   overflow-y: auto;
+  padding-right: 4px;
+}
+
+.care-item-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.care-item-list::-webkit-scrollbar-thumb {
+  background: #dde3ff;
+  border-radius: 10px;
 }
 
 .care-empty {
@@ -1088,15 +1158,15 @@ onMounted(() => {
 .care-item-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   background: #fff;
-  border-radius: 12px;
-  padding: 10px 12px;
+  border-radius: 10px;
+  padding: 8px 10px;
   transition: all 0.15s;
 }
 
 .care-item-row:hover {
-  box-shadow: 0 2px 8px rgba(64, 82, 109, 0.1);
+  box-shadow: 0 2px 8px rgba(64, 82, 109, 0.08);
   transform: translateY(-1px);
 }
 
@@ -1105,12 +1175,12 @@ onMounted(() => {
 }
 
 .care-avatar {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #eef2fb;
-  box-shadow: 0 1px 4px rgba(64, 82, 109, 0.1);
+  border: 1.5px solid #eef2fb;
+  box-shadow: 0 1px 3px rgba(64, 82, 109, 0.08);
 }
 
 .care-item-info {
@@ -1124,7 +1194,7 @@ onMounted(() => {
 }
 
 .care-name {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #2d437a;
 }
@@ -1141,8 +1211,8 @@ onMounted(() => {
 
 .care-award-item {
   background: #fff;
-  border-radius: 12px;
-  padding: 12px 14px;
+  border-radius: 10px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -1152,234 +1222,233 @@ onMounted(() => {
 }
 
 .care-award-item:hover {
-  box-shadow: 0 2px 8px rgba(64, 82, 109, 0.1);
+  box-shadow: 0 2px 8px rgba(64, 82, 109, 0.08);
   transform: translateY(-1px);
 }
 
 .care-award-name {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #2d437a;
 }
 
 .care-award-title {
-  font-size: 13px;
+  font-size: 12px;
   color: #4d71ca;
   font-weight: 500;
   line-height: 1.4;
+  text-align: right;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .care-award-date {
-  font-size: 12px;
+  font-size: 11px;
   color: #9bacc9;
-  margin-top: 2px;
 }
 
-/* 校园新闻、评选章程、评教规则模块样式 */
+/* Custom styles for el-carousel indicators in humanistic care */
+.care-carousel-wrapper :deep(.el-carousel__indicators--outside) {
+  margin-top: 6px !important;
+}
+
+.care-carousel-wrapper :deep(.el-carousel__button) {
+  width: 12px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: #cbd5e1;
+  opacity: 0.8;
+  transition: all 0.3s;
+}
+
+.care-carousel-wrapper :deep(.is-active .el-carousel__button) {
+  background-color: #4a90e2;
+  width: 20px;
+  opacity: 1;
+}
+
+/* 校园新闻、章程与规则模块样式 */
 .portal-info-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
 
 .portal-news-card,
-.portal-rules-card,
-.portal-evaluation-card {
+.portal-rules-card {
   min-height: 400px;
 }
 
-/* 校园新闻样式 */
-.news-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-top: 8px;
-}
-
-.news-item {
-  background: #f8f9fc;
-  border-radius: 14px;
-  padding: 16px 18px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border-left: 3px solid #4a90e2;
+/* 规章制度卡片 Tab 头部样式 */
+.combined-rules-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
-.news-item:hover {
-  background: #f0f3f8;
-  box-shadow: 0 2px 12px rgba(70, 108, 240, 0.08);
-  transform: translateX(4px);
+.header-main-title {
+  font-size: 21px;
+  font-weight: 700;
+  color: #263661;
 }
 
-.news-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #2d437a;
-  line-height: 1.5;
-  margin-bottom: 8px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.news-date {
-  font-size: 12px;
-  color: #9bacc9;
-}
-
-.news-empty {
-  font-size: 14px;
-  color: #9bacc9;
-  text-align: center;
-  padding: 40px 0;
-}
-
-/* 评选章程样式 */
-.rules-list {
+.rules-tab-buttons {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding-top: 8px;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 10px;
+  user-select: none;
+  border: 1px solid #e2e8f0;
 }
 
-.rules-item {
-  background: #f8f9fc;
-  border-radius: 14px;
-  padding: 16px 18px;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
+.tab-btn {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #64748b;
+  padding: 4px 12px;
+  border-radius: 7px;
   cursor: pointer;
-  transition: all 0.2s;
-  border-left: 3px solid #f39c12;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.rules-item:hover {
-  background: #f0f3f8;
-  box-shadow: 0 2px 12px rgba(243, 156, 18, 0.12);
-  transform: translateX(4px);
+.tab-btn.active {
+  background: #ffffff;
+  color: #4a90e2;
+  box-shadow: 0 2px 6px rgba(74, 144, 226, 0.12);
 }
 
-.rules-icon {
-  font-size: 28px;
-  flex-shrink: 0;
-  margin-top: 2px;
+.tab-btn:hover:not(.active) {
+  color: #334155;
 }
 
-.rules-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.rules-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #2d437a;
-  line-height: 1.4;
-}
-
-.rules-desc {
-  font-size: 13px;
-  color: #7e96be;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.rules-empty {
-  font-size: 14px;
-  color: #9bacc9;
-  text-align: center;
-  padding: 40px 0;
-}
-
-/* 评教规则样式 */
+/* 统一的传统文章列表样式 */
+.news-list,
+.rules-list,
 .evaluation-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 2px;
   padding-top: 8px;
 }
 
-.evaluation-item {
-  background: #f8f9fc;
-  border-radius: 14px;
-  padding: 16px 18px;
+.article-item {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border-left: 3px solid #27ae60;
-}
-
-.evaluation-item:hover {
-  background: #f0f3f8;
-  box-shadow: 0 2px 12px rgba(39, 174, 96, 0.12);
-  transform: translateX(4px);
-}
-
-.evaluation-badge {
-  background: #27ae6033;
-  color: #10b981;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 8px;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.evaluation-content {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  gap: 6px;
+  padding: 14px 6px;
+  border-bottom: 1px dashed #e2e8f0;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background: transparent;
+  box-sizing: border-box;
 }
 
-.evaluation-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #2d437a;
-  line-height: 1.4;
+.article-item:last-child {
+  border-bottom: none;
 }
 
-.evaluation-date {
-  font-size: 12px;
-  color: #9bacc9;
+.article-item:hover {
+  background: rgba(74, 144, 226, 0.03);
+  padding-left: 12px; /* 悬停时整体平移，带来精致的微动效 */
 }
 
-.evaluation-empty {
+.article-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.article-bullet {
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 0.25s ease;
+  user-select: none;
+}
+
+.news-bullet {
+  color: #4a90e2;
+}
+
+.rules-bullet {
+  color: #f39c12;
+}
+
+.article-item:hover .article-bullet {
+  transform: scale(1.4);
+}
+
+.article-title {
   font-size: 14px;
-  color: #9bacc9;
+  color: #334155;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.article-item:hover .article-title {
+  color: #4a90e2;
+  font-weight: 600;
+}
+
+.article-date {
+  font-size: 12.5px;
+  color: #94a3b8;
+  margin-left: 12px;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.article-item:hover .article-date {
+  color: #64748b;
+}
+
+/* 特殊标签，如评教规则的“评教”、“成果” */
+.article-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: rgba(39, 174, 96, 0.1);
+  color: #27ae60;
+  transition: all 0.25s ease;
+}
+
+.article-item:hover .article-badge {
+  background: #27ae60;
+  color: #fff;
+}
+
+.article-empty {
+  font-size: 14px;
+  color: #94a3b8;
   text-align: center;
   padding: 40px 0;
 }
 
-@media (max-width: 1400px) {
-  .care-content-grid {
-    grid-template-columns: repeat(2, 1fr);
+@media (max-width: 1300px) {
+  .portal-bottom-combined-row {
+    grid-template-columns: 1fr;
   }
-  
+}
+
+@media (max-width: 1400px) {
   .portal-info-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 900px) {
-  .care-content-grid {
-    grid-template-columns: 1fr;
-  }
-  
   .portal-info-grid {
     grid-template-columns: 1fr;
   }
