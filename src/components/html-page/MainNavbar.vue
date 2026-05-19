@@ -73,7 +73,7 @@ const goNav = (path) => {
 
 // 跳转到管理后台
 const goToAdmin = () => {
-  window.open('https://aidata.cailian.net', '_blank')
+  window.open('https://schooldate.deshui27.cn/', '_blank')
 }
 
 // 切换用户菜单
