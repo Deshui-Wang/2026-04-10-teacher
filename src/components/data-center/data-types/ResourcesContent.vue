@@ -3,17 +3,10 @@
     <div class="content-tabs">
       <div 
         class="tab-item" 
-        :class="{ active: activeSubTab === 'courseware' }"
-        @click="$emit('sub-tab-change', 'courseware')"
+        :class="{ active: activeSubTab === 'teaching-resources' }"
+        @click="$emit('sub-tab-change', 'teaching-resources')"
       >
-        课件
-      </div>
-      <div 
-        class="tab-item" 
-        :class="{ active: activeSubTab === 'courses' }"
-        @click="$emit('sub-tab-change', 'courses')"
-      >
-        课程
+        教学资源
       </div>
       <div 
         class="tab-item" 
@@ -24,117 +17,68 @@
       </div>
       <div 
         class="tab-item" 
-        :class="{ active: activeSubTab === 'workflow' }"
-        @click="$emit('sub-tab-change', 'workflow')"
+        :class="{ active: activeSubTab === 'intelligent-resources' }"
+        @click="$emit('sub-tab-change', 'intelligent-resources')"
       >
-        工作流
+        智能资源
       </div>
       <div 
         class="tab-item" 
-        :class="{ active: activeSubTab === 'knowledge-base' }"
-        @click="$emit('sub-tab-change', 'knowledge-base')"
+        :class="{ active: activeSubTab === 'digital-resources' }"
+        @click="$emit('sub-tab-change', 'digital-resources')"
       >
-        知识库
+        数字资源
       </div>
       <div 
         class="tab-item" 
-        :class="{ active: activeSubTab === 'video' }"
-        @click="$emit('sub-tab-change', 'video')"
+        :class="{ active: activeSubTab === 'graph-resources' }"
+        @click="$emit('sub-tab-change', 'graph-resources')"
       >
-        视频
+        图谱资源
       </div>
-      <div 
-        class="tab-item" 
-        :class="{ active: activeSubTab === 'voice-over' }"
-        @click="$emit('sub-tab-change', 'voice-over')"
-      >
-        配音
-      </div>
-      <div 
-        class="tab-item" 
-        :class="{ active: activeSubTab === 'knowledge-graph' }"
-        @click="$emit('sub-tab-change', 'knowledge-graph')"
-      >
-        知识图谱
-      </div>
-      <div 
-        class="tab-item" 
-        :class="{ active: activeSubTab === 'ability-graph' }"
-        @click="$emit('sub-tab-change', 'ability-graph')"
-      >
-        能力图谱
-      </div>
-      <div 
-        class="tab-item" 
-        :class="{ active: activeSubTab === 'digital-human' }"
-        @click="$emit('sub-tab-change', 'digital-human')"
-      >
-        数字人
-      </div>
-      <div 
-        class="tab-item" 
-        :class="{ active: activeSubTab === 'agent' }"
-        @click="$emit('sub-tab-change', 'agent')"
-      >
-        智能体
-      </div>
+
     </div>
     
     <!-- 内容展示区域 -->
     <div class="content-area">
-      <!-- 资源数据-课件页面 -->
-      <Courseware v-if="activeSubTab === 'courseware'" />
-      
-      <!-- 资源数据-课程页面 -->
-      <Courses v-if="activeSubTab === 'courses'" />
+      <!-- 资源数据-教学资源页面（包含课件、课程与知识库三个页面切换） -->
+      <TeachingResources 
+        v-if="activeSubTab === 'teaching-resources' || activeSubTab === 'courseware' || activeSubTab === 'courses' || activeSubTab === 'knowledge-base'" 
+        :active-sub-tab="activeSubTab"
+      />
       
       <!-- 资源数据-我的资产页面 -->
       <MyAssets v-if="activeSubTab === 'my-assets'" />
       
-      <!-- 资源数据-工作流页面 -->
-      <Workflow v-if="activeSubTab === 'workflow'" />
+      <!-- 资源数据-智能资源页面（包含工作流、数字人与智能体三个页面切换） -->
+      <IntelligentResources 
+        v-if="activeSubTab === 'intelligent-resources' || activeSubTab === 'workflow' || activeSubTab === 'digital-human' || activeSubTab === 'agent'" 
+        :active-sub-tab="activeSubTab"
+      />
       
-      <!-- 资源数据-知识库页面 -->
-      <KnowledgeBase v-if="activeSubTab === 'knowledge-base'" />
+      <!-- 资源数据-数字资源页面（包含视频与配音两个页面切换） -->
+      <DigitalResources v-if="activeSubTab === 'digital-resources' || activeSubTab === 'video' || activeSubTab === 'voice-over'" />
       
-      <!-- 资源数据-视频页面 -->
-      <Video v-if="activeSubTab === 'video'" />
-      
-      <!-- 资源数据-配音页面 -->
-      <Dubbing v-if="activeSubTab === 'voice-over'" />
-      
-      <!-- 资源数据-知识图谱页面 -->
-      <KnowledgeGraph v-if="activeSubTab === 'knowledge-graph'" />
-      
-      <!-- 资源数据-能力图谱页面 -->
-      <AbilityGraph v-if="activeSubTab === 'ability-graph'" />
-      
-      <!-- 资源数据-数字人页面 -->
-      <DigitalHuman v-if="activeSubTab === 'digital-human'" />
-      
-      <!-- 资源数据-智能体页面 -->
-      <Agent v-if="activeSubTab === 'agent'" />
+      <!-- 资源数据-图谱资源页面（包含知识图谱与能力图谱两个页面切换） -->
+      <GraphResources 
+        v-if="activeSubTab === 'graph-resources' || activeSubTab === 'knowledge-graph' || activeSubTab === 'ability-graph'" 
+        :active-sub-tab="activeSubTab"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import Courseware from '@/components/data-center/resource-data/Courseware.vue'
-import Courses from '@/components/data-center/resource-data/Courses.vue'
+import TeachingResources from '@/components/data-center/resource-data/TeachingResources.vue'
+import DigitalResources from '@/components/data-center/resource-data/DigitalResources.vue'
+import IntelligentResources from '@/components/data-center/resource-data/IntelligentResources.vue'
+import GraphResources from '@/components/data-center/resource-data/GraphResources.vue'
 import MyAssets from '@/components/data-center/resource-data/MyAssets.vue'
-import Workflow from '@/components/data-center/resource-data/Workflow.vue'
-import KnowledgeBase from '@/components/data-center/resource-data/KnowledgeBase.vue'
-import Video from '@/components/data-center/resource-data/Video.vue'
-import Dubbing from '@/components/data-center/resource-data/Dubbing.vue'
-import KnowledgeGraph from '@/components/data-center/resource-data/KnowledgeGraph.vue'
-import AbilityGraph from '@/components/data-center/resource-data/AbilityGraph.vue'
-import DigitalHuman from '@/components/data-center/resource-data/DigitalHuman.vue'
-import Agent from '@/components/data-center/resource-data/Agent.vue'
 
 defineProps({
   activeSubTab: {
     type: String,
-    default: 'courseware'
+    default: 'teaching-resources'
   }
 })
 

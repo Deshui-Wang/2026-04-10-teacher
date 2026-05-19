@@ -10,10 +10,10 @@
       </div>
       <div 
         class="tab-item" 
-        :class="{ active: activeSubTab === 'teaching-course' }"
-        @click="$emit('sub-tab-change', 'teaching-course')"
+        :class="{ active: activeSubTab === 'teaching-task' }"
+        @click="$emit('sub-tab-change', 'teaching-task')"
       >
-        我的授课
+        教学任务
       </div>
       <div 
         class="tab-item" 
@@ -45,6 +45,9 @@
       <!-- 教学数据-我的授课看板 -->
       <CourseDashboard v-if="activeSubTab === 'teaching-course'" />
 
+      <!-- 教学数据-教学任务看板 -->
+      <TeachingTask v-if="activeSubTab === 'teaching-task'" />
+
       <!-- 教学数据-工作量页面 -->
       <WorkloadQuantification v-if="activeSubTab === 'workload'" />
       
@@ -60,6 +63,7 @@
 import CourseDashboard from '@/components/data-center/teaching-data/CourseDashboard.vue'
 import WorkloadQuantification from '@/components/data-center/teaching-data/WorkloadQuantification.vue'
 import AIDataAnalysis from '@/components/data-center/teaching-data/AIDataAnalysis.vue'
+import TeachingTask from '@/components/data-center/teaching-data/TeachingTask.vue'
 
 defineProps({
   activeSubTab: {

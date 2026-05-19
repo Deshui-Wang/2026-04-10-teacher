@@ -247,11 +247,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.teacher-dashboard-container {
-  padding: 24px;
-  background-color: #EDF2FD;
-}
-
 .teacher-dashboard {
   display: grid;
   grid-template-columns: 1fr 1.5fr 1fr;
@@ -325,7 +320,6 @@ onBeforeUnmount(() => {
 .class-distribution-card .distribution-summary {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 20px;
 }
 
 .class-distribution-card .summary-item {

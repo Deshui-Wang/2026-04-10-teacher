@@ -140,131 +140,211 @@
       </div>
     </div>
 
-    <!-- 详情弹窗 -->
-    <el-dialog 
+    <!-- 详情侧滑面板 -->
+    <el-drawer 
       v-model="detailDialogVisible" 
-      :title="currentItem?.name"
-      width="80%"
-      class="detail-dialog"
+      size="800px"
+      class="detail-drawer"
+      direction="rtl"
+      :with-header="false"
     >
-      <div v-if="currentItem" class="detail-content">
-        <!-- 基本信息 -->
-        <div class="detail-section">
-          <h3 class="section-title">📋 基本信息</h3>
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="info-label">课件类型</span>
-              <span class="info-value">{{ currentItem.type === 'courseware' ? '课件' : '教案' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">使用课程</span>
-              <span class="info-value">{{ currentItem.courseName }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">学年学期</span>
-              <span class="info-value">{{ currentItem.academicYear }} {{ getSemesterName(currentItem.semester) }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">授课对象</span>
-              <span class="info-value">{{ currentItem.targetAudience }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">总学时</span>
-              <span class="info-value">{{ currentItem.totalHours }} 学时</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">学分</span>
-              <span class="info-value">{{ currentItem.credits }} 学分</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">班级数量</span>
-              <span class="info-value">{{ currentItem.classCount }} 个班级</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">学生数量</span>
-              <span class="info-value">{{ currentItem.studentCount }} 人</span>
+      <div v-if="currentItem" class="drawer-layout">
+        <!-- Premium 渐变头部横幅 -->
+        <div class="drawer-header-banner">
+          <div class="banner-overlay"></div>
+          <div class="header-main">
+            <span class="type-tag">{{ currentItem.type === 'courseware' ? '精品课件' : '核心教案' }}</span>
+            <h2 class="header-title">{{ currentItem.name }}</h2>
+            <div class="course-meta">
+              <span class="meta-tag"><el-icon><Notebook /></el-icon>{{ currentItem.courseName }}</span>
+              <span class="meta-tag"><el-icon><Calendar /></el-icon>{{ currentItem.academicYear }} {{ getSemesterName(currentItem.semester) }}</span>
             </div>
           </div>
+          <button class="close-banner-btn" @click="detailDialogVisible = false">
+            <el-icon><Close /></el-icon>
+          </button>
         </div>
 
-        <!-- 课程描述 -->
-        <div class="detail-section">
-          <h3 class="section-title">📝 课程描述</h3>
-          <p class="description-text">{{ currentItem.description }}</p>
-        </div>
+        <!-- 详情面板主体（双栏设计） -->
+        <div class="drawer-body-content">
+          <div class="drawer-grid-layout">
+            <!-- 左栏：授课概要、说明及教学目标 -->
+            <div class="layout-column">
+              <!-- 授课概要看板 -->
+              <div class="premium-card">
+                <h4 class="card-title">
+                  <el-icon class="title-icon"><Memo /></el-icon>
+                  <span>授课概要</span>
+                </h4>
+                
+                <div class="summary-stats-grid">
+                  <div class="stat-box">
+                    <span class="box-val">{{ currentItem.totalHours }}</span>
+                    <span class="box-lbl">总学时</span>
+                  </div>
+                  <div class="stat-box">
+                    <span class="box-val">{{ currentItem.credits }}</span>
+                    <span class="box-lbl">学分</span>
+                  </div>
+                  <div class="stat-box">
+                    <span class="box-val">{{ currentItem.classCount }}</span>
+                    <span class="box-lbl">授课班级</span>
+                  </div>
+                  <div class="stat-box">
+                    <span class="box-val">{{ currentItem.studentCount }}</span>
+                    <span class="box-lbl">覆盖人数</span>
+                  </div>
+                </div>
 
-        <!-- 教学目标 -->
-        <div class="detail-section">
-          <h3 class="section-title">🎯 教学目标</h3>
-          <ul class="objectives-list">
-            <li v-for="(objective, index) in generatedContent.objectives" :key="index">
-              {{ objective }}
-            </li>
-          </ul>
-        </div>
-
-        <!-- 课程大纲 -->
-        <div class="detail-section">
-          <h3 class="section-title">📚 课程大纲</h3>
-          <div class="outline-container">
-            <div 
-              v-for="(chapter, index) in generatedContent.outline" 
-              :key="index"
-              class="chapter-item"
-            >
-              <div class="chapter-header">
-                <span class="chapter-number">第{{ index + 1 }}章</span>
-                <span class="chapter-title">{{ chapter.title }}</span>
-                <span class="chapter-hours">{{ chapter.hours }}学时</span>
+                <div class="metadata-list-vertical">
+                  <div class="meta-row">
+                    <span class="row-label">授课班级对象</span>
+                    <span class="row-value">{{ currentItem.targetAudience }}</span>
+                  </div>
+                  <div class="meta-row">
+                    <span class="row-label">自主阅读时长</span>
+                    <span class="row-value duration-highlight">{{ currentItem.readTime }} 小时</span>
+                  </div>
+                  <div class="meta-row">
+                    <span class="row-label">课件教学应用</span>
+                    <span class="row-value" style="font-weight: 700; color: #1e293b;">{{ currentItem.usageCount }} 次</span>
+                  </div>
+                </div>
               </div>
-              <ul class="topics-list">
-                <li v-for="(topic, tIndex) in chapter.topics" :key="tIndex">
-                  {{ topic }}
-                </li>
-              </ul>
+
+              <!-- 资源说明 -->
+              <div class="premium-card">
+                <h4 class="card-title">
+                  <el-icon class="title-icon"><Document /></el-icon>
+                  <span>资源说明</span>
+                </h4>
+                <p class="description-paragraph">{{ currentItem.description }}</p>
+              </div>
+
+              <!-- 教学目标 -->
+              <div class="premium-card">
+                <h4 class="card-title">
+                  <el-icon class="title-icon"><Aim /></el-icon>
+                  <span>教学目标</span>
+                </h4>
+                <ul class="objectives-interactive-list">
+                  <li v-for="(objective, index) in generatedContent.objectives" :key="index">
+                    <span class="obj-num">{{ index + 1 }}</span>
+                    <span class="obj-text">{{ objective }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- 右栏：考核占比、章节大纲、参考资料 -->
+            <div class="layout-column">
+              <!-- 评估权重进度条 -->
+              <div class="premium-card">
+                <h4 class="card-title">
+                  <el-icon class="title-icon"><Checked /></el-icon>
+                  <span>考核占比评估</span>
+                </h4>
+                
+                <div class="assessments-visual-list">
+                  <div 
+                    v-for="(assessment, index) in generatedContent.assessments" 
+                    :key="index"
+                    class="assessment-progress-item"
+                  >
+                    <div class="assessment-info">
+                      <span class="assess-name">{{ assessment.name }}</span>
+                      <span class="assess-weight">{{ assessment.weight }}%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                      <div 
+                        class="progress-bar-fill" 
+                        :style="{ width: `${assessment.weight}%` }"
+                        :class="`color-${index % 4}`"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 教学大纲自定义时间线 -->
+              <div class="premium-card">
+                <h4 class="card-title">
+                  <el-icon class="title-icon"><Collection /></el-icon>
+                  <span>教学大纲章节</span>
+                </h4>
+                
+                <div class="custom-timeline">
+                  <div 
+                    v-for="(chapter, index) in generatedContent.outline" 
+                    :key="index"
+                    class="timeline-node"
+                  >
+                    <div class="node-line-indicator">
+                      <div class="node-dot"></div>
+                      <div class="node-connector" v-if="index < generatedContent.outline.length - 1"></div>
+                    </div>
+                    
+                    <div class="node-content">
+                      <div class="chapter-info-header">
+                        <span class="ch-num">第{{ index + 1 }}章</span>
+                        <span class="ch-hours">{{ chapter.hours }} 学时</span>
+                      </div>
+                      <h5 class="ch-title">{{ chapter.title }}</h5>
+                      <ul class="ch-topics-list">
+                        <li v-for="(topic, tIndex) in chapter.topics" :key="tIndex">
+                          {{ topic }}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 参考书目推荐 -->
+              <div class="premium-card">
+                <h4 class="card-title">
+                  <el-icon class="title-icon"><Reading /></el-icon>
+                  <span>推荐参考书目</span>
+                </h4>
+                
+                <div class="references-card-list">
+                  <div 
+                    v-for="(reference, index) in generatedContent.references" 
+                    :key="index"
+                    class="reference-card-item"
+                  >
+                    <span class="ref-icon">📖</span>
+                    <span class="ref-text">{{ reference }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- 考核方式 -->
-        <div class="detail-section">
-          <h3 class="section-title">✅ 考核方式</h3>
-          <div class="assessment-grid">
-            <div 
-              v-for="(assessment, index) in generatedContent.assessments" 
-              :key="index"
-              class="assessment-item"
-            >
-              <div class="assessment-name">{{ assessment.name }}</div>
-              <div class="assessment-weight">占比 {{ assessment.weight }}%</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 参考资料 -->
-        <div class="detail-section">
-          <h3 class="section-title">📖 参考资料</h3>
-          <ul class="references-list">
-            <li v-for="(reference, index) in generatedContent.references" :key="index">
-              {{ reference }}
-            </li>
-          </ul>
+        <!-- 抽屉底部操作栏 -->
+        <div class="drawer-footer-actions">
+          <el-button @click="detailDialogVisible = false" class="footer-btn">返回列表</el-button>
+          <el-button 
+            type="primary" 
+            @click="downloadItem(currentItem)" 
+            class="footer-btn btn-primary-gradient"
+          >
+            <el-icon style="margin-right: 6px;"><Download /></el-icon>
+            <span>下载此教学资源</span>
+          </el-button>
         </div>
       </div>
-      
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="detailDialogVisible = false">关闭</el-button>
-          <el-button type="primary" @click="downloadItem(currentItem)">下载课件</el-button>
-        </div>
-      </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, inject } from 'vue'
-import { User, Timer, DataLine, Cpu } from '@element-plus/icons-vue'
+import { 
+  User, Timer, DataLine, Cpu, Close, Notebook, Calendar, 
+  Memo, Document, Aim, Checked, Collection, Reading, Download 
+} from '@element-plus/icons-vue'
 
 // 注入全局事件总线
 const eventBus = inject('eventBus')
@@ -1634,11 +1714,454 @@ onMounted(() => {
   }
 }
 
-/* 详情弹窗样式 */
-.detail-dialog :deep(.el-dialog__body) {
-  padding: 0;
-  max-height: 70vh;
+/* 详情侧滑页精美样式 */
+.detail-drawer :deep(.el-drawer) {
+  background: #f8fafc !important;
+}
+
+.detail-drawer :deep(.el-drawer__body) {
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.drawer-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.drawer-header-banner {
+  background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+  padding: 28px 24px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+}
+
+.banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent);
+  background-size: 40px 40px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.header-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2;
+}
+
+.type-tag {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 4px 0 0 0;
+  line-height: 1.4;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.course-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.meta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.close-banner-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  z-index: 2;
+}
+
+.close-banner-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.drawer-body-content {
+  flex: 1;
   overflow-y: auto;
+  padding: 24px;
+}
+
+.drawer-grid-layout {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.layout-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.premium-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.015);
+  transition: all 0.3s ease;
+}
+
+.premium-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.03);
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 16px 0;
+  border-left: 4px solid #3b82f6;
+  padding-left: 10px;
+}
+
+.title-icon {
+  font-size: 16px;
+  color: #3b82f6;
+}
+
+.summary-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stat-box {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 12px 4px;
+  text-align: center;
+  border: 1px solid #f1f5f9;
+}
+
+.box-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: #3b82f6;
+  display: block;
+}
+
+.box-lbl {
+  font-size: 10px;
+  color: #64748b;
+  margin-top: 4px;
+  display: block;
+  font-weight: 500;
+}
+
+.metadata-list-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  border-bottom: 1px dashed #f1f5f9;
+  padding-bottom: 8px;
+}
+
+.meta-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.row-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.row-value {
+  font-weight: 600;
+  color: #334155;
+}
+
+.duration-highlight {
+  color: #2563eb;
+}
+
+.description-paragraph {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #475569;
+  margin: 0;
+}
+
+.objectives-interactive-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.objectives-interactive-list li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.obj-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: #3b82f6;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.obj-text {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.assessments-visual-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.assessment-progress-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.assessment-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.assess-name {
+  color: #334155;
+}
+
+.assess-weight {
+  color: #2563eb;
+}
+
+.progress-bar-bg {
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+}
+.progress-bar-fill.color-0 { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.progress-bar-fill.color-1 { background: linear-gradient(90deg, #10b981, #34d399); }
+.progress-bar-fill.color-2 { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.progress-bar-fill.color-3 { background: linear-gradient(90deg, #ec4899, #f472b6); }
+
+.custom-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-node {
+  display: flex;
+  gap: 16px;
+}
+
+.node-line-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.node-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3b82f6;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.node-connector {
+  width: 2px;
+  flex: 1;
+  background: #e2e8f0;
+  margin: 4px 0;
+}
+
+.node-content {
+  padding-bottom: 20px;
+  flex: 1;
+}
+
+.chapter-info-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 2px;
+}
+
+.ch-num {
+  color: #3b82f6;
+  background: #eff6ff;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.ch-hours {
+  color: #64748b;
+}
+
+.ch-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 4px 0 8px 0;
+}
+
+.ch-topics-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ch-topics-list li {
+  font-size: 12px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.5;
+}
+
+.ch-topics-list li::before {
+  content: '•';
+  color: #3b82f6;
+  font-weight: 800;
+  margin-right: 2px;
+}
+
+.references-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reference-card-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid #f1f5f9;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.ref-icon {
+  font-size: 14px;
+}
+
+.drawer-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+  z-index: 10;
+}
+
+.footer-btn {
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.btn-primary-gradient {
+  background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%) !important;
+  border: none !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+  transition: all 0.25s ease;
+}
+
+.btn-primary-gradient:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
 }
 
 .detail-content {

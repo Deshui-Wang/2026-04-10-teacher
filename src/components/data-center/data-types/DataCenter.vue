@@ -19,6 +19,7 @@
               <span>教学数据</span>
             </template>
             <el-menu-item index="workload">课表</el-menu-item>
+            <el-menu-item index="teaching-task">教学任务</el-menu-item>
             <el-menu-item index="teaching-course">我的授课</el-menu-item>
             <el-menu-item index="aidata">AI数据分析</el-menu-item>
           </el-sub-menu>
@@ -29,17 +30,11 @@
               <i class="el-icon-folder-opened"></i>
               <span>资源数据</span>
             </template>
-            <el-menu-item index="courseware">课件</el-menu-item>
-            <el-menu-item index="courses">课程</el-menu-item>
+            <el-menu-item index="teaching-resources">教学资源</el-menu-item>
             <el-menu-item index="my-assets">我的资产</el-menu-item>
-            <el-menu-item index="workflow">工作流</el-menu-item>
-            <el-menu-item index="knowledge-base">知识库</el-menu-item>
-            <el-menu-item index="video">视频</el-menu-item>
-            <el-menu-item index="voice-over">配音</el-menu-item>
-            <el-menu-item index="knowledge-graph">知识图谱</el-menu-item>
-            <el-menu-item index="ability-graph">能力图谱</el-menu-item>
-            <el-menu-item index="digital-human">数字人</el-menu-item>
-            <el-menu-item index="agent">智能体</el-menu-item>
+            <el-menu-item index="intelligent-resources">智能资源</el-menu-item>
+            <el-menu-item index="digital-resources">数字资源</el-menu-item>
+            <el-menu-item index="graph-resources">图谱资源</el-menu-item>
           </el-sub-menu>
 
           <!-- 成果数据组 -->
@@ -159,13 +154,18 @@ const activeTab = ref('teaching')
 const activeSubTab = ref('workload')
 const menuGroupMap = {
   'workload': 'teaching',
+  'teaching-task': 'teaching',
   'teaching-course': 'teaching',
   'aidata': 'teaching',
+  'teaching-resources': 'resources',
   'courseware': 'resources',
   'courses': 'resources',
   'my-assets': 'resources',
+  'intelligent-resources': 'resources',
   'workflow': 'resources',
   'knowledge-base': 'resources',
+  'digital-resources': 'resources',
+  'graph-resources': 'resources',
   'video': 'resources',
   'voice-over': 'resources',
   'knowledge-graph': 'resources',
