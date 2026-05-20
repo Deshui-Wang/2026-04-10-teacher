@@ -50,7 +50,7 @@
         <div ref="sentimentChartRef" class="echart-container small"></div>
       </section>
 
-      <section class="card">
+      <section class="card card-span-2">
         <div class="card-head">
           <h3>科研项目</h3>
         </div>
@@ -74,7 +74,7 @@
         </div>
       </section>
 
-      <section class="card">
+      <section class="card card-span-2">
         <div class="card-head">
           <h3>专业匹配度</h3>
           <span class="major-tag">人工智能专业</span>
@@ -851,6 +851,10 @@ onBeforeUnmount(() => {
   gap: 12px;
 }
 
+.card-span-2 {
+  grid-column: span 2;
+}
+
 .card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -1003,60 +1007,48 @@ onBeforeUnmount(() => {
 }
 
 .project-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  height: 280px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.project-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.project-list::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 3px;
-}
-
-.project-list::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-
-.project-list::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  height: auto;
+  overflow: visible;
+  padding-bottom: 0;
+  padding-right: 0;
 }
 
 .project-item {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
   justify-content: space-between;
-  padding: 12px;
+  padding: 16px;
   background: #f8fafc;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid #e2e8f0;
-  transition: all 0.2s ease;
-  gap: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 145px;
+  box-sizing: border-box;
 }
 
 .project-item:hover {
   background: #f1f5f9;
-  border-color: #cbd5e1;
-  transform: translateX(2px);
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.05);
 }
 
 .project-info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .project-name {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 13.5px;
+  font-weight: 700;
   color: #0f172a;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1070,14 +1062,17 @@ onBeforeUnmount(() => {
 
 .project-progress {
   color: #3b82f6;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .project-students {
   font-size: 11px;
   color: #475569;
-  margin-top: 4px;
+  margin-top: auto; /* 置底展示 */
   line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .students-label {
@@ -1086,16 +1081,18 @@ onBeforeUnmount(() => {
 }
 
 .students-names {
-  color: #0f172a;
+  color: #1e293b;
+  font-weight: 500;
 }
 
 .project-status {
   font-size: 11px;
-  font-weight: 500;
-  padding: 4px 10px;
-  border-radius: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 10px;
   white-space: nowrap;
-  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 6px;
 }
 
 .project-status.status-active {
@@ -1123,57 +1120,46 @@ onBeforeUnmount(() => {
 }
 
 .major-match-container {
-  padding: 16px 4px 16px 0;
-  height: 280px;
-  overflow-y: auto;
-}
-
-.major-match-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.major-match-container::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 3px;
-}
-
-.major-match-container::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-
-.major-match-container::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  display: flex;
+  gap: 24px;
+  padding: 12px 0 4px 0;
+  height: auto;
+  overflow: visible;
 }
 
 .major-match-overview {
+  width: 300px;
+  flex-shrink: 0;
   display: flex;
-  gap: 20px;
-  padding: 16px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border-radius: 12px;
+  border-radius: 16px;
   border: 1px solid #bae6fd;
-  margin-bottom: 20px;
+  margin-bottom: 0;
+  box-sizing: border-box;
 }
 
 .overview-score {
   flex-shrink: 0;
-  text-align: center;
-  min-width: 100px;
+  text-align: left;
 }
 
 .score-value {
-  font-size: 36px;
-  font-weight: 700;
+  font-size: 42px;
+  font-weight: 800;
   color: #0ea5e9;
   line-height: 1;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .score-label {
-  font-size: 12px;
+  font-size: 13px;
   color: #0369a1;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .overview-desc {
@@ -1190,56 +1176,64 @@ onBeforeUnmount(() => {
 }
 
 .major-match-indicators {
-  display: flex;
-  flex-direction: row;
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 14px;
+  align-items: stretch;
 }
 
 .match-indicator {
-  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 14px;
   background: #f8fafc;
-  border-radius: 10px;
+  border-radius: 14px;
   border: 1px solid #e2e8f0;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
 }
 
 .match-indicator:hover {
   background: #f1f5f9;
   border-color: #cbd5e1;
-  transform: translateX(2px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
 }
 
 .indicator-header {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  flex-direction: column;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  width: 100%;
 }
 
 .indicator-name {
   font-size: 13px;
-  font-weight: 500;
-  color: #0f172a;
+  font-weight: 700;
+  color: #1e293b;
 }
 
 .indicator-value {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 800;
   color: #334155;
 }
 
 .indicator-progress {
-  height: 8px;
+  height: 6px;
   background: #e2e8f0;
-  border-radius: 4px;
+  border-radius: 3px;
   overflow: hidden;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .progress-bar {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 3px;
   transition: width 0.3s ease;
 }
 
@@ -1247,25 +1241,55 @@ onBeforeUnmount(() => {
   font-size: 11px;
   color: #64748b;
   line-height: 1.5;
+  white-space: normal;
 }
-
 
 @media (max-width: 1200px) {
   .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
+  }
+  
+  .card-span-2 {
+    grid-column: span 1;
   }
 
   .stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .project-list {
+    grid-template-columns: repeat(2, 1fr); /* 中屏下科研项目两列展示 */
+  }
+
+  .major-match-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .major-match-overview {
+    width: 100%;
+    text-align: center;
+  }
+
+  .overview-score {
+    text-align: center;
+  }
+
+  .major-match-indicators {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 720px) {
-  .grid {
+  .stats {
     grid-template-columns: 1fr;
   }
 
-  .stats {
+  .project-list {
+    grid-template-columns: 1fr; /* 小屏下科研项目单列展示 */
+  }
+
+  .major-match-indicators {
     grid-template-columns: 1fr;
   }
 }
